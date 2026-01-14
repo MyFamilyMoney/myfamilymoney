@@ -2,11 +2,11 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>บันทึกเงิน - MyFamily</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>บันทึกรายรับ-รายจ่าย</title><script src="https://cdn.tailwindcss.com"></script>
+    <style>body { font-family: 'Kanit', sans-serif; }</style>
 </head>
 <body class="bg-gray-50 min-h-screen p-4">
-    <div class="max-w-md mx-auto bg-white p-6 rounded-3xl shadow-xl border">
+    <div class="max-w-md mx-auto bg-white p-6 rounded-[2.5rem] shadow-xl border">
         <h2 class="text-xl font-bold text-center mb-6 text-green-700">💰 บันทึกรายการใหม่</h2>
         
         <div class="flex bg-gray-100 p-1 rounded-2xl mb-6">
@@ -15,14 +15,25 @@
         </div>
 
         <form id="transForm" class="space-y-4">
-            <select id="catId" required class="w-full p-4 border rounded-2xl bg-gray-50 outline-none focus:ring-2 focus:ring-green-500">
-                <option value="">กำลังโหลดหมวดหมู่...</option>
-            </select>
-            <input type="number" id="amount" placeholder="จำนวนเงิน" required class="w-full p-4 border rounded-2xl outline-none focus:ring-2 focus:ring-green-500 text-2xl text-center font-bold">
-            <input type="text" id="note" placeholder="หมายเหตุ (ถ้ามี)" class="w-full p-4 border rounded-2xl">
+            <div>
+                <label class="text-xs text-gray-400 ml-2">หมวดหมู่หลัก</label>
+                <select id="mainCat" onchange="filterSubCategories()" required class="w-full p-4 border rounded-2xl bg-gray-50 outline-none focus:ring-2 focus:ring-green-500">
+                    <option value="">-- เลือกกลุ่มหลัก --</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="text-xs text-gray-400 ml-2">รายการย่อย</label>
+                <select id="catId" required class="w-full p-4 border rounded-2xl bg-gray-50 outline-none focus:ring-2 focus:ring-green-500">
+                    <option value="">-- เลือกรายการ --</option>
+                </select>
+            </div>
+
+            <input type="number" id="amount" placeholder="0.00" required class="w-full p-4 border rounded-2xl text-3xl text-center font-black text-green-600">
+            <input type="text" id="note" placeholder="บันทึกช่วยจำ..." class="w-full p-4 border rounded-2xl bg-gray-50">
             
-            <button type="submit" id="saveBtn" class="w-full bg-green-600 text-white py-4 rounded-2xl font-bold shadow-lg active:scale-95 transition">บันทึกข้อมูล</button>
-            <button type="button" onclick="window.location.href='dashboard.html'" class="w-full text-gray-400 py-2 text-sm">กลับหน้าหลัก</button>
+            <button type="submit" id="saveBtn" class="w-full bg-green-600 text-white py-5 rounded-3xl font-bold shadow-lg active:scale-95 transition text-lg">บันทึกข้อมูล</button>
+            <button type="button" onclick="window.location.href='dashboard.html'" class="w-full text-gray-400 py-2 text-sm">ยกเลิกและกลับหน้าหลัก</button>
         </form>
     </div>
 
@@ -32,34 +43,41 @@
         let allCategories = [];
 
         async function loadCategories() {
-            try {
-                const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_categories' }) });
-                const data = await res.json();
-                if (data.status === 'success') {
-                    allCategories = data.categories;
-                    renderCategories();
-                }
-            } catch (e) { alert("โหลดข้อมูลไม่สำเร็จ"); }
+            const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_categories' }) });
+            const data = await res.json();
+            if (data.status === 'success') {
+                allCategories = data.categories;
+                renderMainCategories();
+            }
         }
 
-        function renderCategories() {
-            const select = document.getElementById('catId');
+        // แสดงหมวดหมู่หลัก (ไม่ให้ซ้ำกัน)
+        function renderMainCategories() {
+            const mainSelect = document.getElementById('mainCat');
             const filtered = allCategories.filter(c => c.type === currentType);
-            select.innerHTML = filtered.map(c => `<option value="${c.id}">${c.parent} > ${c.name}</option>`).join('');
+            const uniqueParents = [...new Set(filtered.map(c => c.parent))];
+            
+            mainSelect.innerHTML = '<option value="">-- เลือกกลุ่มหลัก --</option>' + 
+                uniqueParents.map(p => `<option value="${p}">${p}</option>`).join('');
+            
+            document.getElementById('catId').innerHTML = '<option value="">-- เลือกรายการ --</option>';
+        }
+
+        // กรองรายการย่อยตามกลุ่มหลักที่เลือก
+        function filterSubCategories() {
+            const selectedParent = document.getElementById('mainCat').value;
+            const subSelect = document.getElementById('catId');
+            const filteredSub = allCategories.filter(c => c.type === currentType && c.parent === selectedParent);
+            
+            subSelect.innerHTML = '<option value="">-- เลือกรายการ --</option>' + 
+                filteredSub.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
         }
 
         function changeType(type) {
             currentType = type;
-            const btnExp = document.getElementById('btnExp');
-            const btnInc = document.getElementById('btnInc');
-            if (type === 'Income') {
-                btnInc.className = "flex-1 py-3 rounded-xl font-bold bg-white shadow text-green-600";
-                btnExp.className = "flex-1 py-3 rounded-xl font-bold text-gray-400";
-            } else {
-                btnExp.className = "flex-1 py-3 rounded-xl font-bold bg-white shadow text-red-600";
-                btnInc.className = "flex-1 py-3 rounded-xl font-bold text-gray-400";
-            }
-            renderCategories();
+            document.getElementById('btnInc').className = type === 'Income' ? "flex-1 py-3 rounded-xl font-bold bg-white shadow text-green-600" : "flex-1 py-3 rounded-xl font-bold text-gray-400";
+            document.getElementById('btnExp').className = type === 'Expense' ? "flex-1 py-3 rounded-xl font-bold bg-white shadow text-red-600" : "flex-1 py-3 rounded-xl font-bold text-gray-400";
+            renderMainCategories();
         }
 
         window.onload = loadCategories;
@@ -79,7 +97,6 @@
             };
             const btn = document.getElementById('saveBtn');
             btn.disabled = true; btn.innerText = "กำลังบันทึก...";
-            
             const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
             const result = await res.json();
             if (result.status === 'success') { alert("บันทึกสำเร็จ!"); window.location.href = 'dashboard.html'; }
