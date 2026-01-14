@@ -2,60 +2,84 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>บันทึกเงิน</title><script src="https://cdn.tailwindcss.com"></script>
+    <title>บันทึกรายการ</title><script src="https://cdn.tailwindcss.com"></script>
     <style>body { font-family: 'Kanit', sans-serif; }</style>
 </head>
 <body class="bg-gray-50 min-h-screen p-4 flex items-center">
     <div class="max-w-md w-full mx-auto bg-white p-6 rounded-[2.5rem] shadow-xl border">
-        <div class="flex bg-gray-100 p-1 rounded-2xl mb-4">
-            <button onclick="changeType('Expense')" id="btnExp" class="flex-1 py-3 rounded-xl font-bold bg-white shadow text-red-600 text-sm">รายจ่าย</button>
-            <button onclick="changeType('Income')" id="btnInc" class="flex-1 py-3 rounded-xl font-bold text-gray-400 text-sm">รายรับ</button>
+        
+        <div class="flex bg-blue-50 p-1 rounded-2xl mb-4">
+            <button onclick="changeAcc('Circular')" id="btnCirc" class="flex-1 py-2 rounded-xl font-bold bg-white shadow text-blue-600 text-sm">เงินหมุนเวียน</button>
+            <button onclick="changeAcc('Savings')" id="btnSave" class="flex-1 py-2 rounded-xl font-bold text-gray-400 text-sm">เงินเก็บ/ออม</button>
+        </div>
+
+        <div class="flex bg-gray-100 p-1 rounded-2xl mb-6">
+            <button onclick="changeType('Expense')" id="btnExp" class="flex-1 py-3 rounded-xl font-bold bg-white shadow text-red-600">รายจ่าย</button>
+            <button onclick="changeType('Income')" id="btnInc" class="flex-1 py-3 rounded-xl font-bold text-gray-400">รายรับ</button>
         </div>
 
         <form id="transForm" class="space-y-4">
-            <select id="accType" class="w-full p-4 border rounded-2xl bg-blue-50 font-bold text-blue-700 outline-none">
-                <option value="Circular">💳 เงินหมุนเวียน (หักรายคน)</option>
-                <option value="Savings">💰 เงินเก็บ (ทอง/ลงทุน/เงินสด)</option>
-            </select>
-            <select id="mainCat" onchange="filterSub()" required class="w-full p-4 border rounded-2xl bg-gray-50 text-sm"></select>
-            <select id="catId" required class="w-full p-4 border rounded-2xl bg-gray-50 text-sm"></select>
-            <input type="number" id="amount" placeholder="0.00" required class="w-full p-4 border rounded-2xl text-3xl text-center font-black text-green-600 outline-none">
-            <input type="text" id="note" placeholder="หมายเหตุ" class="w-full p-4 border rounded-2xl bg-gray-50 text-sm">
-            <button type="submit" id="saveBtn" class="w-full bg-green-600 text-white py-5 rounded-3xl font-bold shadow-lg active:scale-95 transition">บันทึกข้อมูล</button>
+            <select id="mainCat" onchange="filterSub()" required class="w-full p-4 border rounded-2xl bg-gray-50"><option value="">-- กลุ่มหลัก --</option></select>
+            <select id="catId" required class="w-full p-4 border rounded-2xl bg-gray-50"><option value="">-- รายการย่อย --</option></select>
+            <input type="number" id="amount" placeholder="0.00" required class="w-full p-4 border rounded-2xl text-3xl text-center font-black text-green-600">
+            <input type="text" id="note" placeholder="หมายเหตุ" class="w-full p-4 border rounded-2xl bg-gray-50">
+            <button type="submit" id="saveBtn" class="w-full bg-green-600 text-white py-5 rounded-3xl font-bold shadow-lg">บันทึกข้อมูล</button>
             <button type="button" onclick="window.location.href='dashboard.html'" class="w-full text-gray-400 text-sm">กลับหน้าหลัก</button>
         </form>
     </div>
 
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxxR_ewzPI6qonh5tQNZz0o1Gek4M_ylU2jqXxlIXrHP0ns6ppC1hR9SXCIw6jY2PFF/exec";
-        let currentType = 'Expense'; let allCats = [];
+        let currentType = 'Expense'; 
+        let currentAcc = 'Circular'; // ค่าเริ่มต้นเป็นเงินหมุนเวียน
+        let allCats = [];
 
         async function load() {
             const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_categories' }) });
             const data = await res.json();
             if (data.status === 'success') { allCats = data.categories; renderMain(); }
         }
+
+        function changeAcc(acc) {
+            currentAcc = acc;
+            document.getElementById('btnCirc').className = acc === 'Circular' ? "flex-1 py-2 rounded-xl font-bold bg-white shadow text-blue-600 text-sm" : "flex-1 py-2 rounded-xl font-bold text-gray-400 text-sm";
+            document.getElementById('btnSave').className = acc === 'Savings' ? "flex-1 py-2 rounded-xl font-bold bg-white shadow text-green-600 text-sm" : "flex-1 py-2 rounded-xl font-bold text-gray-400 text-sm";
+        }
+
         function renderMain() {
             const filtered = allCats.filter(c => c.type === currentType);
             const unique = [...new Set(filtered.map(c => c.parent))];
             document.getElementById('mainCat').innerHTML = '<option value="">-- กลุ่มหลัก --</option>' + unique.map(p => `<option value="${p}">${p}</option>`).join('');
             document.getElementById('catId').innerHTML = '<option value="">-- รายการย่อย --</option>';
         }
+
         function filterSub() {
             const p = document.getElementById('mainCat').value;
             const subs = allCats.filter(c => c.type === currentType && c.parent === p);
             document.getElementById('catId').innerHTML = '<option value="">-- รายการย่อย --</option>' + subs.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
         }
+
         function changeType(t) {
             currentType = t;
-            document.getElementById('btnExp').className = t === 'Expense' ? "flex-1 py-3 rounded-xl font-bold bg-white shadow text-red-600 text-sm" : "flex-1 py-3 rounded-xl font-bold text-gray-400 text-sm";
-            document.getElementById('btnInc').className = t === 'Income' ? "flex-1 py-3 rounded-xl font-bold bg-white shadow text-green-600 text-sm" : "flex-1 py-3 rounded-xl font-bold text-gray-400 text-sm";
+            document.getElementById('btnExp').className = t === 'Expense' ? "flex-1 py-3 rounded-xl font-bold bg-white shadow text-red-600" : "flex-1 py-3 rounded-xl font-bold text-gray-400";
+            document.getElementById('btnInc').className = t === 'Income' ? "flex-1 py-3 rounded-xl font-bold bg-white shadow text-green-600" : "flex-1 py-3 rounded-xl font-bold text-gray-400";
             renderMain();
         }
+
         document.getElementById('transForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const user = JSON.parse(localStorage.getItem('userData'));
-            const payload = { action: 'add_transaction', data: { userId: user.userId, catId: document.getElementById('catId').value, amount: document.getElementById('amount').value, note: document.getElementById('note').value, type: currentType, accType: document.getElementById('accType').value } };
+            const payload = { 
+                action: 'add_transaction', 
+                data: { 
+                    userId: user.userId, 
+                    catId: document.getElementById('catId').value, 
+                    amount: document.getElementById('amount').value, 
+                    note: document.getElementById('note').value, 
+                    type: currentType,
+                    accType: currentAcc // ส่งค่าประเภทบัญชีไปที่ Apps Script
+                } 
+            };
             document.getElementById('saveBtn').innerText = "กำลังบันทึก...";
             await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
             window.location.href = 'dashboard.html';
