@@ -14,35 +14,37 @@
             <button onclick="logout()" class="text-xs font-bold text-red-500 bg-red-50 px-3 py-2 rounded-xl">ออกจากระบบ</button>
         </div>
 
-        <div class="bg-white rounded-[2rem] shadow-sm border-t-4 border-green-500 overflow-hidden">
+        <div class="bg-white rounded-[2.5rem] shadow-sm border-t-4 border-green-500 overflow-hidden">
             <div class="bg-green-50 p-3 border-b border-green-100 grid grid-cols-4 text-center gap-1">
                 <div><p class="text-[8px] text-gray-500">🏆 ทอง</p><p id="saveGold" class="text-[10px] font-bold text-yellow-600">0</p></div>
                 <div><p class="text-[8px] text-gray-500">📈 ลงทุน</p><p id="saveInvest" class="text-[10px] font-bold text-blue-600">0</p></div>
                 <div><p class="text-[8px] text-gray-500">💵 เงินสด</p><p id="saveCash" class="text-[10px] font-bold text-purple-600">0</p></div>
                 <div><p class="text-[8px] text-gray-500">💰 รวมออม</p><p id="saveTotal" class="text-[10px] font-bold text-green-700">0</p></div>
             </div>
-            <div class="p-4 text-center">
-                <p class="text-[10px] text-gray-400 font-bold tracking-widest">💰 เงินหมุนเวียนกองกลาง (รวม)</p>
-                <h1 id="sharedCircular" class="text-4xl font-black text-gray-800">0.00 ฿</h1>
+            
+            <div class="p-3 text-center bg-gray-50/30">
+                <p class="text-[9px] text-gray-400 font-bold tracking-widest italic">💰 เงินหมุนเวียนกองกลาง (รวม)</p>
+                <h1 id="sharedCircular" class="text-xl font-bold text-gray-600">0.00 ฿</h1>
             </div>
-            <div class="grid grid-cols-2 border-t border-gray-100 bg-gray-50/30">
-                <div class="p-3 text-center border-r border-gray-100">
-                    <p id="u1NameDisp" class="text-[9px] text-gray-400 italic">...</p>
-                    <p id="u1Bal" class="text-xs font-bold text-gray-700">0.00</p>
+
+            <div class="grid grid-cols-2 border-t border-gray-100 divide-x">
+                <div class="p-5 text-center">
+                    <p id="u1NameDisp" class="text-sm font-bold text-gray-500 mb-1">...</p>
+                    <p id="u1Bal" class="text-2xl font-black text-gray-800">0</p>
                 </div>
-                <div class="p-3 text-center">
-                    <p id="u2NameDisp" class="text-[9px] text-gray-400 italic">...</p>
-                    <p id="u2Bal" class="text-xs font-bold text-gray-700">0.00</p>
+                <div class="p-5 text-center">
+                    <p id="u2NameDisp" class="text-sm font-bold text-gray-500 mb-1">...</p>
+                    <p id="u2Bal" class="text-2xl font-black text-gray-800">0</p>
                 </div>
             </div>
         </div>
 
-        <div class="bg-gradient-to-r from-blue-600 to-blue-500 p-4 rounded-[1.5rem] text-white shadow-lg flex justify-between items-center px-8">
+        <div class="bg-gradient-to-r from-blue-600 to-blue-500 p-4 rounded-[2rem] text-white shadow-lg flex justify-between items-center px-8">
             <p class="text-[11px] opacity-80 font-bold uppercase">ยอดส่วนตัวของคุณ</p>
             <h1 id="myBalance" class="text-2xl font-black">0.00 ฿</h1>
         </div>
 
-        <button onclick="window.location.href='add_transaction.html'" class="w-full bg-white border-2 border-blue-600 text-blue-700 py-3 rounded-2xl font-bold shadow-md active:scale-95 transition">+ บันทึกรายการใหม่</button>
+        <button onclick="window.location.href='add_transaction.html'" class="w-full bg-white border-2 border-blue-600 text-blue-700 py-4 rounded-2xl font-bold shadow-md active:scale-95 transition">+ บันทึกรายการใหม่</button>
 
         <div class="space-y-2">
             <h3 class="font-bold text-gray-700 ml-2 text-xs text-center uppercase tracking-widest">ความเคลื่อนไหวล่าสุด</h3>
@@ -60,24 +62,31 @@
     </div>
 
     <script>
+        // ⚠️ แทนที่ลิงก์นี้ด้วย URL เว็บแอป (รหัส.gs) เวอร์ชันล่าสุดของคุณ
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyUG4j3I4VHyHEpxezh-GZMV7-zwbZ6jur5z6yJi3D73uyru1RTBQUrRIdCWaaQUPt_/exec";
+
         async function init() {
             const user = JSON.parse(localStorage.getItem('userData'));
             if (!user) { window.location.href = 'index.html'; return; }
             document.getElementById('userNameDisplay').innerText = user.name;
+
             const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_dashboard_data', data: { userId: user.userId } }) });
             const data = await res.json();
+            
             if (data.status === 'success') {
                 document.getElementById('saveGold').innerText = data.savings.gold.toLocaleString();
                 document.getElementById('saveInvest').innerText = data.savings.invest.toLocaleString();
                 document.getElementById('saveCash').innerText = data.savings.cash.toLocaleString();
                 document.getElementById('saveTotal').innerText = data.savings.total.toLocaleString();
                 document.getElementById('sharedCircular').innerText = data.sharedCircular.toLocaleString() + " ฿";
-                document.getElementById('u1NameDisp').innerText = data.user1.name; document.getElementById('u1Bal').innerText = data.user1.balance.toLocaleString();
-                document.getElementById('u2NameDisp').innerText = data.user2.name; document.getElementById('u2Bal').innerText = data.user2.balance.toLocaleString();
+                
+                // ข้อมูลชื่อและยอดเงินที่ปรับให้ใหญ่ขึ้น
+                document.getElementById('u1NameDisp').innerText = data.user1.name; 
+                document.getElementById('u1Bal').innerText = data.user1.balance.toLocaleString();
+                document.getElementById('u2NameDisp').innerText = data.user2.name; 
+                document.getElementById('u2Bal').innerText = data.user2.balance.toLocaleString();
+                
                 document.getElementById('myBalance').innerText = data.myBalance.toLocaleString() + " ฿";
-
-                // จัดการคอลัมน์ประวัติรายคน
                 document.getElementById('u1ColName').innerText = data.user1.name;
                 document.getElementById('u2ColName').innerText = data.user2.name;
 
