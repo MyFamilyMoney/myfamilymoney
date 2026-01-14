@@ -10,8 +10,8 @@
 <body class="bg-gray-50 min-h-screen pb-10">
     <div class="max-w-md mx-auto p-4 space-y-4">
         <div class="flex justify-between items-center px-2">
-            <div><p class="text-[10px] text-gray-400">ยินดีต้อนรับ</p><h2 id="userNameDisplay" class="font-bold text-gray-800">...</h2></div>
-            <button onclick="logout()" class="text-xs font-bold text-red-500 bg-red-50 px-3 py-2 rounded-xl">ออกจากระบบ</button>
+            <div><p class="text-[10px] text-gray-400">ยินดีต้อนรับ</p><h2 id="userNameDisplay" class="font-bold text-gray-800 text-lg">...</h2></div>
+            <button onclick="logout()" class="text-xs font-bold text-red-500 bg-red-50 px-3 py-2 rounded-xl active:scale-95 transition">ออกจากระบบ</button>
         </div>
 
         <div class="bg-white rounded-[2.5rem] shadow-sm border-t-4 border-green-500 overflow-hidden">
@@ -22,26 +22,26 @@
                 <div><p class="text-[8px] text-gray-500">💰 รวมออม</p><p id="saveTotal" class="text-[10px] font-bold text-green-700">0</p></div>
             </div>
             
-            <div class="p-3 text-center bg-gray-50/30">
-                <p class="text-[9px] text-gray-400 font-bold tracking-widest italic">💰 เงินหมุนเวียนกองกลาง (รวม)</p>
-                <h1 id="sharedCircular" class="text-xl font-bold text-gray-600">0.00 ฿</h1>
+            <div class="p-6 text-center">
+                <p class="text-[10px] text-gray-400 font-bold tracking-widest uppercase">💰 เงินหมุนเวียนกองกลาง (รวม)</p>
+                <h1 id="sharedCircular" class="text-4xl font-black text-gray-800 mt-1">0.00 ฿</h1>
             </div>
 
-            <div class="grid grid-cols-2 border-t border-gray-100 divide-x">
-                <div class="p-5 text-center">
-                    <p id="u1NameDisp" class="text-sm font-bold text-gray-500 mb-1">...</p>
-                    <p id="u1Bal" class="text-2xl font-black text-gray-800">0</p>
+            <div class="grid grid-cols-2 border-t border-gray-100 bg-gray-50/50 divide-x">
+                <div class="p-3 text-center">
+                    <p id="u1NameDisp" class="text-[11px] font-bold text-gray-400 truncate">...</p>
+                    <p id="u1Bal" class="text-lg font-bold text-gray-700 leading-tight">0</p>
                 </div>
-                <div class="p-5 text-center">
-                    <p id="u2NameDisp" class="text-sm font-bold text-gray-500 mb-1">...</p>
-                    <p id="u2Bal" class="text-2xl font-black text-gray-800">0</p>
+                <div class="p-3 text-center">
+                    <p id="u2NameDisp" class="text-[11px] font-bold text-gray-400 truncate">...</p>
+                    <p id="u2Bal" class="text-lg font-bold text-gray-700 leading-tight">0</p>
                 </div>
             </div>
         </div>
 
-        <div class="bg-gradient-to-r from-blue-600 to-blue-500 p-4 rounded-[2rem] text-white shadow-lg flex justify-between items-center px-8">
-            <p class="text-[11px] opacity-80 font-bold uppercase">ยอดส่วนตัวของคุณ</p>
-            <h1 id="myBalance" class="text-2xl font-black">0.00 ฿</h1>
+        <div class="bg-gradient-to-r from-blue-600 to-blue-500 p-5 rounded-[2rem] text-white shadow-lg flex justify-between items-center px-8">
+            <p class="text-[11px] opacity-80 font-bold uppercase tracking-tight">ยอดส่วนตัวของคุณ</p>
+            <h1 id="myBalance" class="text-3xl font-black">0.00 ฿</h1>
         </div>
 
         <button onclick="window.location.href='add_transaction.html'" class="w-full bg-white border-2 border-blue-600 text-blue-700 py-4 rounded-2xl font-bold shadow-md active:scale-95 transition">+ บันทึกรายการใหม่</button>
@@ -62,7 +62,7 @@
     </div>
 
     <script>
-        // ⚠️ แทนที่ลิงก์นี้ด้วย URL เว็บแอป (รหัส.gs) เวอร์ชันล่าสุดของคุณ
+        // ใส่ URL เว็บแอป (รหัส.gs) ล่าสุดของคุณที่นี่
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyUG4j3I4VHyHEpxezh-GZMV7-zwbZ6jur5z6yJi3D73uyru1RTBQUrRIdCWaaQUPt_/exec";
 
         async function init() {
@@ -78,9 +78,11 @@
                 document.getElementById('saveInvest').innerText = data.savings.invest.toLocaleString();
                 document.getElementById('saveCash').innerText = data.savings.cash.toLocaleString();
                 document.getElementById('saveTotal').innerText = data.savings.total.toLocaleString();
+                
+                // ยอดเงินกองกลาง (ขยายใหญ่)
                 document.getElementById('sharedCircular').innerText = data.sharedCircular.toLocaleString() + " ฿";
                 
-                // ข้อมูลชื่อและยอดเงินที่ปรับให้ใหญ่ขึ้น
+                // ข้อมูลชื่อและยอดรายบุคคล (ย่อขนาด)
                 document.getElementById('u1NameDisp').innerText = data.user1.name; 
                 document.getElementById('u1Bal').innerText = data.user1.balance.toLocaleString();
                 document.getElementById('u2NameDisp').innerText = data.user2.name; 
@@ -99,8 +101,8 @@
                         </div>
                     </div>`;
 
-                document.getElementById('u1Logs').innerHTML = data.user1.logs.map(renderLog).join('') || '<p class="text-center text-[8px] text-gray-300">ไม่มีข้อมูล</p>';
-                document.getElementById('u2Logs').innerHTML = data.user2.logs.map(renderLog).join('') || '<p class="text-center text-[8px] text-gray-300">ไม่มีข้อมูล</p>';
+                document.getElementById('u1Logs').innerHTML = data.user1.logs.map(renderLog).join('') || '<p class="text-center text-[8px] text-gray-300 py-2">ไม่มีข้อมูล</p>';
+                document.getElementById('u2Logs').innerHTML = data.user2.logs.map(renderLog).join('') || '<p class="text-center text-[8px] text-gray-300 py-2">ไม่มีข้อมูล</p>';
             }
         }
         function logout() { if(confirm('ต้องการออกจากระบบ?')) { localStorage.removeItem('userData'); window.location.href = 'index.html'; } }
