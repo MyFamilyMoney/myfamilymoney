@@ -9,50 +9,54 @@
     <div class="max-w-md w-full bg-white p-6 rounded-[2.5rem] shadow-2xl border border-gray-100">
         
         <div class="flex bg-gray-100 p-1 rounded-2xl mb-6">
-            <button onclick="changeAcc('Circular')" id="btnCirc" class="flex-1 py-2 rounded-xl font-bold bg-white shadow text-blue-600 transition-all">เงินหมุนเวียน</button>
-            <button onclick="changeAcc('Savings')" id="btnSave" class="flex-1 py-2 rounded-xl font-bold text-gray-400 transition-all">เงินเก็บ/ออม</button>
+            <button onclick="changeAcc('Circular')" id="btnCirc" class="flex-1 py-2 rounded-xl font-bold bg-white shadow text-blue-600 transition-all">
+                💳 หมุนเวียน
+            </button>
+            <button onclick="changeAcc('Savings')" id="btnSave" class="flex-1 py-2 rounded-xl font-bold text-gray-400 transition-all">
+                💰 เงินเก็บ/ออม
+            </button>
         </div>
 
         <div id="typeToggle" class="grid grid-cols-2 gap-2 mb-6">
-            <button onclick="changeType('Expense')" id="typeExp" class="py-3 rounded-2xl font-black border-2 border-red-500 bg-red-50 text-red-600 shadow-sm transition-all">
-                🔻 รายจ่าย
-            </button>
-            <button onclick="changeType('Income')" id="typeInc" class="py-3 rounded-2xl font-black border-2 border-gray-200 text-gray-400 transition-all">
+            <button onclick="changeType('Income')" id="typeInc" class="py-3 rounded-2xl font-black border-2 border-green-500 bg-green-50 text-green-600 shadow-sm transition-all">
                 🔺 รายรับ
+            </button>
+            <button onclick="changeType('Expense')" id="typeExp" class="py-3 rounded-2xl font-black border-2 border-gray-100 text-gray-400 transition-all">
+                🔻 รายจ่าย
             </button>
         </div>
 
         <form id="transForm" class="space-y-4">
-            <div class="space-y-3">
-                <select id="mainCat" onchange="filterSub()" required class="w-full p-4 border-2 border-gray-100 rounded-2xl bg-gray-50 focus:border-blue-400 outline-none">
+            <div id="catArea" class="space-y-3">
+                <select id="mainCat" onchange="filterSub()" required class="w-full p-4 border-2 border-gray-100 rounded-2xl bg-gray-50 outline-none">
                     <option value="">-- กลุ่มหลัก --</option>
                 </select>
-                <select id="catId" required class="w-full p-4 border-2 border-gray-100 rounded-2xl bg-gray-50 focus:border-blue-400 outline-none">
+                <select id="catId" required class="w-full p-4 border-2 border-gray-100 rounded-2xl bg-gray-50 outline-none">
                     <option value="">-- รายการย่อย --</option>
                 </select>
             </div>
 
-            <div class="bg-blue-50/50 p-4 rounded-3xl border-2 border-dashed border-blue-200">
-                <p class="text-center text-[10px] text-blue-400 uppercase font-bold mb-1">ระบุจำนวนเงิน</p>
+            <div id="amtBox" class="bg-blue-50/50 p-4 rounded-3xl border-2 border-dashed border-blue-200">
+                <p id="amtLabel" class="text-center text-[10px] text-blue-400 uppercase font-bold mb-1">ระบุจำนวนเงิน</p>
                 <input type="number" id="amount" placeholder="0.00" required step="any"
                        class="w-full bg-transparent text-4xl text-center font-black text-gray-800 outline-none">
             </div>
 
             <input type="text" id="note" placeholder="บันทึกหมายเหตุ..." 
-                   class="w-full p-4 border-2 border-gray-100 rounded-2xl bg-gray-50 focus:border-blue-400 outline-none">
+                   class="w-full p-4 border-2 border-gray-100 rounded-2xl bg-gray-50 outline-none">
             
             <button type="submit" id="saveBtn" 
                     class="w-full bg-blue-600 text-white py-5 rounded-[2rem] font-bold text-xl shadow-lg active:scale-95 transition-all mt-4">
                 บันทึกข้อมูล
             </button>
-            <button type="button" onclick="window.location.href='dashboard.html'" class="w-full text-gray-400 text-sm mt-2">กลับหน้าหลัก</button>
+            <button type="button" onclick="window.location.href='dashboard.html'" class="w-full text-gray-400 text-sm mt-2 text-center">กลับหน้าหลัก</button>
         </form>
     </div>
 
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxxR_ewzPI6qonh5tQNZz0o1Gek4M_ylU2jqXxlIXrHP0ns6ppC1hR9SXCIw6jY2PFF/exec";
         let currentAcc = 'Circular'; 
-        let currentType = 'Expense'; 
+        let currentType = 'Income'; 
         let allCats = [];
 
         async function load() {
@@ -63,63 +67,80 @@
 
         function changeAcc(acc) {
             currentAcc = acc;
-            document.getElementById('btnCirc').className = acc === 'Circular' ? "flex-1 py-2 rounded-xl font-bold bg-white shadow text-blue-600" : "flex-1 py-2 rounded-xl font-bold text-gray-400";
-            document.getElementById('btnSave').className = acc === 'Savings' ? "flex-1 py-2 rounded-xl font-bold bg-white shadow text-green-600" : "flex-1 py-2 rounded-xl font-bold text-gray-400";
+            const isSave = acc === 'Savings';
+            // ปรับสีแท็บและปุ่มบันทึกตามหมวด
+            document.getElementById('btnCirc').className = !isSave ? "flex-1 py-2 rounded-xl font-bold bg-white shadow text-blue-600" : "flex-1 py-2 rounded-xl font-bold text-gray-400";
+            document.getElementById('btnSave').className = isSave ? "flex-1 py-2 rounded-xl font-bold bg-white shadow text-green-600" : "flex-1 py-2 rounded-xl font-bold text-gray-400";
+            document.getElementById('saveBtn').className = isSave ? "w-full bg-green-600 text-white py-5 rounded-[2rem] font-bold text-xl shadow-lg active:scale-95 transition-all mt-4" : "w-full bg-blue-600 text-white py-5 rounded-[2rem] font-bold text-xl shadow-lg active:scale-95 transition-all mt-4";
+            document.getElementById('amtBox').className = isSave ? "bg-green-50/50 p-4 rounded-3xl border-2 border-dashed border-green-200" : "bg-blue-50/50 p-4 rounded-3xl border-2 border-dashed border-blue-200";
+            document.getElementById('amtLabel').className = isSave ? "text-center text-[10px] text-green-400 uppercase font-bold mb-1" : "text-center text-[10px] text-blue-400 uppercase font-bold mb-1";
             renderOptions();
         }
 
         function changeType(type) {
             currentType = type;
-            const isExp = type === 'Expense';
-            document.getElementById('typeExp').className = isExp ? "py-3 rounded-2xl font-black border-2 border-red-500 bg-red-50 text-red-600 shadow-sm" : "py-3 rounded-2xl font-black border-2 border-gray-100 text-gray-400";
-            document.getElementById('typeInc').className = !isExp ? "py-3 rounded-2xl font-black border-2 border-green-500 bg-green-50 text-green-600 shadow-sm" : "py-3 rounded-2xl font-black border-2 border-gray-100 text-gray-400";
+            const isInc = type === 'Income';
+            document.getElementById('typeInc').className = isInc ? "py-3 rounded-2xl font-black border-2 border-green-500 bg-green-50 text-green-600 shadow-sm" : "py-3 rounded-2xl font-black border-2 border-gray-100 text-gray-400";
+            document.getElementById('typeExp').className = !isInc ? "py-3 rounded-2xl font-black border-2 border-red-500 bg-red-50 text-red-600 shadow-sm" : "py-3 rounded-2xl font-black border-2 border-gray-100 text-gray-400";
             renderOptions();
         }
 
         function renderOptions() {
-            const mainSelect = document.getElementById('mainCat');
-            const parentFilter = currentAcc === 'Savings' ? 'เงินเก็บ' : null;
-            
-            // กรองหมวดหมู่ตามประเภทบัญชีและรายรับ/รายจ่าย
-            const filtered = allCats.filter(c => {
-                const isAccMatch = parentFilter ? c.parent === parentFilter : c.parent !== 'เงินเก็บ';
-                return isAccMatch && c.type === currentType;
-            });
-
-            const uniqueParents = [...new Set(filtered.map(c => c.parent))];
-            mainSelect.innerHTML = '<option value="">-- กลุ่มหลัก --</option>' + 
-                                  uniqueParents.map(p => `<option value="${p}">${p}</option>`).join('');
-            document.getElementById('catId').innerHTML = '<option value="">-- รายการย่อย --</option>';
+            const catArea = document.getElementById('catArea');
+            if (currentAcc === 'Savings') {
+                // โหมดเงินออม: กรองรายการ "เงินเก็บ" และเปลี่ยนชื่อตามสถานะ (ซื้อ/ขาย)
+                const savCats = allCats.filter(c => c.parent === 'เงินเก็บ');
+                catArea.innerHTML = `
+                    <p class="text-xs text-gray-400 ml-2">รายการทรัพย์สิน:</p>
+                    <select id="catId" required class="w-full p-4 border-2 border-gray-100 rounded-2xl bg-gray-50 font-bold outline-none">
+                        ${savCats.map(c => {
+                            let dName = c.name;
+                            if (currentType === 'Expense') {
+                                if (dName.includes('ทองคำ')) dName = "ขายทองคำ";
+                                if (dName.includes('เงินสด')) dName = "ถอนเงินสด/ใช้เงินออม";
+                                if (dName.includes('ลงทุน')) dName = "ขายหน่วยลงทุน";
+                            }
+                            return `<option value="${c.id}">${dName}</option>`;
+                        }).join('')}
+                    </select>`;
+            } else {
+                // โหมดเงินหมุนเวียน: กรองตามหมวดหมู่ปกติ
+                catArea.innerHTML = `
+                    <select id="mainCat" onchange="filterSub()" required class="w-full p-4 border-2 border-gray-100 rounded-2xl bg-gray-50 outline-none"><option value="">-- กลุ่มหลัก --</option></select>
+                    <select id="catId" required class="w-full p-4 border-2 border-gray-100 rounded-2xl bg-gray-50 outline-none"><option value="">-- รายการย่อย --</option></select>`;
+                const filtered = allCats.filter(c => c.parent !== 'เงินเก็บ' && c.type === currentType);
+                const uniqueParents = [...new Set(filtered.map(c => c.parent))];
+                document.getElementById('mainCat').innerHTML += uniqueParents.map(p => `<option value="${p}">${p}</option>`).join('');
+            }
         }
 
         function filterSub() {
-            const parentName = document.getElementById('mainCat').value;
-            const subSelect = document.getElementById('catId');
-            const subs = allCats.filter(c => c.parent === parentName && c.type === currentType);
-            subSelect.innerHTML = '<option value="">-- รายการย่อย --</option>' + 
-                                 subs.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            const pName = document.getElementById('mainCat').value;
+            const subs = allCats.filter(c => c.parent === pName && c.type === currentType);
+            document.getElementById('catId').innerHTML = '<option value="">-- รายการย่อย --</option>' + 
+                                                         subs.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
         }
 
         document.getElementById('transForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const user = JSON.parse(localStorage.getItem('userData'));
-            const amtInput = document.getElementById('amount').value;
-            // ระบบจะใส่เครื่องหมายลบให้อัตโนมัติถ้าเลือกประเภท "รายจ่าย"
-            const finalAmount = currentType === 'Expense' ? -Math.abs(amtInput) : Math.abs(amtInput);
+            const amtVal = Math.abs(parseFloat(document.getElementById('amount').value));
+            const finalAmount = currentType === 'Expense' ? -amtVal : amtVal;
 
-            const payload = { 
-                action: 'add_transaction', 
-                data: { 
-                    userId: user.userId, 
-                    catId: document.getElementById('catId').value, 
-                    amount: finalAmount, 
-                    note: document.getElementById('note').value, 
-                    type: currentType,
-                    accType: currentAcc 
-                } 
-            };
             document.getElementById('saveBtn').innerText = "กำลังบันทึก...";
-            await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
+            document.getElementById('saveBtn').disabled = true;
+
+            await fetch(WEB_APP_URL, { 
+                method: 'POST', 
+                body: JSON.stringify({ 
+                    action: 'add_transaction', 
+                    data: { 
+                        userId: user.userId, catId: document.getElementById('catId').value, 
+                        amount: finalAmount, note: document.getElementById('note').value, 
+                        type: currentType, accType: currentAcc 
+                    } 
+                }) 
+            });
             window.location.href = 'dashboard.html';
         });
         window.onload = load;
