@@ -1,41 +1,53 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title><script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - MyFamily</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>body { font-family: 'Kanit', sans-serif; }</style>
 </head>
 <body class="bg-gray-50 min-h-screen">
-    <nav class="bg-green-600 p-4 text-white flex justify-between shadow-md">
-        <h1 class="font-bold">🏠 MyFamily</h1>
-        <button onclick="localStorage.clear(); window.location.href='index.html'" class="text-xs">Logout</button>
-    </nav>
-    <div class="p-6 max-w-md mx-auto space-y-6">
-        <div class="bg-white p-6 rounded-3xl shadow text-center">
-            <h2 id="userName" class="text-2xl font-bold text-gray-800">กำลังโหลด...</h2>
+    <div class="p-6 max-w-md mx-auto">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-xl font-bold text-green-700">Dashboard</h1>
+            <button onclick="localStorage.clear(); window.location.href='index.html'" class="text-red-500 text-sm">ออกจากระบบ</button>
         </div>
-        <div class="bg-green-500 p-8 rounded-3xl text-white text-center shadow-lg">
-            <p>ยอดเงินรวมทั้งหมด</p>
+        <div class="bg-white p-6 rounded-3xl shadow-sm mb-6 text-center">
+            <p class="text-gray-500">ยินดีต้อนรับ</p>
+            <h2 id="userName" class="text-2xl font-bold">กำลังโหลด...</h2>
+        </div>
+        <div class="bg-green-600 p-8 rounded-3xl text-white text-center shadow-lg mb-6">
+            <p class="opacity-80">ยอดเงินรวม</p>
             <h1 id="totalAmount" class="text-4xl font-black mt-2">0.00 บาท</h1>
         </div>
-        <button onclick="window.location.href='add_transaction.html'" class="w-full bg-white border-2 border-green-500 text-green-600 py-4 rounded-2xl font-bold shadow-sm">+ บันทึกรายจ่าย</button>
-        <div id="recentList" class="space-y-3"></div>
+        <button onclick="window.location.href='add_transaction.html'" class="w-full bg-white border-2 border-green-600 text-green-600 py-4 rounded-2xl font-bold shadow-sm mb-6">+ บันทึกรายจ่ายใหม่</button>
+        
+        <h3 class="font-bold text-gray-700 mb-3">รายการล่าสุด</h3>
+        <div id="recentList" class="space-y-3">
+            <p class="text-center text-gray-400">กำลังโหลดรายการ...</p>
+        </div>
     </div>
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby6RYLrJvdKYhPrzMxLZdGeLapV8EoQWTAw8jDi8FUzZnAW9sBMW9036RMHI-Me5-s6/exec";
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx9BPyA1sK8n6bDqy_feIKcf7mbXOGaL1cpxZN_gaqW7wqvFodAsQ9aQQcKRnGOrCg/exec";
         window.onload = async () => {
             const user = JSON.parse(localStorage.getItem('userData'));
             if (!user) { window.location.href = 'index.html'; return; }
             document.getElementById('userName').innerText = user.name;
-            const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_dashboard_data' }) });
-            const data = await res.json();
-            if (data.status === 'success') {
-                document.getElementById('totalAmount').innerText = data.totalAmount.toLocaleString() + " บาท";
-                document.getElementById('recentList').innerHTML = data.recentTransactions.map(t => `
-                    <div class="bg-white p-4 rounded-2xl shadow-sm flex justify-between border-l-4 border-green-500">
-                        <div><p class="font-bold">${t.note || 'ไม่มีหมายเหตุ'}</p><p class="text-[10px] text-gray-400">${t.date}</p></div>
-                        <p class="text-red-500 font-bold">-${t.amount.toLocaleString()}</p>
-                    </div>`).join('');
-            }
+            try {
+                const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_dashboard_data' }) });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    document.getElementById('totalAmount').innerText = data.totalAmount.toLocaleString() + " บาท";
+                    const listHtml = data.recentTransactions.map(t => `
+                        <div class="bg-white p-4 rounded-2xl flex justify-between shadow-sm border border-gray-50">
+                            <div><p class="font-bold">${t.note || 'ไม่ระบุ'}</p><p class="text-xs text-gray-400">${t.date}</p></div>
+                            <p class="text-red-500 font-bold">-${t.amount.toLocaleString()}</p>
+                        </div>
+                    `).join('');
+                    document.getElementById('recentList').innerHTML = listHtml || '<p class="text-center text-gray-400">ไม่มีรายการ</p>';
+                }
+            } catch (e) { console.error(e); }
         };
     </script>
 </body>
