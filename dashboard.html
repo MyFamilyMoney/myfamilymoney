@@ -8,7 +8,7 @@
 <body class="bg-gray-50 min-h-screen pb-10">
     <div class="max-w-md mx-auto p-4 space-y-4">
         <div class="flex justify-between items-center px-2">
-            <div><p class="text-[10px] text-gray-400">ยินดีต้อนรับ</p><h2 id="userNameDisplay" class="font-bold text-gray-800 text-lg">...</h2></div>
+            <div><p class="text-[10px] text-gray-400 uppercase tracking-widest">ยินดีต้อนรับ</p><h2 id="userNameDisplay" class="font-bold text-gray-800 text-lg">...</h2></div>
             <button onclick="logout()" class="text-xs font-bold text-red-500 bg-red-50 px-3 py-2 rounded-xl">ออกจากระบบ</button>
         </div>
 
@@ -19,31 +19,33 @@
                 <div><p class="text-[8px] text-gray-500">💵 เงินสด</p><p id="saveCash" class="text-[10px] font-bold text-purple-600">0</p></div>
                 <div><p class="text-[8px] text-gray-500">💰 รวมออม</p><p id="saveTotal" class="text-[10px] font-bold text-green-700">0</p></div>
             </div>
+            
             <div class="p-4 text-center">
                 <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest">💰 เงินหมุนเวียนกองกลาง (รวม)</p>
-                <h1 id="sharedCircular" class="text-4xl font-black text-gray-800">0.00 ฿</h1>
+                <h1 id="sharedCircular" class="text-2xl font-black text-gray-800">0.00 ฿</h1>
             </div>
-            <div class="grid grid-cols-2 border-t border-gray-100 bg-gray-50/30">
-                <div class="p-3 text-center border-r border-gray-100">
-                    <p id="u1Name" class="text-[9px] text-gray-400 italic">...</p>
-                    <p id="u1Bal" class="text-xs font-bold text-gray-700">0.00</p>
+
+            <div class="grid grid-cols-2 border-t border-gray-100 bg-gray-50/50">
+                <div class="p-4 text-center border-r border-gray-100">
+                    <p id="u1Name" class="text-xs font-bold text-gray-500">...</p>
+                    <p id="u1Bal" class="text-lg font-black text-gray-800">0.00</p>
                 </div>
-                <div class="p-3 text-center">
-                    <p id="u2Name" class="text-[9px] text-gray-400 italic">...</p>
-                    <p id="u2Bal" class="text-xs font-bold text-gray-700">0.00</p>
+                <div class="p-4 text-center">
+                    <p id="u2Name" class="text-xs font-bold text-gray-500">...</p>
+                    <p id="u2Bal" class="text-lg font-black text-gray-800">0.00</p>
                 </div>
             </div>
         </div>
 
         <div class="bg-gradient-to-r from-blue-600 to-blue-500 p-4 rounded-[1.5rem] text-white shadow-lg flex justify-between items-center px-8">
-            <p class="text-[11px] opacity-80 font-bold uppercase">ยอดส่วนตัวของคุณ</p>
-            <h1 id="myBalance" class="text-2xl font-black">0.00 ฿</h1>
+            <p class="text-[11px] opacity-80 font-bold uppercase tracking-wider">ยอดส่วนตัวของคุณ</p>
+            <h1 id="myBalance" class="text-xl font-black">0.00 ฿</h1>
         </div>
 
         <button onclick="window.location.href='add_transaction.html'" class="w-full bg-white border-2 border-blue-600 text-blue-700 py-3 rounded-2xl font-bold shadow-md active:scale-95 transition">+ บันทึกรายการใหม่</button>
 
         <div class="space-y-2">
-            <h3 class="font-bold text-gray-700 ml-2 text-xs">รายการล่าสุดของคุณ</h3>
+            <h3 class="font-bold text-gray-700 ml-2 text-xs">ประวัติล่าสุดของคุณ</h3>
             <div id="recentList" class="space-y-2"></div>
         </div>
     </div>
@@ -68,7 +70,7 @@
                 document.getElementById('recentList').innerHTML = data.recentTransactions.map(t => `
                     <div class="bg-white p-3 rounded-xl shadow-sm flex justify-between items-center border-l-4 ${t.amount > 0 ? 'border-blue-400' : 'border-red-400'}">
                         <div><p class="font-bold text-gray-800 text-[10px]">${t.note || 'ไม่ระบุ'}</p><p class="text-[8px] text-gray-400">${t.date}</p></div>
-                        <p class="font-bold text-[11px] ${t.amount > 0 ? 'text-blue-600' : 'text-red-500'}">${t.amount > 0 ? '+' : ''}${t.amount.toLocaleString()}</p>
+                        <p class="font-bold text-[10px] ${t.amount > 0 ? 'text-blue-600' : 'text-red-500'}">${t.amount > 0 ? '+' : ''}${t.amount.toLocaleString()}</p>
                     </div>`).join('');
             }
         }
