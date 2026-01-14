@@ -9,27 +9,69 @@
     <style>body { font-family: 'Kanit', sans-serif; }</style>
 </head>
 <body class="bg-gray-50 min-h-screen">
-    <nav class="bg-green-600 p-4 text-white shadow-md flex justify-between">
-        <h1 class="font-bold">🏠 MyFamily Dashboard</h1>
-        <button onclick="logout()" class="text-xs bg-green-700 px-2 py-1 rounded">ออกจากระบบ</button>
+    <nav class="bg-green-600 p-4 text-white shadow-md flex justify-between items-center">
+        <h1 class="font-bold text-lg">🏠 MyFamily</h1>
+        <button onclick="logout()" class="text-xs bg-green-700 px-3 py-1 rounded-full">ออกจากระบบ</button>
     </nav>
-    <div class="p-6 max-w-md mx-auto space-y-4">
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-            <p class="text-gray-500 text-sm">ยินดีต้อนรับ</p>
-            <h2 id="userName" class="text-2xl font-bold text-green-600">กำลังโหลด...</h2>
+
+    <div class="p-6 max-w-md mx-auto space-y-6">
+        <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+            <p class="text-gray-400 text-sm">ยินดีต้อนรับ</p>
+            <h2 id="userName" class="text-2xl font-bold text-gray-800">กำลังโหลด...</h2>
         </div>
+
+        <div class="bg-gradient-to-r from-green-500 to-green-600 p-8 rounded-3xl shadow-lg text-white">
+            <p class="opacity-80 text-sm mb-1">ยอดเงินรวมทั้งหมด</p>
+            <div class="flex items-baseline space-x-2">
+                <span class="text-4xl font-bold" id="totalBalance">0.00</span>
+                <span class="text-xl">บาท</span>
+            </div>
+        </div>
+
         <button onclick="window.location.href='add_transaction.html'" 
-            class="w-full bg-green-600 text-white py-4 rounded-xl font-semibold shadow-lg">
-            + บันทึกรายจ่ายใหม่
+            class="w-full bg-white text-green-600 border-2 border-green-600 py-4 rounded-2xl font-bold text-lg shadow-sm hover:bg-green-50 transition-all flex items-center justify-center space-x-2">
+            <span>+ บันทึกรายจ่ายใหม่</span>
         </button>
     </div>
+
     <script>
-        window.onload = function() {
+        // 🚨 วาง URL ของเว็บแอป (อันเดียวกับหน้า Login) ตรงนี้ครับ
+        const WEB_APP_URL = ""https://script.google.com/macros/s/AKfycbzyhnj4KJFI5EjfKYYqvU8Ax6CiQ7dYlK-UKJ9CCYYnXVSeyj1Kv3owz3SY-WNkPya-/exec; 
+
+        window.onload = async function() {
             const userData = JSON.parse(localStorage.getItem('userData'));
-            if (!userData) { window.location.href = 'index.html'; }
-            else { document.getElementById('userName').innerText = userData.name; }
+            
+            if (!userData) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // 1. แสดงชื่อจากหน่วยความจำทันที
+            document.getElementById('userName').innerText = userData.name;
+
+            // 2. วิ่งไปถาม "สมอง" เพื่อดึงยอดเงินรวมจากชีท Transactions
+            try {
+                const response = await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        action: 'get_dashboard',
+                        data: { userId: userData.userId }
+                    })
+                });
+                const result = await response.json();
+                if (result.status === 'success') {
+                    // แสดงยอดเงินที่คำนวณได้
+                    document.getElementById('totalBalance').innerText = result.total.toLocaleString();
+                }
+            } catch (err) {
+                console.error("ดึงข้อมูลยอดเงินไม่สำเร็จ");
+            }
         };
-        function logout() { localStorage.clear(); window.location.href = 'index.html'; }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
     </script>
 </body>
 </html>
