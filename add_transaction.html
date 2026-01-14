@@ -1,45 +1,88 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>บันทึกรายจ่าย - MyFamily Money</title>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>บันทึกเงิน - MyFamily</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>body { font-family: 'Kanit', sans-serif; }</style>
 </head>
-<body class="bg-gray-50 p-4">
-    <div class="max-w-md mx-auto bg-white p-8 rounded-3xl shadow-lg">
-        <h2 class="text-2xl font-bold text-green-600 mb-6">📝 บันทึกรายจ่าย</h2>
+<body class="bg-gray-50 min-h-screen p-4">
+    <div class="max-w-md mx-auto bg-white p-6 rounded-3xl shadow-xl border">
+        <h2 class="text-xl font-bold text-center mb-6 text-green-700">💰 บันทึกรายการใหม่</h2>
+        
+        <div class="flex bg-gray-100 p-1 rounded-2xl mb-6">
+            <button onclick="changeType('Expense')" id="btnExp" class="flex-1 py-3 rounded-xl font-bold transition bg-white shadow text-red-600">รายจ่าย</button>
+            <button onclick="changeType('Income')" id="btnInc" class="flex-1 py-3 rounded-xl font-bold transition text-gray-400">รายรับ</button>
+        </div>
+
         <form id="transForm" class="space-y-4">
-            <input type="number" id="amount" placeholder="จำนวนเงิน" required class="w-full p-4 border rounded-2xl outline-none focus:ring-2 focus:ring-green-500">
-            <input type="text" id="note" placeholder="หมายเหตุ (เช่น ค่ากับข้าว)" class="w-full p-4 border rounded-2xl outline-none focus:ring-2 focus:ring-green-500">
-            <button type="submit" id="saveBtn" class="w-full bg-green-600 text-white py-4 rounded-2xl font-bold shadow-lg">บันทึกข้อมูล</button>
+            <select id="catId" required class="w-full p-4 border rounded-2xl bg-gray-50 outline-none focus:ring-2 focus:ring-green-500">
+                <option value="">กำลังโหลดหมวดหมู่...</option>
+            </select>
+            <input type="number" id="amount" placeholder="จำนวนเงิน" required class="w-full p-4 border rounded-2xl outline-none focus:ring-2 focus:ring-green-500 text-2xl text-center font-bold">
+            <input type="text" id="note" placeholder="หมายเหตุ (ถ้ามี)" class="w-full p-4 border rounded-2xl">
+            
+            <button type="submit" id="saveBtn" class="w-full bg-green-600 text-white py-4 rounded-2xl font-bold shadow-lg active:scale-95 transition">บันทึกข้อมูล</button>
+            <button type="button" onclick="window.location.href='dashboard.html'" class="w-full text-gray-400 py-2 text-sm">กลับหน้าหลัก</button>
         </form>
-        <button onclick="window.location.href='dashboard.html'" class="w-full mt-6 text-gray-400 text-sm text-center underline">ยกเลิกและกลับหน้าหลัก</button>
     </div>
+
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx9BPyA1sK8n6bDqy_feIKcf7mbXOGaL1cpxZN_gaqW7wqvFodAsQ9aQQcKRnGOrCg/exec";
+        let currentType = 'Expense';
+        let allCategories = [];
+
+        async function loadCategories() {
+            try {
+                const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_categories' }) });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    allCategories = data.categories;
+                    renderCategories();
+                }
+            } catch (e) { alert("โหลดข้อมูลไม่สำเร็จ"); }
+        }
+
+        function renderCategories() {
+            const select = document.getElementById('catId');
+            const filtered = allCategories.filter(c => c.type === currentType);
+            select.innerHTML = filtered.map(c => `<option value="${c.id}">${c.parent} > ${c.name}</option>`).join('');
+        }
+
+        function changeType(type) {
+            currentType = type;
+            const btnExp = document.getElementById('btnExp');
+            const btnInc = document.getElementById('btnInc');
+            if (type === 'Income') {
+                btnInc.className = "flex-1 py-3 rounded-xl font-bold bg-white shadow text-green-600";
+                btnExp.className = "flex-1 py-3 rounded-xl font-bold text-gray-400";
+            } else {
+                btnExp.className = "flex-1 py-3 rounded-xl font-bold bg-white shadow text-red-600";
+                btnInc.className = "flex-1 py-3 rounded-xl font-bold text-gray-400";
+            }
+            renderCategories();
+        }
+
+        window.onload = loadCategories;
+
         document.getElementById('transForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            const user = JSON.parse(localStorage.getItem('userData'));
+            const payload = {
+                action: 'add_transaction',
+                data: {
+                    userId: user.userId,
+                    catId: document.getElementById('catId').value,
+                    amount: document.getElementById('amount').value,
+                    note: document.getElementById('note').value,
+                    type: currentType
+                }
+            };
             const btn = document.getElementById('saveBtn');
-            const userData = JSON.parse(localStorage.getItem('userData'));
-            if (!userData) { alert("กรุณาเข้าสู่ระบบใหม่"); window.location.href='index.html'; return; }
             btn.disabled = true; btn.innerText = "กำลังบันทึก...";
-            try {
-                const response = await fetch(WEB_APP_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        action: "add_transaction",
-                        data: { userId: userData.userId, amount: document.getElementById('amount').value, note: document.getElementById('note').value }
-                    })
-                });
-                const result = await response.json();
-                if (result.status === 'success') {
-                    alert("บันทึกสำเร็จ!"); window.location.href = 'dashboard.html';
-                } else { throw new Error(result.message); }
-            } catch (error) {
-                alert("เกิดข้อผิดพลาด: " + error.message); btn.disabled = false; btn.innerText = "บันทึกข้อมูล";
-            }
+            
+            const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
+            const result = await res.json();
+            if (result.status === 'success') { alert("บันทึกสำเร็จ!"); window.location.href = 'dashboard.html'; }
         });
     </script>
 </body>
