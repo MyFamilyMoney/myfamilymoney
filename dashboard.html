@@ -1,55 +1,58 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - MyFamily</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - MyFamily</title><script src="https://cdn.tailwindcss.com"></script>
     <style>body { font-family: 'Kanit', sans-serif; }</style>
 </head>
 <body class="bg-gray-50 min-h-screen">
-    <div class="p-6 max-w-md mx-auto">
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-xl font-bold text-green-700">Dashboard</h1>
-            <button onclick="localStorage.clear(); window.location.href='index.html'" class="text-red-500 text-sm">ออกจากระบบ</button>
+    <div class="max-w-md mx-auto p-4 space-y-4">
+        <div class="bg-gradient-to-br from-green-600 to-green-700 p-8 rounded-[2rem] text-white shadow-2xl text-center relative overflow-hidden">
+            <p class="text-sm opacity-80 uppercase tracking-widest">ยอดเงินคงเหลือปัจจุบัน</p>
+            <h1 id="totalBalance" class="text-5xl font-black mt-2">0.00</h1>
+            <p class="text-xs mt-2 opacity-60">อัปเดตล่าสุด: <span id="lastUpdate">--/--/--</span></p>
         </div>
-        <div class="bg-white p-6 rounded-3xl shadow-sm mb-6 text-center">
-            <p class="text-gray-500">ยินดีต้อนรับ</p>
-            <h2 id="userName" class="text-2xl font-bold">กำลังโหลด...</h2>
+
+        <div class="grid grid-cols-2 gap-3">
+            <div class="bg-white p-5 rounded-3xl shadow-sm border-b-4 border-blue-500">
+                <p class="text-xs text-gray-400">รายรับทั้งหมด</p>
+                <p id="totalIncome" class="text-xl font-bold text-blue-600 mt-1">0.00</p>
+            </div>
+            <div class="bg-white p-5 rounded-3xl shadow-sm border-b-4 border-red-500">
+                <p class="text-xs text-gray-400">รายจ่ายทั้งหมด</p>
+                <p id="totalExpense" class="text-xl font-bold text-red-600 mt-1">0.00</p>
+            </div>
         </div>
-        <div class="bg-green-600 p-8 rounded-3xl text-white text-center shadow-lg mb-6">
-            <p class="opacity-80">ยอดเงินรวม</p>
-            <h1 id="totalAmount" class="text-4xl font-black mt-2">0.00 บาท</h1>
-        </div>
-        <button onclick="window.location.href='add_transaction.html'" class="w-full bg-white border-2 border-green-600 text-green-600 py-4 rounded-2xl font-bold shadow-sm mb-6">+ บันทึกรายจ่ายใหม่</button>
-        
-        <h3 class="font-bold text-gray-700 mb-3">รายการล่าสุด</h3>
-        <div id="recentList" class="space-y-3">
-            <p class="text-center text-gray-400">กำลังโหลดรายการ...</p>
+
+        <button onclick="window.location.href='add_transaction.html'" class="w-full bg-white border-2 border-green-600 text-green-700 py-4 rounded-2xl font-bold shadow-md hover:bg-green-50 active:scale-95 transition">+ บันทึกรายการใหม่</button>
+
+        <div class="space-y-3">
+            <h3 class="font-bold text-gray-700 ml-2">ประวัติ 10 รายการล่าสุด</h3>
+            <div id="recentList" class="space-y-2 text-sm">
+                </div>
         </div>
     </div>
+
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx9BPyA1sK8n6bDqy_feIKcf7mbXOGaL1cpxZN_gaqW7wqvFodAsQ9aQQcKRnGOrCg/exec";
-        window.onload = async () => {
-            const user = JSON.parse(localStorage.getItem('userData'));
-            if (!user) { window.location.href = 'index.html'; return; }
-            document.getElementById('userName').innerText = user.name;
-            try {
-                const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_dashboard_data' }) });
-                const data = await res.json();
-                if (data.status === 'success') {
-                    document.getElementById('totalAmount').innerText = data.totalAmount.toLocaleString() + " บาท";
-                    const listHtml = data.recentTransactions.map(t => `
-                        <div class="bg-white p-4 rounded-2xl flex justify-between shadow-sm border border-gray-50">
-                            <div><p class="font-bold">${t.note || 'ไม่ระบุ'}</p><p class="text-xs text-gray-400">${t.date}</p></div>
-                            <p class="text-red-500 font-bold">-${t.amount.toLocaleString()}</p>
-                        </div>
-                    `).join('');
-                    document.getElementById('recentList').innerHTML = listHtml || '<p class="text-center text-gray-400">ไม่มีรายการ</p>';
-                }
-            } catch (e) { console.error(e); }
-        };
+
+        async function loadDashboard() {
+            const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_dashboard_data' }) });
+            const data = await res.json();
+            if (data.status === 'success') {
+                document.getElementById('totalBalance').innerText = data.totalBalance.toLocaleString() + " ฿";
+                document.getElementById('totalIncome').innerText = "+" + data.income.toLocaleString();
+                document.getElementById('totalExpense').innerText = "-" + data.expense.toLocaleString();
+                document.getElementById('lastUpdate').innerText = new Date().toLocaleDateString('th-TH');
+                
+                document.getElementById('recentList').innerHTML = data.recentTransactions.map(t => `
+                    <div class="bg-white p-4 rounded-2xl shadow-sm flex justify-between items-center">
+                        <div><p class="font-bold text-gray-800">${t.note}</p><p class="text-[10px] text-gray-400">${t.date}</p></div>
+                        <p class="font-bold ${t.amount > 0 ? 'text-blue-600' : 'text-red-500'}">${t.amount > 0 ? '+' : ''}${t.amount.toLocaleString()}</p>
+                    </div>`).join('');
+            }
+        }
+        window.onload = loadDashboard;
     </script>
 </body>
 </html>
- 
