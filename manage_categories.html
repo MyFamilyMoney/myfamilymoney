@@ -3,58 +3,49 @@
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>จัดการหมวดหมู่ - Admin</title><script src="https://cdn.tailwindcss.com"></script>
-    <style>body { font-family: 'Kanit', sans-serif; }</style>
 </head>
-<body class="bg-gray-50 min-h-screen p-4">
-    <div class="max-w-md mx-auto space-y-6">
-        <h2 class="text-2xl font-bold text-center text-gray-800">⚙️ จัดการหมวดหมู่</h2>
-
-        <div class="bg-white p-6 rounded-3xl shadow-sm border">
-            <h3 class="font-bold mb-4 text-green-700">➕ เพิ่มหมวดหมู่ใหม่</h3>
+<body class="bg-gray-100 p-4">
+    <div class="max-w-md mx-auto space-y-4">
+        <h2 class="text-xl font-bold text-center">⚙️ ตั้งค่าหมวดหมู่</h2>
+        
+        <div class="bg-white p-6 rounded-3xl shadow-sm">
             <form id="catForm" class="space-y-3">
-                <input type="text" id="catName" placeholder="ชื่อหมวดหมู่ (เช่น ค่าน้ำมัน)" required class="w-full p-3 border rounded-xl">
                 <select id="catType" class="w-full p-3 border rounded-xl">
-                    <option value="Expense">รายจ่าย (Expense)</option>
-                    <option value="Income">รายรับ (Income)</option>
+                    <option value="Expense">รายจ่าย</option>
+                    <option value="Income">รายรับ</option>
                 </select>
                 <input type="text" id="catParent" placeholder="หมวดหมู่หลัก (เช่น ค่าเดินทาง)" required class="w-full p-3 border rounded-xl">
-                <button type="submit" id="saveBtn" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold shadow-md active:scale-95 transition">บันทึกหมวดหมู่</button>
+                <input type="text" id="catName" placeholder="รายการย่อย (เช่น ค่าน้ำมัน)" required class="w-full p-3 border rounded-xl">
+                <button type="submit" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold">เพิ่มรายการ</button>
             </form>
         </div>
 
-        <div class="space-y-3">
-            <h3 class="font-bold text-gray-700 ml-2">🗂️ รายชื่อหมวดหมู่ทั้งหมด</h3>
-            <div id="catList" class="space-y-2">
-                <p class="text-center text-gray-400 py-10">กำลังโหลด...</p>
+        <div id="catList" class="space-y-2">
             </div>
-        </div>
-
-        <button onclick="window.location.href='dashboard.html'" class="w-full text-gray-400 py-2 text-sm italic">กลับไปหน้า Dashboard</button>
+        
+        <button onclick="window.location.href='dashboard.html'" class="w-full text-gray-400 text-sm py-4">กลับหน้าหลัก</button>
     </div>
 
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx9BPyA1sK8n6bDqy_feIKcf7mbXOGaL1cpxZN_gaqW7wqvFodAsQ9aQQcKRnGOrCg/exec";
 
-        async function loadCategories() {
+        async function load() {
             const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_categories' }) });
             const data = await res.json();
             if (data.status === 'success') {
                 document.getElementById('catList').innerHTML = data.categories.map(c => `
-                    <div class="bg-white p-4 rounded-2xl shadow-sm flex justify-between items-center border-l-4 ${c.type === 'Income' ? 'border-blue-500' : 'border-red-500'}">
+                    <div class="bg-white p-4 rounded-2xl shadow-sm flex justify-between border-l-4 ${c.type === 'Income' ? 'border-blue-500' : 'border-red-500'}">
                         <div>
-                            <p class="font-bold">${c.name}</p>
-                            <p class="text-[10px] text-gray-400">${c.parent} | ${c.type}</p>
+                            <p class="text-[10px] text-gray-400 uppercase font-bold">${c.parent}</p>
+                            <p class="font-bold text-gray-800">${c.name}</p>
                         </div>
-                        <button onclick="toggleStatus('${c.id}', 'Inactive')" class="text-xs text-red-400 hover:text-red-600">ลบ</button>
+                        <button onclick="del('${c.id}')" class="text-red-400 text-xs">ลบ</button>
                     </div>`).join('');
             }
         }
 
         document.getElementById('catForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const btn = document.getElementById('saveBtn');
-            btn.disabled = true; btn.innerText = "กำลังบันทึก...";
-            
             const payload = {
                 action: 'add_category',
                 data: {
@@ -63,24 +54,17 @@
                     parent: document.getElementById('catParent').value
                 }
             };
-
-            const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
-            const result = await res.json();
-            if (result.status === 'success') {
-                alert("เพิ่มสำเร็จ!");
-                document.getElementById('catForm').reset();
-                loadCategories();
-            }
-            btn.disabled = false; btn.innerText = "บันทึกหมวดหมู่";
+            await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
+            document.getElementById('catForm').reset();
+            load();
         });
 
-        async function toggleStatus(id, status) {
-            if(!confirm("ยืนยันการลบหมวดหมู่นี้?")) return;
-            await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'update_category_status', data: { id: id, status: status } }) });
-            loadCategories();
+        async function del(id) {
+            if(!confirm('ลบรายการนี้?')) return;
+            await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'update_category_status', data: { id: id, status: 'Inactive' } }) });
+            load();
         }
-
-        window.onload = loadCategories;
+        window.onload = load;
     </script>
 </body>
 </html>
