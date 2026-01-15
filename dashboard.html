@@ -10,8 +10,11 @@
 <body class="bg-gray-50 min-h-screen pb-10">
     <div class="max-w-md mx-auto p-4 space-y-4">
         <div class="flex justify-between items-center px-2">
-            <div><p class="text-[10px] text-gray-400">ยินดีต้อนรับ</p><h2 id="userNameDisplay" class="font-bold text-gray-800 text-lg">...</h2></div>
-            <button onclick="logout()" class="text-xs font-bold text-red-500 bg-red-50 px-3 py-2 rounded-xl active:scale-95 transition">ออกจากระบบ</button>
+            <div><p class="text-[10px] text-gray-400">ยินดีต้อนรับ</p><h2 id="userNameDisplay" class="font-bold text-gray-800">...</h2></div>
+            <div class="flex gap-2">
+                <button onclick="window.location.href='manage_categories.html'" class="text-[10px] font-bold text-blue-500 bg-blue-50 px-3 py-2 rounded-xl">⚙️ ตั้งค่า</button>
+                <button onclick="logout()" class="text-[10px] font-bold text-red-500 bg-red-50 px-3 py-2 rounded-xl">ออกระบบ</button>
+            </div>
         </div>
 
         <div class="bg-white rounded-[2.5rem] shadow-sm border-t-4 border-green-500 overflow-hidden">
@@ -29,18 +32,18 @@
 
             <div class="grid grid-cols-2 border-t border-gray-100 bg-gray-50/50 divide-x">
                 <div class="p-3 text-center">
-                    <p id="u1NameDisp" class="text-[11px] font-bold text-gray-400 truncate">...</p>
-                    <p id="u1Bal" class="text-lg font-bold text-gray-700 leading-tight">0</p>
+                    <p id="u1NameDisp" class="text-[11px] font-bold text-gray-400">...</p>
+                    <p id="u1Bal" class="text-lg font-bold text-gray-700">0</p>
                 </div>
                 <div class="p-3 text-center">
-                    <p id="u2NameDisp" class="text-[11px] font-bold text-gray-400 truncate">...</p>
-                    <p id="u2Bal" class="text-lg font-bold text-gray-700 leading-tight">0</p>
+                    <p id="u2NameDisp" class="text-[11px] font-bold text-gray-400">...</p>
+                    <p id="u2Bal" class="text-lg font-bold text-gray-700">0</p>
                 </div>
             </div>
         </div>
 
         <div class="bg-gradient-to-r from-blue-600 to-blue-500 p-5 rounded-[2rem] text-white shadow-lg flex justify-between items-center px-8">
-            <p class="text-[11px] opacity-80 font-bold uppercase tracking-tight">ยอดส่วนตัวของคุณ</p>
+            <p class="text-[11px] opacity-80 font-bold uppercase">ยอดส่วนตัวของคุณ</p>
             <h1 id="myBalance" class="text-3xl font-black">0.00 ฿</h1>
         </div>
 
@@ -50,11 +53,11 @@
             <h3 class="font-bold text-gray-700 ml-2 text-xs text-center uppercase tracking-widest">ความเคลื่อนไหวล่าสุด</h3>
             <div class="grid grid-cols-2 gap-2">
                 <div class="space-y-2">
-                    <p id="u1ColName" class="text-[9px] font-bold text-center text-blue-500 uppercase"></p>
+                    <p id="u1ColName" class="text-[9px] font-bold text-center text-blue-500"></p>
                     <div id="u1Logs" class="space-y-1"></div>
                 </div>
                 <div class="space-y-2">
-                    <p id="u2ColName" class="text-[9px] font-bold text-center text-purple-500 uppercase"></p>
+                    <p id="u2ColName" class="text-[9px] font-bold text-center text-purple-500"></p>
                     <div id="u2Logs" class="space-y-1"></div>
                 </div>
             </div>
@@ -62,45 +65,30 @@
     </div>
 
     <script>
-        // ใส่ URL เว็บแอป (รหัส.gs) ล่าสุดของคุณที่นี่
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyUG4j3I4VHyHEpxezh-GZMV7-zwbZ6jur5z6yJi3D73uyru1RTBQUrRIdCWaaQUPt_/exec";
-
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxtpTK0LAcGHYUdTFopPg8CJbQ0FRPpPA1fSDo-Mn3PQ93jN-HqJjqL_9t0cSSLxclj/exec";
         async function init() {
             const user = JSON.parse(localStorage.getItem('userData'));
             if (!user) { window.location.href = 'index.html'; return; }
             document.getElementById('userNameDisplay').innerText = user.name;
-
             const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_dashboard_data', data: { userId: user.userId } }) });
             const data = await res.json();
-            
             if (data.status === 'success') {
                 document.getElementById('saveGold').innerText = data.savings.gold.toLocaleString();
                 document.getElementById('saveInvest').innerText = data.savings.invest.toLocaleString();
                 document.getElementById('saveCash').innerText = data.savings.cash.toLocaleString();
                 document.getElementById('saveTotal').innerText = data.savings.total.toLocaleString();
-                
-                // ยอดเงินกองกลาง (ขยายใหญ่)
                 document.getElementById('sharedCircular').innerText = data.sharedCircular.toLocaleString() + " ฿";
-                
-                // ข้อมูลชื่อและยอดรายบุคคล (ย่อขนาด)
-                document.getElementById('u1NameDisp').innerText = data.user1.name; 
-                document.getElementById('u1Bal').innerText = data.user1.balance.toLocaleString();
-                document.getElementById('u2NameDisp').innerText = data.user2.name; 
-                document.getElementById('u2Bal').innerText = data.user2.balance.toLocaleString();
-                
+                document.getElementById('u1NameDisp').innerText = data.user1.name; document.getElementById('u1Bal').innerText = data.user1.balance.toLocaleString();
+                document.getElementById('u2NameDisp').innerText = data.user2.name; document.getElementById('u2Bal').innerText = data.user2.balance.toLocaleString();
                 document.getElementById('myBalance').innerText = data.myBalance.toLocaleString() + " ฿";
-                document.getElementById('u1ColName').innerText = data.user1.name;
-                document.getElementById('u2ColName').innerText = data.user2.name;
+                document.getElementById('u1ColName').innerText = data.user1.name; document.getElementById('u2ColName').innerText = data.user2.name;
 
                 const renderLog = (log) => `
                     <div class="bg-white p-2 rounded-xl shadow-sm border-l-2 ${log.amount > 0 ? 'border-blue-400' : 'border-red-400'}">
                         <p class="text-[9px] font-bold text-gray-800 truncate">${log.note}</p>
-                        <div class="flex justify-between items-center mt-1">
-                            <span class="text-[7px] text-gray-400">${log.date}</span>
-                            <span class="text-[9px] font-bold ${log.amount > 0 ? 'text-blue-600' : 'text-red-500'}">${log.amount > 0 ? '+' : ''}${log.amount.toLocaleString()}</span>
-                        </div>
+                        <div class="flex justify-between items-center mt-1"><span class="text-[7px] text-gray-400">${log.date}</span>
+                        <span class="text-[9px] font-bold ${log.amount > 0 ? 'text-blue-600' : 'text-red-500'}">${log.amount > 0 ? '+' : ''}${log.amount.toLocaleString()}</span></div>
                     </div>`;
-
                 document.getElementById('u1Logs').innerHTML = data.user1.logs.map(renderLog).join('') || '<p class="text-center text-[8px] text-gray-300 py-2">ไม่มีข้อมูล</p>';
                 document.getElementById('u2Logs').innerHTML = data.user2.logs.map(renderLog).join('') || '<p class="text-center text-[8px] text-gray-300 py-2">ไม่มีข้อมูล</p>';
             }
