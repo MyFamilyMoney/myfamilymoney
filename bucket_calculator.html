@@ -2,47 +2,59 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌀 วางแผนงบประมาณ 3 วงกลม</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌀</text></svg>">
+    <title>🌀 วางแผน 3 วงกลม</title>
     <script src="https://cdn.tailwindcss.com"></script><script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>body { font-family: 'Kanit', sans-serif; }</style>
 </head>
 <body class="bg-slate-50 min-h-screen p-4 pb-10">
     <div class="max-w-md mx-auto space-y-4">
         <div class="bg-white p-8 rounded-[2.5rem] shadow-xl text-center border-t-8 border-blue-600">
-            <h1 class="text-xl font-black text-slate-800">🌀 วางแผนงบประมาณ</h1>
-            <input type="number" id="incomeInput" oninput="runPlanning()" placeholder="รายได้รวม ฿" class="w-full mt-6 p-5 border-2 border-blue-50 rounded-3xl text-4xl font-black text-center text-slate-800 outline-none">
+            <h1 class="text-xl font-black">🌀 วางแผนงบประมาณ</h1>
+            <input type="number" id="incomeInput" oninput="runPlanning()" placeholder="กรอกรายได้รวม ฿" class="w-full mt-6 p-5 border-2 border-blue-50 rounded-3xl text-4xl font-black text-center outline-none">
         </div>
-        <div id="fixedArea" class="bg-white p-6 rounded-[2rem] shadow-md grid grid-cols-2 gap-4">
-            <div class="col-span-2 text-center bg-red-50 p-2 rounded-xl"><p class="text-xs font-black text-red-500">ต้องหักออกรวม: <span id="totalFixed">0.00 ฿</span></p></div>
+        <div class="bg-white p-6 rounded-[2rem] shadow-md space-y-2">
+            <h3 class="text-xs font-bold text-slate-400 uppercase">⭕ รายจ่ายคงที่ (คำนวณอัตโนมัติ)</h3>
+            <div id="fixedDetails" class="space-y-1 text-sm text-slate-600"></div>
+            <div class="text-center bg-red-50 p-2 rounded-xl mt-2"><p class="text-xs font-black text-red-500">ต้องหักออกรวม: <span id="totalFixed">0 ฿</span></p></div>
         </div>
         <div id="c3Section" class="bg-white p-6 rounded-[2.5rem] shadow-xl hidden">
-            <div class="text-center mb-6"><h2 id="balanceC3" class="text-4xl font-black text-blue-600">0.00</h2></div>
-            <div class="space-y-3">
-                <div class="p-4 bg-yellow-50 rounded-2xl flex justify-between"><span>🏆 ลงทุน/ทอง (40%)</span><span id="v_invest" class="font-black">0</span></div>
-                <div class="p-4 bg-green-50 rounded-2xl flex justify-between"><span>🏥 ความมั่นคง (30%)</span><span id="v_health" class="font-black">0</span></div>
-                <div class="p-4 bg-purple-50 rounded-2xl flex justify-between"><span>✈️ รางวัลชีวิต (30%)</span><span id="v_travel" class="font-black">0</span></div>
-            </div>
+            <div class="text-center mb-6"><p class="text-xs font-bold text-blue-500">เงินส่วนที่เหลือสำหรับออม</p><h2 id="balanceC3" class="text-4xl font-black text-slate-800">0.00</h2></div>
+            <div id="savingsDetails" class="space-y-3"></div>
             <canvas id="planningChart" class="mt-6"></canvas>
         </div>
         <button onclick="window.location.href='dashboard.html'" class="w-full py-4 text-slate-400 text-sm font-bold">กลับหน้าหลัก</button>
     </div>
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz9-bKyKpCp_auOPIWgtH78F0Kc_IQpK0aMoJ0nWvzv1GrMp4Ka9DXxr9A-Fjwr3ifm/exec";
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzZZpDPyHZjKTm4IdVsHSat6wuzSaxsV-6EZGnF-YCDar632A9DV0ZULzXcNrLwGLB3/exec";
         let config = {}; let chart;
-        async function init() { const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_bucket_config' }) }); const data = await res.json(); if (data.status === 'success') { config = data.config; document.getElementById('totalFixed').innerText = (config.C1_U101 + config.C1_U102 + config.C1_SON + config.C2_SHARED).toLocaleString() + " ฿"; } }
+        async function init() {
+            const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_bucket_config' }) });
+            const data = await res.json();
+            if (data.status === 'success') {
+                config = data.config;
+                let html = ""; let total = 0;
+                config.circle1.concat(config.circle2).forEach(item => { html += `<div class="flex justify-between"><span>${item.name}</span><span class="font-bold">${item.value.toLocaleString()}</span></div>`; total += item.value; });
+                document.getElementById('fixedDetails').innerHTML = html;
+                document.getElementById('totalFixed').innerText = total.toLocaleString() + " ฿";
+                runPlanning();
+            }
+        }
         function runPlanning() {
             const income = parseFloat(document.getElementById('incomeInput').value) || 0;
-            const fixedTotal = config.C1_U101 + config.C1_U102 + config.C1_SON + config.C2_SHARED;
+            const fixedTotal = config.circle1.concat(config.circle2).reduce((acc, cur) => acc + cur.value, 0);
             const balance = Math.max(0, income - fixedTotal);
             if (balance > 0) {
-                document.getElementById('c3Section').classList.remove('hidden'); document.getElementById('balanceC3').innerText = balance.toLocaleString() + " ฿";
-                const inv = balance * config.C3_INVEST_PCT, hea = balance * config.C3_HEALTH_PCT, tra = balance * config.C3_TRAVEL_PCT;
-                document.getElementById('v_invest').innerText = inv.toLocaleString(); document.getElementById('v_health').innerText = hea.toLocaleString(); document.getElementById('v_travel').innerText = tra.toLocaleString();
+                document.getElementById('c3Section').classList.remove('hidden');
+                document.getElementById('balanceC3').innerText = balance.toLocaleString() + " ฿";
+                const inv = balance * config.circle3.C3_INVEST_PCT, hea = balance * config.circle3.C3_HEALTH_PCT, tra = balance * config.circle3.C3_TRAVEL_PCT;
+                document.getElementById('savingsDetails').innerHTML = `
+                    <div class="p-4 bg-yellow-50 rounded-2xl flex justify-between"><span>🏆 ลงทุน/ทอง (40%)</span><span class="font-black">${inv.toLocaleString()}</span></div>
+                    <div class="p-4 bg-green-50 rounded-2xl flex justify-between"><span>🏥 สุขภาพ (30%)</span><span class="font-black">${hea.toLocaleString()}</span></div>
+                    <div class="p-4 bg-purple-50 rounded-2xl flex justify-between"><span>✈️ รางวัลชีวิต (30%)</span><span class="font-black">${tra.toLocaleString()}</span></div>`;
                 updateChart([inv, hea, tra]);
             } else { document.getElementById('c3Section').classList.add('hidden'); }
         }
-        function updateChart(d) { const ctx = document.getElementById('planningChart').getContext('2d'); if (chart) chart.destroy(); chart = new Chart(ctx, { type: 'doughnut', data: { labels: ['ลงทุน/ทอง', 'สุขภาพ', 'รางวัล'], datasets: [{ data: d, backgroundColor: ['#EAB308', '#22C55E', '#A855F7'], borderWidth: 0 }] }, options: { cutout: '75%' } }); }
+        function updateChart(d) { const ctx = document.getElementById('planningChart').getContext('2d'); if (chart) chart.destroy(); chart = new Chart(ctx, { type: 'doughnut', data: { labels: ['ลงทุน', 'สุขภาพ', 'รางวัล'], datasets: [{ data: d, backgroundColor: ['#EAB308', '#22C55E', '#A855F7'], borderWidth: 0 }] }, options: { cutout: '75%' } }); }
         window.onload = init;
     </script>
 </body>
