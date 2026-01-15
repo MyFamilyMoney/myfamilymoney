@@ -2,13 +2,13 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚙️ จัดการตัวเลือก</title>
+    <title>⚙️ จัดการหมวดหมู่</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>body { font-family: 'Kanit', sans-serif; }</style>
 </head>
-<body class="bg-gray-50 min-h-screen p-4 pb-20">
+<body class="bg-gray-50 min-h-screen p-4 pb-20 text-slate-800">
     <div class="max-w-md mx-auto space-y-4">
-        <div class="bg-white p-6 rounded-[2rem] shadow-sm border-t-4 border-blue-500 flex justify-between items-center"><h2 class="text-xl font-black text-gray-800 text-lg">⚙️ ตั้งค่าหมวดหมู่</h2><button onclick="window.location.href='dashboard.html'" class="text-xs text-blue-500 font-bold">กลับ</button></div>
+        <div class="bg-white p-6 rounded-[2rem] shadow-sm border-t-4 border-blue-500 flex justify-between items-center"><h2 class="text-xl font-black">⚙️ ตั้งค่าหมวดหมู่</h2><button onclick="window.location.href='dashboard.html'" class="text-xs text-blue-500 font-bold">กลับ</button></div>
         <div class="bg-white p-6 rounded-[2.5rem] shadow-xl space-y-3">
             <p class="text-[10px] font-bold text-gray-400 mb-4 uppercase text-center tracking-widest">➕ เพิ่มรายการใหม่</p>
             <div class="grid grid-cols-2 gap-2"><select id="accType" class="p-3 border rounded-xl bg-gray-50 text-xs font-bold outline-none"><option value="Circular">💳 เงินหมุนเวียน</option><option value="Savings">💰 เงินเก็บ/ออม</option></select><select id="catType" class="p-3 border rounded-xl bg-gray-50 text-xs font-bold outline-none"><option value="Income">🔺 รายรับ</option><option value="Expense">🔻 รายจ่าย</option></select></div>
@@ -18,7 +18,7 @@
         <div id="catList" class="space-y-2 pb-10"></div>
     </div>
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzZZpDPyHZjkTw4IdvSHSat6wuzSaxsv-6EZGnF-YCDar632A9DV0ZULzXcNrLwGLB3/exec";
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwfDZ-slLMJ7um1unLdcAFoCCMjNDRMUFlollky1Zk2kieNtvokIYU1NZAW650IDsLn/exec";
         async function load() { const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_categories' }) }); const data = await res.json(); if (data.status === 'success') { document.getElementById('catList').innerHTML = data.categories.reverse().map(c => `<div class="bg-white p-4 rounded-2xl shadow-sm flex justify-between items-center border-l-4 ${c.type === 'Income' ? 'border-green-400' : 'border-red-400'}"><div><p class="text-[9px] text-gray-400 font-bold">${c.parent}</p><p class="text-sm font-black text-gray-800">${c.name}</p></div><button onclick="delCat('${c.id}')" class="text-red-500 font-bold">🗑️</button></div>`).join(''); } }
         async function addCat() { const btn = document.getElementById('addBtn'); btn.disabled=true; btn.innerText="⏳..."; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'add_category', data: { name: document.getElementById('catName').value, type: document.getElementById('catType').value, parent: document.getElementById('accType').value === 'Savings' ? 'เงินเก็บ' : document.getElementById('catParent').value } }) }); document.getElementById('catName').value=''; btn.disabled=false; btn.innerText="เพิ่มรายการ"; load(); }
         async function delCat(id) { if(confirm('ลบรายการ?')) { await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'update_category_status', data: { id: id, status: 'Inactive' } }) }); load(); } }
