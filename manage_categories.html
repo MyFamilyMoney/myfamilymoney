@@ -13,7 +13,6 @@
             <h2 class="text-xl font-black text-gray-800">⚙️ ตั้งค่าหมวดหมู่</h2>
             <button onclick="window.location.href='dashboard.html'" class="text-xs text-blue-500 font-bold">กลับ</button>
         </div>
-
         <div class="bg-white p-6 rounded-[2.5rem] shadow-xl">
             <p class="text-[10px] font-bold text-gray-400 mb-4 uppercase text-center">➕ เพิ่มรายการใหม่</p>
             <form id="catForm" class="space-y-3">
@@ -26,11 +25,10 @@
                 <button type="submit" id="saveBtn" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg mt-2">เพิ่มรายการ</button>
             </form>
         </div>
-
         <div id="catList" class="space-y-2 pb-10"></div>
     </div>
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby8yABKroMQ0VD0XS-SaX_PNXfVlIh84Nx97VQMICJnryO24ciDqQdc_qSrGIvpkrWg/exec";
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz9-bKyKpCp_auOPIWgtH78F0Kc_IQpK0aMoJ0nWvzv1GrMp4Ka9DXxr9A-Fjwr3ifm/exec";
         function toggleParent() { const acc = document.getElementById('accType').value; const pi = document.getElementById('catParent'); if(acc==='Savings'){pi.value='เงินเก็บ'; pi.readOnly=true; pi.classList.add('bg-gray-200');}else{pi.value=''; pi.readOnly=false; pi.classList.remove('bg-gray-200');}}
         async function load() { const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_categories' }) }); const data = await res.json(); if (data.status === 'success') { document.getElementById('catList').innerHTML = data.categories.reverse().map(c => `<div class="bg-white p-4 rounded-2xl shadow-sm flex justify-between items-center border-l-4 ${c.type === 'Income' ? 'border-green-400' : 'border-red-400'}"><div><p class="text-[9px] text-gray-400 font-bold">${c.parent}</p><p class="text-sm font-black text-gray-800">${c.name}</p></div><button onclick="del('${c.id}')" class="bg-red-50 text-red-500 px-3 py-2 rounded-xl text-[10px] font-bold">🗑️ ลบ</button></div>`).join(''); }}
         document.getElementById('catForm').addEventListener('submit', async (e) => { e.preventDefault(); const btn = document.getElementById('saveBtn'); btn.disabled = true; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'add_category', data: { name: document.getElementById('catName').value, type: document.getElementById('catType').value, parent: document.getElementById('catParent').value } }) }); document.getElementById('catName').value=''; btn.disabled=false; load(); });
@@ -39,4 +37,3 @@
     </script>
 </body>
 </html>
- 
