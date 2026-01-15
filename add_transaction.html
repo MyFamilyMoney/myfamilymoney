@@ -29,7 +29,7 @@
         </form>
     </div>
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwfDZ-slLMJ7um1unLdcAFoCCMjNDRMUFlollky1Zk2kieNtvokIYU1NZAW650IDsLn/exec";
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwNothBrUbARXK3Gge3nc3xV5VaiN2URvu1hRSnnwGc8FNASACngAv6Iwmysw_A4boC/exec";
         let currentAcc = 'Circular', currentType = 'Income', allCats = [], base64Image = "";
         async function load() { const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_categories' }) }); const data = await res.json(); if (data.status === 'success') { allCats = data.categories; renderOptions(); } }
         function previewImage(input) { if (input.files && input.files[0]) { const reader = new FileReader(); reader.onload = (e) => { base64Image = e.target.result; document.getElementById('preview').src = base64Image; document.getElementById('imgPreview').classList.remove('hidden'); document.getElementById('camLabel').innerText = "✅ เลือกรูปแล้ว"; }; reader.readAsDataURL(input.files[0]); } }
