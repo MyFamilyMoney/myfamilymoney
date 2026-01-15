@@ -24,32 +24,31 @@
                 <div><p class="text-[8px] text-gray-500">💵 เงินสด</p><p id="saveCash" class="text-[10px] font-bold text-purple-600">0</p></div>
                 <div><p class="text-[8px] text-gray-500">💰 รวมออม</p><p id="saveTotal" class="text-[10px] font-bold text-green-700">0</p></div>
             </div>
-            <div class="p-6 text-center">
+            <div class="p-4 text-center">
                 <p class="text-[10px] text-gray-400 font-bold tracking-widest uppercase">💰 เงินหมุนเวียนกองกลาง (รวม)</p>
-                <h1 id="sharedCircular" class="text-4xl font-black text-gray-800 mt-1">0.00 ฿</h1>
+                <h1 id="sharedCircular" class="text-xl font-bold text-gray-600">0.00 ฿</h1>
             </div>
             <div class="grid grid-cols-2 border-t border-gray-100 bg-gray-50/50 divide-x">
-                <div class="p-3 text-center"><p id="u1NameDisp" class="text-[11px] font-bold text-gray-400">...</p><p id="u1Bal" class="text-lg font-bold text-gray-700">0</p></div>
-                <div class="p-3 text-center"><p id="u2NameDisp" class="text-[11px] font-bold text-gray-400">...</p><p id="u2Bal" class="text-lg font-bold text-gray-700">0</p></div>
+                <div class="p-4 text-center">
+                    <p id="u1NameDisp" class="text-sm font-bold text-gray-500 mb-1">...</p>
+                    <p id="u1Bal" class="text-2xl font-black text-gray-800">0</p>
+                </div>
+                <div class="p-4 text-center">
+                    <p id="u2NameDisp" class="text-sm font-bold text-gray-500 mb-1">...</p>
+                    <p id="u2Bal" class="text-2xl font-black text-gray-800">0</p>
+                </div>
             </div>
         </div>
 
         <div class="bg-gradient-to-r from-blue-600 to-blue-500 p-5 rounded-[2rem] text-white shadow-lg flex justify-between items-center px-8">
-            <p class="text-[11px] opacity-80 font-bold uppercase">ยอดส่วนตัวของคุณ</p>
-            <h1 id="myBalance" class="text-3xl font-black">0.00 ฿</h1>
+            <p class="text-[11px] opacity-80 font-bold uppercase tracking-tight">ยอดส่วนตัวของคุณ</p>
+            <h1 id="myBalance" class="text-2xl font-black">0.00 ฿</h1>
         </div>
 
-        <button onclick="window.location.href='add_transaction.html'" 
-                class="w-full bg-white border-2 border-blue-600 text-blue-700 py-4 rounded-2xl font-black shadow-md active:scale-95 transition">
-            + บันทึกรายการใหม่
-        </button>
+        <button onclick="window.location.href='add_transaction.html'" class="w-full bg-white border-2 border-blue-600 text-blue-700 py-4 rounded-2xl font-bold shadow-md">+ บันทึกรายการใหม่</button>
+        <button onclick="window.location.href='bucket_calculator.html'" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg flex items-center justify-center gap-2"><span>🌀 วางแผนงบประมาณ 3 วงกลม</span></button>
 
-        <button onclick="window.location.href='bucket_calculator.html'" 
-                class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black shadow-lg shadow-blue-200 active:scale-95 transition flex items-center justify-center gap-2">
-            <span>🌀 วางแผนงบประมาณ 3 วงกลม</span>
-        </button>
-
-        <div class="space-y-2 pt-2">
+        <div class="space-y-2 pt-4">
             <h3 class="font-bold text-gray-700 ml-2 text-xs text-center uppercase tracking-widest">ความเคลื่อนไหวล่าสุด</h3>
             <div class="grid grid-cols-2 gap-2">
                 <div class="space-y-2"><p id="u1ColName" class="text-[9px] font-bold text-center text-blue-500 uppercase"></p><div id="u1Logs" class="space-y-1"></div></div>
@@ -59,7 +58,7 @@
     </div>
 
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby8yABKroMQ0VD0XS-SaX_PNXfVlIh84Nx97VQMICJnryO24ciDqQdc_qSrGIvpkrWg/exec";
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz9-bKyKpCp_auOPIWgtH78F0Kc_IQpK0aMoJ0nWvzv1GrMp4Ka9DXxr9A-Fjwr3ifm/exec";
         async function init() {
             const user = JSON.parse(localStorage.getItem('userData'));
             if (!user) { window.location.href = 'index.html'; return; }
