@@ -32,7 +32,7 @@
         <div class="space-y-2 pt-4"><h3 class="font-bold text-gray-700 text-[10px] text-center uppercase tracking-[0.2em] mb-4">ความเคลื่อนไหวล่าสุด</h3><div id="logsArea" class="grid grid-cols-2 gap-2"><div id="u1Logs" class="space-y-1"></div><div id="u2Logs" class="space-y-1"></div></div></div>
     </div>
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwfDZ-slLMJ7um1unLdcAFoCCMjNDRMUFlollky1Zk2kieNtvokIYU1NZAW650IDsLn/exec";
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwNothBrUbARXK3Gge3nc3xV5VaiN2URvu1hRSnnwGc8FNASACngAv6Iwmysw_A4boC/exec";
         async function init() {
             const user = JSON.parse(localStorage.getItem('userData')); if (!user) { window.location.href = 'index.html'; return; }
             document.getElementById('userNameDisplay').innerText = user.name;
