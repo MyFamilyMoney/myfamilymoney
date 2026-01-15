@@ -8,22 +8,25 @@
 </head>
 <body class="bg-slate-50 min-h-screen pb-10">
     <div class="max-w-md mx-auto p-4 space-y-4">
-        <div class="flex justify-between items-center px-2">
+        <div class="flex justify-between items-start px-2">
             <div class="flex items-center gap-3">
-                <div class="relative group">
-                    <img id="userImg" src="https://ui-avatars.com/api/?name=User&background=random&color=fff" 
-                         class="w-16 h-16 rounded-full border-4 border-white shadow-lg object-cover bg-gray-200">
+                <div class="relative">
+                    <img id="userImg" src="https://ui-avatars.com/api/?name=User&background=random" 
+                         class="w-16 h-16 rounded-full border-4 border-white shadow-lg object-cover bg-gray-100 transition-opacity">
                     <label class="absolute bottom-0 right-0 bg-blue-600 p-1.5 rounded-full shadow-md cursor-pointer border-2 border-white active:scale-90 transition">
-                        <input type="file" class="hidden" accept="image/*" onchange="uploadProfile(this)">
+                        <input type="file" class="hidden" accept="image/*" onchange="previewProfile(this)">
                         <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
                     </label>
                 </div>
-                <div><p class="text-[10px] text-gray-400 uppercase tracking-widest font-bold">ยินดีต้อนรับ</p><h2 id="userNameDisplay" class="font-black text-gray-800 text-xl tracking-tight">...</h2></div>
+                <div>
+                    <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest">ยินดีต้อนรับ</p>
+                    <h2 id="userNameDisplay" class="font-black text-gray-800 text-xl tracking-tight">...</h2>
+                    <button id="savePicBtn" onclick="uploadProfile()" class="hidden mt-1 bg-emerald-500 text-white text-[10px] px-3 py-1 rounded-full font-bold shadow-sm animate-bounce">💾 กดเพื่อบันทึกรูป</button>
+                </div>
             </div>
             <div class="flex gap-2">
-                <button id="exportBtn" onclick="exportReport()" class="text-[10px] font-bold text-green-600 bg-green-50 px-3 py-2 rounded-xl active:scale-95 transition">📄 รายงาน</button>
-                <button onclick="window.location.href='bucket_calculator.html'" class="text-[10px] font-bold text-blue-600 bg-blue-50 px-3 py-2 rounded-xl active:scale-95 transition">🌀 จัดงบ</button>
-                <button onclick="logout()" class="text-[10px] font-bold text-red-500 bg-red-50 px-3 py-2 rounded-xl active:scale-95 transition">ออก</button>
+                <button id="exportBtn" onclick="exportReport()" class="text-[10px] font-bold text-green-600 bg-green-50 px-3 py-2 rounded-xl">📄 รายงาน</button>
+                <button onclick="logout()" class="text-[10px] font-bold text-red-500 bg-red-50 px-3 py-2 rounded-xl">ออก</button>
             </div>
         </div>
 
@@ -34,36 +37,28 @@
                 <div><p class="text-[8px] text-gray-500 font-bold uppercase">✈️ รางวัล</p><p id="saveReward" class="text-[10px] font-bold text-purple-600">0</p></div>
                 <div><p class="text-[8px] text-gray-500 font-bold uppercase">💰 รวมออม</p><p id="saveTotal" class="text-[10px] font-bold text-green-700">0</p></div>
             </div>
-            <div class="p-8 text-center"><p class="text-[10px] text-gray-400 font-bold tracking-widest uppercase">💰 เงินหมุนเวียนกองกลาง (รวม)</p><h1 id="sharedCircular" class="text-5xl font-black text-gray-800 mt-1 tracking-tighter">0 ฿</h1></div>
-            <div class="grid grid-cols-2 border-t border-gray-100 bg-gray-50/50 divide-x"><div class="p-5 text-center"><p id="u1NameDisp" class="text-[11px] font-bold text-gray-400 truncate uppercase">...</p><p id="u1Bal" class="text-2xl font-black text-gray-800 tracking-tight">0</p></div><div class="p-5 text-center"><p id="u2NameDisp" class="text-[11px] font-bold text-gray-400 truncate uppercase">...</p><p id="u2Bal" class="text-2xl font-black text-gray-800 tracking-tight">0</p></div></div>
+            <div class="p-8 text-center"><p class="text-[10px] text-gray-400 font-bold tracking-widest uppercase">💰 เงินหมุนเวียนกองกลาง (รวม)</p><h1 id="sharedCircular" class="text-5xl font-black text-gray-800 mt-1">0 ฿</h1></div>
+            <div class="grid grid-cols-2 border-t border-gray-100 bg-gray-50/50 divide-x"><div class="p-5 text-center"><p id="u1NameDisp" class="text-[11px] font-bold text-gray-400">...</p><p id="u1Bal" class="text-2xl font-black text-gray-800">0</p></div><div class="p-5 text-center"><p id="u2NameDisp" class="text-[11px] font-bold text-gray-400">...</p><p id="u2Bal" class="text-2xl font-black text-gray-800">0</p></div></div>
         </div>
 
-        <div class="bg-gradient-to-br from-blue-600 to-indigo-700 p-6 rounded-[2.5rem] text-white shadow-xl flex justify-between items-center px-10"><p class="text-[11px] font-bold uppercase tracking-widest opacity-80">ส่วนตัวของคุณ</p><h1 id="myBalance" class="text-4xl font-black tracking-tighter">0.00 ฿</h1></div>
-
+        <div class="bg-gradient-to-br from-blue-600 to-indigo-700 p-6 rounded-[2.5rem] text-white shadow-xl flex justify-between items-center px-10"><p class="text-[11px] font-bold uppercase tracking-widest opacity-80">ส่วนตัวของคุณ</p><h1 id="myBalance" class="text-4xl font-black">0.00 ฿</h1></div>
         <button onclick="window.location.href='add_transaction.html'" class="w-full bg-white border-2 border-blue-600 text-blue-700 py-5 rounded-[2rem] font-black text-lg shadow-md active:scale-95 transition-all">+ บันทึกรายการใหม่</button>
-
         <div class="space-y-2 pt-4"><h3 class="font-bold text-gray-700 text-[10px] text-center uppercase tracking-[0.2em] mb-4">ความเคลื่อนไหวล่าสุด</h3><div class="grid grid-cols-2 gap-3"><div id="u1Logs" class="space-y-2"></div><div id="u2Logs" class="space-y-2"></div></div></div>
     </div>
 
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwNothBrUbARXK3Gge3nc3xV5VaiN2URvu1hRSnnwGc8FNASACngAv6Iwmysw_A4boC/exec";
-        
+        let tempImageData = null;
+
         async function init() {
             const user = JSON.parse(localStorage.getItem('userData'));
             if (!user) { window.location.href = 'index.html'; return; }
             document.getElementById('userNameDisplay').innerText = user.name;
-            
             try {
                 const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_dashboard_data', data: { userId: user.userId } }) });
                 const data = await res.json();
                 if (data.status === 'success') {
-                    // แสดงรูปโปรไฟล์
-                    if (data.userPic && data.userPic !== "") {
-                        document.getElementById('userImg').src = data.userPic;
-                    } else {
-                        document.getElementById('userImg').src = "https://ui-avatars.com/api/?name=" + user.name + "&background=random&color=fff";
-                    }
-                    // แสดงข้อมูลตัวเลขอื่นๆ
+                    if (data.userPic) document.getElementById('userImg').src = data.userPic;
                     document.getElementById('saveInvest').innerText = data.savings.invest.toLocaleString();
                     document.getElementById('saveHealth').innerText = data.savings.health.toLocaleString();
                     document.getElementById('saveReward').innerText = data.savings.reward.toLocaleString();
@@ -72,30 +67,53 @@
                     document.getElementById('u1NameDisp').innerText = data.user1.name; document.getElementById('u1Bal').innerText = data.user1.balance.toLocaleString();
                     document.getElementById('u2NameDisp').innerText = data.user2.name; document.getElementById('u2Bal').innerText = data.user2.balance.toLocaleString();
                     document.getElementById('myBalance').innerText = data.myBalance.toLocaleString() + " ฿";
-                    
                     const renderLog = (log) => `<div class="bg-white p-3 rounded-2xl shadow-sm border-l-4 ${log.amount > 0 ? 'border-blue-400' : 'border-red-400'}"><p class="text-[10px] font-bold text-gray-800 truncate">${log.note}</p><div class="flex justify-between items-center mt-1"><span class="text-[8px] text-gray-400 font-medium">${log.date}</span><span class="text-[10px] font-black ${log.amount > 0 ? 'text-blue-600' : 'text-red-500'}">${log.amount.toLocaleString()}</span></div></div>`;
                     document.getElementById('u1Logs').innerHTML = data.user1.logs.map(renderLog).join(''); 
                     document.getElementById('u2Logs').innerHTML = data.user2.logs.map(renderLog).join('');
                 }
-            } catch (e) { console.error(e); }
+            } catch (e) { alert("เชื่อมต่อไม่ได้: " + e); }
         }
 
-        async function uploadProfile(input) {
+        // 1. เลือกรูปแล้วแสดงตัวอย่างก่อน
+        function previewProfile(input) {
             if (input.files && input.files[0]) {
-                const user = JSON.parse(localStorage.getItem('userData'));
-                const img = document.getElementById('userImg');
-                img.style.opacity = "0.3";
                 const reader = new FileReader();
-                reader.onload = async (e) => {
-                    const res = await fetch(WEB_APP_URL, {
-                        method: 'POST',
-                        body: JSON.stringify({ action: 'update_profile_pic', data: { userId: user.userId, imageFile: e.target.result } })
-                    });
-                    const result = await res.json();
-                    if (result.status === 'success') { img.src = result.url; img.style.opacity = "1"; alert('✅ อัปเดตรูปสำเร็จ!'); }
-                    else { alert('❌ ผิดพลาด: ' + result.message); img.style.opacity = "1"; }
-                }; reader.readAsDataURL(input.files[0]);
+                reader.onload = (e) => {
+                    tempImageData = e.target.result;
+                    document.getElementById('userImg').src = tempImageData;
+                    document.getElementById('savePicBtn').classList.remove('hidden'); // โชว์ปุ่มเซฟ
+                };
+                reader.readAsDataURL(input.files[0]);
             }
+        }
+
+        // 2. กดปุ่มเซฟเพื่อส่งข้อมูล
+        async function uploadProfile() {
+            if (!tempImageData) return;
+            const user = JSON.parse(localStorage.getItem('userData'));
+            const btn = document.getElementById('savePicBtn');
+            const img = document.getElementById('userImg');
+            
+            btn.innerText = "⌛ กำลังบันทึก...";
+            btn.disabled = true;
+            img.style.opacity = "0.4";
+
+            try {
+                const res = await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'update_profile_pic', data: { userId: user.userId, imageFile: tempImageData } })
+                });
+                const result = await res.json();
+                if (result.status === 'success') {
+                    img.src = result.url;
+                    alert('✅ บันทึกรูปโปรไฟล์เรียบร้อย!');
+                    btn.classList.add('hidden'); // ซ่อนปุ่มเซฟหลังเสร็จ
+                } else { alert('❌ Error: ' + result.message); }
+            } catch (e) { alert('❌ เชื่อมต่อระบบไม่ได้'); }
+            
+            btn.disabled = false;
+            btn.innerText = "💾 กดเพื่อบันทึกรูป";
+            img.style.opacity = "1";
         }
 
         async function exportReport() {
@@ -103,7 +121,7 @@
             try {
                 const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'export_pdf', data: { userId: user.userId } }) });
                 const result = await res.json();
-                if (result.status === 'success') { alert('✅ สร้างรายงานสำเร็จ!'); window.open(result.url, '_blank'); } else { alert('❌ ผิดพลาด: ' + result.message); }
+                if (result.status === 'success') { window.open(result.url, '_blank'); } else { alert('❌ ' + result.message); }
             } catch (e) { alert('❌ เชื่อมต่อไม่ได้'); }
             btn.innerText = "📄 รายงาน"; btn.disabled = false;
         }
