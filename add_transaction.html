@@ -1,86 +1,49 @@
 <!DOCTYPE html>
-<html lang="th">
-<head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>💰 บันทึกรายการ</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>body { font-family: 'Kanit', sans-serif; }</style>
-</head>
+<html lang="th"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Add</title><script src="https://cdn.tailwindcss.com"></script></head>
 <body class="bg-gray-50 min-h-screen p-4 flex items-center justify-center">
     <div class="max-w-md w-full bg-white p-6 rounded-[2.5rem] shadow-2xl">
         <div class="flex bg-gray-100 p-1 rounded-2xl mb-6">
-            <button type="button" onclick="changeAcc('Circular')" id="btnCirc" class="flex-1 py-2 rounded-xl font-bold bg-white shadow text-blue-600 transition-all">💳 หมุนเวียน</button>
-            <button type="button" onclick="changeAcc('Savings')" id="btnSave" class="flex-1 py-2 rounded-xl font-bold text-gray-400 transition-all">💰 เงินเก็บ/ออม</button>
+            <button type="button" onclick="changeAcc('Circular')" id="btnCirc" class="flex-1 py-2 rounded-xl font-bold bg-white shadow text-blue-600">💳 หมุนเวียน</button>
+            <button type="button" onclick="changeAcc('Savings')" id="btnSave" class="flex-1 py-2 rounded-xl font-bold text-gray-400">💰 เงินเก็บ</button>
         </div>
         <div class="grid grid-cols-2 gap-2 mb-6">
-            <button type="button" onclick="changeType('Income')" id="typeInc" class="py-3 rounded-2xl font-black border-2 border-green-500 bg-green-50 text-green-600 shadow-sm transition-all">🔺 รายรับ</button>
-            <button type="button" onclick="changeType('Expense')" id="typeExp" class="py-3 rounded-2xl font-black border-2 border-gray-100 text-gray-400 transition-all">🔻 รายจ่าย</button>
+            <button type="button" onclick="changeType('Income')" id="typeInc" class="py-3 rounded-2xl font-black border-2 border-green-500 bg-green-50 text-green-600 shadow-sm">🔺 รายรับ</button>
+            <button type="button" onclick="changeType('Expense')" id="typeExp" class="py-3 rounded-2xl font-black border-2 border-gray-100 text-gray-400">🔻 รายจ่าย</button>
         </div>
         <form id="transForm" class="space-y-4">
-            <div id="catArea" class="space-y-3">
-                <select id="mainCat" onchange="filterSub()" required class="w-full p-4 border rounded-2xl outline-none"><option value="">-- กลุ่มหลัก --</option></select>
-                <select id="catId" required class="w-full p-4 border rounded-2xl outline-none"><option value="">-- รายการย่อย --</option></select>
-            </div>
-            <div class="bg-blue-50/50 p-4 rounded-3xl border-2 border-dashed border-blue-200">
-                <input type="number" id="amount" placeholder="0.00" required step="any" class="w-full bg-transparent text-4xl text-center font-black outline-none">
-            </div>
-            <div class="space-y-2">
-                <label class="flex items-center justify-center gap-2 w-full p-4 border-2 border-gray-100 rounded-2xl bg-gray-50 text-gray-500 font-bold cursor-pointer transition">
-                    <span id="camLabel">📸 ถ่ายรูปหรือแนบใบเสร็จ</span>
-                    <input type="file" id="imageInput" accept="image/*" capture="camera" class="hidden" onchange="previewImage(this)">
-                </label>
-                <div id="imgPreview" class="hidden"><img id="preview" class="w-full h-40 object-cover rounded-2xl border"></div>
-            </div>
+            <div id="catArea" class="space-y-3"><select id="mainCat" onchange="filterSub()" required class="w-full p-4 border rounded-2xl outline-none"><option value="">-- กลุ่มหลัก --</option></select><select id="catId" required class="w-full p-4 border rounded-2xl outline-none"><option value="">-- รายการย่อย --</option></select></div>
+            <div class="bg-blue-50/50 p-4 rounded-3xl border-2 border-dashed border-blue-200"><input type="number" id="amount" placeholder="0.00" required step="any" class="w-full bg-transparent text-4xl text-center font-black outline-none"></div>
+            <div class="space-y-2"><label class="flex items-center justify-center gap-2 w-full p-4 border-2 border-gray-100 rounded-2xl bg-gray-50 text-gray-500 font-bold cursor-pointer"><span id="camLabel">📸 แนบรูป</span><input type="file" id="imageInput" accept="image/*" capture="camera" class="hidden" onchange="previewImage(this)"></label><div id="imgPreview" class="hidden"><img id="preview" class="w-full h-40 object-cover rounded-2xl border"></div></div>
             <input type="text" id="note" placeholder="หมายเหตุ..." class="w-full p-4 border rounded-2xl outline-none">
-            <button type="submit" id="saveBtn" class="w-full bg-blue-600 text-white py-5 rounded-[2rem] font-bold shadow-lg active:scale-95 transition-all">บันทึกข้อมูล</button>
-            <button type="button" onclick="window.location.href='dashboard.html'" class="w-full text-gray-400 text-sm mt-2 text-center">กลับหน้าหลัก</button>
+            <button type="submit" id="saveBtn" class="w-full bg-blue-600 text-white py-5 rounded-[2rem] font-bold shadow-lg">บันทึกข้อมูล</button>
+            <button type="button" onclick="window.location.href='dashboard.html'" class="w-full text-gray-400 text-sm mt-2 text-center">กลับ</button>
         </form>
     </div>
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzZZpDPyHZjKTm4IdVsHSat6wuzSaxsV-6EZGnF-YCDar632A9DV0ZULzXcNrLwGLB3/exec";
-        let currentAcc = 'Circular', currentType = 'Income', allCats = [], base64Image = "";
-        async function load() { const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_categories' }) }); const data = await res.json(); if (data.status === 'success') { allCats = data.categories; renderOptions(); } }
-        function previewImage(input) { if (input.files && input.files[0]) { const reader = new FileReader(); reader.onload = (e) => { base64Image = e.target.result; document.getElementById('preview').src = base64Image; document.getElementById('imgPreview').classList.remove('hidden'); document.getElementById('camLabel').innerText = "✅ เลือกรูปแล้ว"; }; reader.readAsDataURL(input.files[0]); } }
-        function changeAcc(acc) { currentAcc = acc; renderOptions(); }
-        function changeType(type) { 
-            currentType = type; 
-            const isInc = type === 'Income';
-            document.getElementById('typeInc').className = isInc ? "py-3 rounded-2xl font-black border-2 border-green-500 bg-green-50 text-green-600 shadow-sm transition-all" : "py-3 rounded-2xl font-black border-2 border-gray-100 text-gray-400 transition-all";
-            document.getElementById('typeExp').className = !isInc ? "py-3 rounded-2xl font-black border-2 border-red-500 bg-red-50 text-red-600 shadow-sm transition-all" : "py-3 rounded-2xl font-black border-2 border-gray-100 text-gray-400 transition-all";
-            renderOptions(); 
+        let cAcc = 'Circular', cType = 'Income', allC = [], b64 = "";
+        async function load() { const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_categories' }) }); const d = await res.json(); if (d.status === 'success') { allC = d.categories; rOpt(); } }
+        function previewImage(i) { if (i.files && i.files[0]) { const r = new FileReader(); r.onload = (e) => { b64 = e.target.result; document.getElementById('preview').src = b64; document.getElementById('imgPreview').classList.remove('hidden'); document.getElementById('camLabel').innerText = "✅ เลือกแล้ว"; }; r.readAsDataURL(i.files[0]); } }
+        function changeAcc(a) { cAcc = a; rOpt(); }
+        function changeType(t) { 
+            cType = t; const isI = t === 'Income';
+            document.getElementById('typeInc').className = isI ? "py-3 rounded-2xl font-black border-2 border-green-500 bg-green-50 text-green-600 shadow-sm" : "py-3 rounded-2xl font-black border-2 border-gray-100 text-gray-400";
+            document.getElementById('typeExp').className = !isI ? "py-3 rounded-2xl font-black border-2 border-red-500 bg-red-50 text-red-600 shadow-sm" : "py-3 rounded-2xl font-black border-2 border-gray-100 text-gray-400";
+            rOpt(); 
         }
-        function renderOptions() { 
-            const isSave = currentAcc === 'Savings';
-            document.getElementById('btnCirc').className = !isSave ? "flex-1 py-2 rounded-xl font-bold bg-white shadow text-blue-600" : "flex-1 py-2 rounded-xl font-bold text-gray-400";
-            document.getElementById('btnSave').className = isSave ? "flex-1 py-2 rounded-xl font-bold bg-white shadow text-green-600" : "flex-1 py-2 rounded-xl font-bold text-gray-400";
-            const catArea = document.getElementById('catArea');
-            if (isSave) {
-                const savCats = allCats.filter(c => c.parent === 'เงินเก็บ');
-                catArea.innerHTML = `<select id="catId" required class="w-full p-4 border rounded-2xl outline-none">${savCats.map(c => `<option value="${c.id}">${currentType === 'Expense' ? 'ถอน/ขาย' + c.name : c.name}</option>`).join('')}</select>`;
-            } else {
-                catArea.innerHTML = `<select id="mainCat" onchange="filterSub()" required class="w-full p-4 border rounded-2xl outline-none"><option value="">-- กลุ่มหลัก --</option></select><select id="catId" required class="w-full p-4 border rounded-2xl outline-none"><option value="">-- รายการย่อย --</option></select>`;
-                const filtered = allCats.filter(c => c.parent !== 'เงินเก็บ' && c.type === currentType);
-                const uniqueParents = [...new Set(filtered.map(c => c.parent))];
-                document.getElementById('mainCat').innerHTML += uniqueParents.map(p => `<option value="${p}">${p}</option>`).join('');
-            }
+        function rOpt() { 
+            const isS = cAcc === 'Savings'; document.getElementById('btnCirc').className = !isS ? "flex-1 py-2 rounded-xl font-bold bg-white shadow text-blue-600" : "flex-1 py-2 rounded-xl font-bold text-gray-400"; document.getElementById('btnSave').className = isS ? "flex-1 py-2 rounded-xl font-bold bg-white shadow text-green-600" : "flex-1 py-2 rounded-xl font-bold text-gray-400";
+            const cArea = document.getElementById('catArea');
+            if (isS) { const sC = allC.filter(c => c.parent === 'เงินเก็บ'); cArea.innerHTML = `<select id="catId" required class="w-full p-4 border rounded-2xl outline-none">${sC.map(c => `<option value="${c.id}">${cType === 'Expense' ? 'ถอน' + c.name : c.name}</option>`).join('')}</select>`; }
+            else { cArea.innerHTML = `<select id="mainCat" onchange="filterSub()" required class="w-full p-4 border rounded-2xl outline-none"><option value="">-- กลุ่มหลัก --</option></select><select id="catId" required class="w-full p-4 border rounded-2xl outline-none"><option value="">-- รายการย่อย --</option></select>`; const f = allC.filter(c => c.parent !== 'เงินเก็บ' && c.type === cType); const uP = [...new Set(f.map(c => c.parent))]; document.getElementById('mainCat').innerHTML += uP.map(p => `<option value="${p}">${p}</option>`).join(''); }
         }
-        function filterSub() { const pName = document.getElementById('mainCat').value; const subs = allCats.filter(c => c.parent === pName && c.type === currentType); document.getElementById('catId').innerHTML = subs.map(c => `<option value="${c.id}">${c.name}</option>`).join(''); }
+        function filterSub() { const p = document.getElementById('mainCat').value; const s = allC.filter(c => c.parent === p && c.type === cType); document.getElementById('catId').innerHTML = s.map(c => `<option value="${c.id}">${c.name}</option>`).join(''); }
         document.getElementById('transForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('saveBtn');
-            btn.disabled = true; btn.innerText = "กำลังบันทึก...";
-            const user = JSON.parse(localStorage.getItem('userData'));
-            const amt = Math.abs(parseFloat(document.getElementById('amount').value));
-            const imgInput = document.getElementById('imageInput');
-            const payload = { action: 'add_transaction', data: { userId: user.userId, catId: document.getElementById('catId').value, amount: currentType === 'Expense' ? -amt : amt, note: document.getElementById('note').value, type: currentType, accType: currentAcc, imageFile: base64Image, imageName: imgInput.files[0] ? imgInput.files[0].name : "" } };
-            const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
-            const result = await res.json();
-            if (result.status === 'success') {
-                alert('✅ บันทึกข้อมูลและอัปโหลดรูปสำเร็จ!'); // เพิ่ม Popup แจ้งเตือนสำเร็จ
-                window.location.href = 'dashboard.html';
-            }
+            e.preventDefault(); const b = document.getElementById('saveBtn'); b.disabled = true; b.innerText = "⏳...";
+            const user = JSON.parse(localStorage.getItem('userData')); const amt = Math.abs(parseFloat(document.getElementById('amount').value));
+            const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'add_transaction', data: { userId: user.userId, catId: document.getElementById('catId').value, amount: cType === 'Expense' ? -amt : amt, note: document.getElementById('note').value, type: cType, accType: cAcc, imageFile: b64, imageName: document.getElementById('imageInput').files[0] ? document.getElementById('imageInput').files[0].name : "" } }) });
+            if ((await res.json()).status === 'success') { alert('✅ สำเร็จ!'); window.location.href = 'dashboard.html'; }
         });
         window.onload = load;
     </script>
-</body>
-</html>
+</body></html>
