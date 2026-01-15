@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌀 วางแผนงบประมาณ 3 วงกลม</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌀</text></svg>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;700;900&display=swap');
+        body { font-family: 'Kanit', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen p-4 pb-10">
+    <div class="max-w-md mx-auto space-y-4">
+        
+        <div class="bg-white p-8 rounded-[2.5rem] shadow-xl text-center border-t-8 border-blue-600">
+            <h1 class="text-xl font-black text-slate-800">เครื่องมือวางแผนรายได้</h1>
+            <p class="text-[10px] text-slate-400 uppercase tracking-widest mt-1 font-bold">Independent Monthly Planning</p>
+            
+            <div class="mt-8">
+                <p class="text-xs font-bold text-blue-500 mb-2">ระบุรายได้รวมเดือนนี้ (บาท)</p>
+                <input type="number" id="incomeInput" oninput="runPlanning()" placeholder="0.00" 
+                       class="w-full p-5 border-2 border-blue-50 rounded-3xl text-4xl font-black text-center text-slate-800 outline-none focus:border-blue-500 bg-slate-50 shadow-inner transition-all">
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-[2rem] shadow-md border-l-8 border-red-400">
+            <h3 class="text-[10px] font-black text-slate-400 uppercase mb-4 tracking-widest">⭕ รายจ่ายคงที่ (C1 + C2)</h3>
+            <div class="space-y-3">
+                <div class="flex justify-between text-sm">
+                    <span class="text-slate-500">วงกลม 1 (ส่วนตัว 3 คน)</span>
+                    <span id="sumC1" class="font-bold text-slate-700">กำลังโหลด...</span>
+                </div>
+                <div class="flex justify-between text-sm border-b pb-2">
+                    <span class="text-slate-500">วงกลม 2 (ส่วนกลาง)</span>
+                    <span id="sumC2" class="font-bold text-slate-700">กำลังโหลด...</span>
+                </div>
+                <div class="flex justify-between pt-1">
+                    <span class="text-sm font-black text-red-500">รวมที่ต้องหักออก</span>
+                    <span id="totalFixed" class="text-lg font-black text-red-500">- ฿</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="c3Section" class="bg-white p-6 rounded-[2.5rem] shadow-xl hidden">
+            <h3 class="text-[10px] font-black text-slate-400 uppercase mb-4 text-center tracking-widest">🟢 จัดสรรเงินส่วนที่เหลือ (C3)</h3>
+            
+            <div class="text-center mb-6 p-4 bg-blue-50 rounded-3xl border-2 border-dashed border-blue-200">
+                <p class="text-[10px] text-blue-500 font-bold uppercase mb-1">ยอดเงินคงเหลือสำหรับออม</p>
+                <h2 id="balanceC3" class="text-4xl font-black text-blue-700">0.00</h2>
+            </div>
+
+            <div class="grid grid-cols-1 gap-3">
+                <div class="p-4 bg-yellow-50 rounded-2xl flex justify-between items-center border-l-4 border-yellow-400">
+                    <div>
+                        <p class="text-[9px] font-bold text-yellow-600 uppercase">ลงทุน & ทองคำ (40%)</p>
+                        <p id="v_invest" class="text-xl font-black text-slate-800">0.00</p>
+                    </div>
+                    <span class="text-2xl">🏆</span>
+                </div>
+                <div class="p-4 bg-green-50 rounded-2xl flex justify-between items-center border-l-4 border-green-400">
+                    <div>
+                        <p class="text-[9px] font-bold text-green-600 uppercase">สุขภาพ & มั่นคง (30%)</p>
+                        <p id="v_health" class="text-xl font-black text-slate-800">0.00</p>
+                    </div>
+                    <span class="text-2xl">🏥</span>
+                </div>
+                <div class="p-4 bg-purple-50 rounded-2xl flex justify-between items-center border-l-4 border-purple-400">
+                    <div>
+                        <p class="text-[9px] font-bold text-purple-600 uppercase">รางวัลชีวิต & ท่องเที่ยว (30%)</p>
+                        <p id="v_travel" class="text-xl font-black text-slate-800">0.00</p>
+                    </div>
+                    <span class="text-2xl">✈️</span>
+                </div>
+            </div>
+
+            <div class="mt-8 px-4">
+                <canvas id="planningChart"></canvas>
+            </div>
+        </div>
+
+        <button onclick="window.location.href='dashboard.html'" class="w-full py-6 text-slate-400 text-sm font-bold active:scale-95 transition-all">
+            ← กลับหน้าแดชบอร์ด
+        </button>
+    </div>
+
+    <script>
+        // ⚠️ สำคัญ: ใส่ URL เว็บแอป (รหัส.gs) ของคุณที่นี่
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby8yABKroMQ0VD0XS-SaX_PNXfVlIh84Nx97VQMICJnryO24ciDqQdc_qSrGIvpkrWg/exec";
+        
+        let config = {}; 
+        let chart;
+
+        // ดึงค่าตั้งต้นจากแท็บ BucketConfig เมื่อเปิดหน้า
+        async function init() {
+            try {
+                const res = await fetch(WEB_APP_URL, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ action: 'get_bucket_config' }) 
+                });
+                const data = await res.json();
+                
+                if (data.status === 'success') {
+                    config = data.config;
+                    const sC1 = config.C1_U101 + config.C1_U102 + config.C1_SON;
+                    const sC2 = config.C2_SHARED;
+                    
+                    document.getElementById('sumC1').innerText = sC1.toLocaleString() + " ฿";
+                    document.getElementById('sumC2').innerText = sC2.toLocaleString() + " ฿";
+                    document.getElementById('totalFixed').innerText = "- " + (sC1 + sC2).toLocaleString() + " ฿";
+                }
+            } catch (e) {
+                alert("โหลดข้อมูลการตั้งค่าไม่สำเร็จ กรุณาตรวจสอบแท็บ BucketConfig");
+            }
+        }
+
+        // ฟังก์ชันคำนวณแบบ Real-time
+        function runPlanning() {
+            const income = parseFloat(document.getElementById('incomeInput').value) || 0;
+            const fixedTotal = config.C1_U101 + config.C1_U102 + config.C1_SON + config.C2_SHARED;
+            const balance = Math.max(0, income - fixedTotal);
+
+            if (balance > 0) {
+                document.getElementById('c3Section').classList.remove('hidden');
+                document.getElementById('balanceC3').innerText = balance.toLocaleString() + " ฿";
+                
+                const inv = balance * config.C3_INVEST_PCT;
+                const hea = balance * config.C3_HEALTH_PCT;
+                const tra = balance * config.C3_TRAVEL_PCT;
+
+                document.getElementById('v_invest').innerText = inv.toLocaleString();
+                document.getElementById('v_health').innerText = hea.toLocaleString();
+                document.getElementById('v_travel').innerText = tra.toLocaleString();
+
+                updateChart([inv, hea, tra]);
+            } else {
+                document.getElementById('c3Section').classList.add('hidden');
+            }
+        }
+
+        // ฟังก์ชันสร้าง/อัปเดตกราฟ
+        function updateChart(dataValues) {
+            const ctx = document.getElementById('planningChart').getContext('2d');
+            if (chart) chart.destroy();
+            chart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['ลงทุน/ทอง (40%)', 'สุขภาพ (30%)', 'รางวัล (30%)'],
+                    datasets: [{
+                        data: dataValues,
+                        backgroundColor: ['#EAB308', '#22C55E', '#A855F7'],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    cutout: '75%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: { family: 'Kanit', size: 10 },
+                                padding: 20
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
