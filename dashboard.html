@@ -6,7 +6,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;700;900&display=swap'); body { font-family: 'Kanit', sans-serif; }</style>
 </head>
-<body class="bg-gray-50 min-h-screen pb-10">
+<body class="bg-gray-50 min-h-screen pb-10 text-slate-800">
     <div class="max-w-md mx-auto p-4 space-y-4">
         <div class="flex justify-between items-center px-2">
             <div><p class="text-[10px] text-gray-400 uppercase tracking-widest">ยินดีต้อนรับ</p><h2 id="userNameDisplay" class="font-black text-gray-800 text-lg">...</h2></div>
@@ -27,22 +27,21 @@
             <div class="p-6 text-center"><p class="text-[10px] text-gray-400 font-bold tracking-widest uppercase">💰 เงินหมุนเวียนกองกลาง (รวม)</p><h1 id="sharedCircular" class="text-4xl font-black text-gray-800 mt-1">0 ฿</h1></div>
             <div class="grid grid-cols-2 border-t border-gray-100 bg-gray-50/50 divide-x"><div class="p-4 text-center"><p id="u1NameDisp" class="text-[11px] font-bold text-gray-400 truncate">...</p><p id="u1Bal" class="text-xl font-black text-gray-800">0</p></div><div class="p-4 text-center"><p id="u2NameDisp" class="text-[11px] font-bold text-gray-400 truncate">...</p><p id="u2Bal" class="text-xl font-black text-gray-800">0</p></div></div>
         </div>
-        <div class="bg-gradient-to-r from-blue-600 to-blue-500 p-5 rounded-[2.2rem] text-white shadow-lg flex justify-between items-center px-8"><p class="text-[11px] opacity-80 font-bold uppercase tracking-tight">ยอดส่วนตัวของคุณ</p><h1 id="myBalance" class="text-3xl font-black">0.00 ฿</h1></div>
-        <button onclick="window.location.href='add_transaction.html'" class="w-full bg-white border-2 border-blue-600 text-blue-700 py-4 rounded-2xl font-black shadow-md active:scale-95 transition">+ บันทึกรายการใหม่</button>
+        <div class="bg-gradient-to-r from-blue-600 to-blue-500 p-5 rounded-[2.2rem] text-white shadow-lg flex justify-between items-center px-8 border-b-4 border-blue-700"><p class="text-[11px] opacity-80 font-bold uppercase tracking-tight">ยอดส่วนตัวของคุณ</p><h1 id="myBalance" class="text-3xl font-black">0.00 ฿</h1></div>
+        <button onclick="window.location.href='add_transaction.html'" class="w-full bg-white border-2 border-blue-600 text-blue-700 py-4 rounded-2xl font-black shadow-md active:scale-95 transition-all">+ บันทึกรายการใหม่</button>
         <div class="space-y-2 pt-4"><h3 class="font-bold text-gray-700 text-[10px] text-center uppercase tracking-[0.2em] mb-4">ความเคลื่อนไหวล่าสุด</h3><div id="logsArea" class="grid grid-cols-2 gap-2"><div id="u1Logs" class="space-y-1"></div><div id="u2Logs" class="space-y-1"></div></div></div>
     </div>
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwfDZ-slLMJ7um1unLdcAFoCCMjNDRMUFlollky1Zk2kieNtvokIYU1NZAW650IDsLn/exec";
         async function init() {
-            const user = JSON.parse(localStorage.getItem('userData'));
-            if (!user) { window.location.href = 'index.html'; return; }
+            const user = JSON.parse(localStorage.getItem('userData')); if (!user) { window.location.href = 'index.html'; return; }
             document.getElementById('userNameDisplay').innerText = user.name;
             try {
                 const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_dashboard_data', data: { userId: user.userId } }) });
                 const data = await res.json();
                 if (data.status === 'success') {
                     document.getElementById('saveInvest').innerText = data.savings.invest.toLocaleString(); document.getElementById('saveHealth').innerText = data.savings.health.toLocaleString(); document.getElementById('saveReward').innerText = data.savings.reward.toLocaleString(); document.getElementById('saveTotal').innerText = data.savings.total.toLocaleString(); document.getElementById('sharedCircular').innerText = data.sharedCircular.toLocaleString() + " ฿"; document.getElementById('u1NameDisp').innerText = data.user1.name; document.getElementById('u1Bal').innerText = data.user1.balance.toLocaleString(); document.getElementById('u2NameDisp').innerText = data.user2.name; document.getElementById('u2Bal').innerText = data.user2.balance.toLocaleString(); document.getElementById('myBalance').innerText = data.myBalance.toLocaleString() + " ฿";
-                    const renderLog = (log) => `<div class="bg-white p-2 rounded-xl shadow-sm border-l-2 ${log.amount > 0 ? 'border-blue-400' : 'border-red-400'}"><p class="text-[9px] font-bold text-gray-800 truncate">${log.note}</p><div class="flex justify-between items-center"><span class="text-[7px] text-gray-400">${log.date}</span><span class="text-[9px] font-black ${log.amount > 0 ? 'text-blue-600' : 'text-red-500'}">${log.amount.toLocaleString()}</span></div></div>`;
+                    const renderLog = (log) => `<div class="bg-white p-2 rounded-xl shadow-sm border-l-2 ${log.amount > 0 ? 'border-blue-400' : 'border-red-400'}"><p class="text-[9px] font-bold text-gray-800 truncate">${log.note}</p><div class="flex justify-between items-center mt-1"><span class="text-[7px] text-gray-400">${log.date}</span><span class="text-[9px] font-black ${log.amount > 0 ? 'text-blue-600' : 'text-red-500'}">${log.amount.toLocaleString()}</span></div></div>`;
                     document.getElementById('u1Logs').innerHTML = data.user1.logs.map(renderLog).join(''); document.getElementById('u2Logs').innerHTML = data.user2.logs.map(renderLog).join('');
                 }
             } catch (e) { alert("เชื่อมต่อไม่ได้"); }
@@ -52,11 +51,11 @@
             try {
                 const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'export_pdf', data: { userId: user.userId } }) });
                 const result = await res.json();
-                if (result.status === 'success') { alert('✅ สร้างสำเร็จ!'); window.open(result.url, '_blank'); } else { alert('❌ ผิดพลาด: ' + result.message); }
+                if (result.status === 'success') { alert('✅ สร้างรายงานสำเร็จ!'); window.open(result.url, '_blank'); } else { alert('❌ ผิดพลาด: ' + result.message); }
             } catch (e) { alert('❌ เชื่อมต่อระบบไม่ได้'); }
             btn.innerText = "📄 รายงาน"; btn.disabled = false;
         }
-        function logout() { localStorage.removeItem('userData'); window.location.href = 'index.html'; }
+        function logout() { if(confirm('ออกจากระบบ?')) { localStorage.removeItem('userData'); window.location.href = 'index.html'; } }
         window.onload = init;
     </script>
 </body>
