@@ -2,21 +2,19 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>💰 คลังเงินครอบครัว Dashboard</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💰</text></svg>">
+    <title>💰 Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>body { font-family: 'Kanit', sans-serif; }</style>
 </head>
 <body class="bg-gray-50 min-h-screen pb-10">
     <div class="max-w-md mx-auto p-4 space-y-4">
         <div class="flex justify-between items-center px-2">
-            <div><p class="text-[10px] text-gray-400">ยินดีต้อนรับ</p><h2 id="userNameDisplay" class="font-bold text-gray-800">...</h2></div>
+            <div><p class="text-[10px] text-gray-400 uppercase tracking-widest">ยินดีต้อนรับ</p><h2 id="userNameDisplay" class="font-black text-gray-800 text-lg">...</h2></div>
             <div class="flex gap-2">
                 <button onclick="window.location.href='manage_categories.html'" class="text-[10px] font-bold text-blue-500 bg-blue-50 px-3 py-2 rounded-xl">⚙️ ตั้งค่า</button>
                 <button onclick="logout()" class="text-[10px] font-bold text-red-500 bg-red-50 px-3 py-2 rounded-xl">ออกระบบ</button>
             </div>
         </div>
-
         <div class="bg-white rounded-[2.5rem] shadow-sm border-t-4 border-green-500 overflow-hidden">
             <div class="bg-green-50 p-3 border-b border-green-100 grid grid-cols-4 text-center gap-1">
                 <div><p class="text-[8px] text-gray-500">🏆 ทอง</p><p id="saveGold" class="text-[10px] font-bold text-yellow-600">0</p></div>
@@ -24,41 +22,24 @@
                 <div><p class="text-[8px] text-gray-500">💵 เงินสด</p><p id="saveCash" class="text-[10px] font-bold text-purple-600">0</p></div>
                 <div><p class="text-[8px] text-gray-500">💰 รวมออม</p><p id="saveTotal" class="text-[10px] font-bold text-green-700">0</p></div>
             </div>
-            <div class="p-4 text-center">
+            <div class="p-6 text-center">
                 <p class="text-[10px] text-gray-400 font-bold tracking-widest uppercase">💰 เงินหมุนเวียนกองกลาง (รวม)</p>
-                <h1 id="sharedCircular" class="text-xl font-bold text-gray-600">0.00 ฿</h1>
+                <h1 id="sharedCircular" class="text-4xl font-black text-gray-800 mt-1">0 ฿</h1>
             </div>
             <div class="grid grid-cols-2 border-t border-gray-100 bg-gray-50/50 divide-x">
-                <div class="p-4 text-center">
-                    <p id="u1NameDisp" class="text-sm font-bold text-gray-500 mb-1">...</p>
-                    <p id="u1Bal" class="text-2xl font-black text-gray-800">0</p>
-                </div>
-                <div class="p-4 text-center">
-                    <p id="u2NameDisp" class="text-sm font-bold text-gray-500 mb-1">...</p>
-                    <p id="u2Bal" class="text-2xl font-black text-gray-800">0</p>
-                </div>
+                <div class="p-3 text-center"><p id="u1NameDisp" class="text-[11px] font-bold text-gray-400">...</p><p id="u1Bal" class="text-lg font-bold text-gray-700">0</p></div>
+                <div class="p-3 text-center"><p id="u2NameDisp" class="text-[11px] font-bold text-gray-400">...</p><p id="u2Bal" class="text-lg font-bold text-gray-700">0</p></div>
             </div>
         </div>
-
         <div class="bg-gradient-to-r from-blue-600 to-blue-500 p-5 rounded-[2rem] text-white shadow-lg flex justify-between items-center px-8">
-            <p class="text-[11px] opacity-80 font-bold uppercase tracking-tight">ยอดส่วนตัวของคุณ</p>
-            <h1 id="myBalance" class="text-2xl font-black">0.00 ฿</h1>
+            <p class="text-[11px] opacity-80 font-bold uppercase">ยอดส่วนตัวของคุณ</p><h1 id="myBalance" class="text-3xl font-black">0 ฿</h1>
         </div>
-
-        <button onclick="window.location.href='add_transaction.html'" class="w-full bg-white border-2 border-blue-600 text-blue-700 py-4 rounded-2xl font-bold shadow-md">+ บันทึกรายการใหม่</button>
-        <button onclick="window.location.href='bucket_calculator.html'" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg flex items-center justify-center gap-2"><span>🌀 วางแผนงบประมาณ 3 วงกลม</span></button>
-
-        <div class="space-y-2 pt-4">
-            <h3 class="font-bold text-gray-700 ml-2 text-xs text-center uppercase tracking-widest">ความเคลื่อนไหวล่าสุด</h3>
-            <div class="grid grid-cols-2 gap-2">
-                <div class="space-y-2"><p id="u1ColName" class="text-[9px] font-bold text-center text-blue-500 uppercase"></p><div id="u1Logs" class="space-y-1"></div></div>
-                <div class="space-y-2"><p id="u2ColName" class="text-[9px] font-bold text-center text-purple-500 uppercase"></p><div id="u2Logs" class="space-y-1"></div></div>
-            </div>
-        </div>
+        <button onclick="window.location.href='add_transaction.html'" class="w-full bg-white border-2 border-blue-600 text-blue-700 py-4 rounded-2xl font-black shadow-md">+ บันทึกรายการใหม่</button>
+        <button onclick="window.location.href='bucket_calculator.html'" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black shadow-lg">🌀 วางแผนงบประมาณ 3 วงกลม</button>
+        <div class="space-y-2 pt-4"><h3 class="font-bold text-gray-700 text-xs text-center uppercase tracking-widest">ความเคลื่อนไหวล่าสุด</h3><div class="grid grid-cols-2 gap-2"><div id="u1Logs" class="space-y-1"></div><div id="u2Logs" class="space-y-1"></div></div></div>
     </div>
-
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz9-bKyKpCp_auOPIWgtH78F0Kc_IQpK0aMoJ0nWvzv1GrMp4Ka9DXxr9A-Fjwr3ifm/exec";
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzZZpDPyHZjKTm4IdVsHSat6wuzSaxsV-6EZGnF-YCDar632A9DV0ZULzXcNrLwGLB3/exec";
         async function init() {
             const user = JSON.parse(localStorage.getItem('userData'));
             if (!user) { window.location.href = 'index.html'; return; }
@@ -74,19 +55,12 @@
                 document.getElementById('u1NameDisp').innerText = data.user1.name; document.getElementById('u1Bal').innerText = data.user1.balance.toLocaleString();
                 document.getElementById('u2NameDisp').innerText = data.user2.name; document.getElementById('u2Bal').innerText = data.user2.balance.toLocaleString();
                 document.getElementById('myBalance').innerText = data.myBalance.toLocaleString() + " ฿";
-                document.getElementById('u1ColName').innerText = data.user1.name; document.getElementById('u2ColName').innerText = data.user2.name;
-
-                const renderLog = (log) => `
-                    <div class="bg-white p-2 rounded-xl shadow-sm border-l-2 ${log.amount > 0 ? 'border-blue-400' : 'border-red-400'}">
-                        <p class="text-[9px] font-bold text-gray-800 truncate">${log.note}</p>
-                        <div class="flex justify-between items-center mt-1"><span class="text-[7px] text-gray-400">${log.date}</span>
-                        <span class="text-[9px] font-bold ${log.amount > 0 ? 'text-blue-600' : 'text-red-500'}">${log.amount > 0 ? '+' : ''}${log.amount.toLocaleString()}</span></div>
-                    </div>`;
-                document.getElementById('u1Logs').innerHTML = data.user1.logs.map(renderLog).join('') || '<p class="text-center text-[8px] text-gray-300 py-2">ไม่มีข้อมูล</p>';
-                document.getElementById('u2Logs').innerHTML = data.user2.logs.map(renderLog).join('') || '<p class="text-center text-[8px] text-gray-300 py-2">ไม่มีข้อมูล</p>';
+                const renderLog = (log) => `<div class="bg-white p-2 rounded-xl shadow-sm border-l-2 ${log.amount > 0 ? 'border-blue-400' : 'border-red-400'}"><p class="text-[9px] font-bold text-gray-800 truncate">${log.note}</p><div class="flex justify-between items-center"><span class="text-[7px] text-gray-400">${log.date}</span><span class="text-[9px] font-bold ${log.amount > 0 ? 'text-blue-600' : 'text-red-500'}">${log.amount.toLocaleString()}</span></div></div>`;
+                document.getElementById('u1Logs').innerHTML = data.user1.logs.map(renderLog).join('');
+                document.getElementById('u2Logs').innerHTML = data.user2.logs.map(renderLog).join('');
             }
         }
-        function logout() { if(confirm('ต้องการออกจากระบบ?')) { localStorage.removeItem('userData'); window.location.href = 'index.html'; } }
+        function logout() { localStorage.removeItem('userData'); window.location.href = 'index.html'; }
         window.onload = init;
     </script>
 </body>
