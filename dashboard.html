@@ -4,45 +4,77 @@
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>💰 แผงควบคุม - MyFamily Money</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;700;900&display=swap'); body { font-family: 'Kanit', sans-serif; }</style>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;400;500;600;700&display=swap');
+        body { font-family: 'Kanit', sans-serif; -webkit-font-smoothing: antialiased; }
+        .stat-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); }
+        .number-soft { font-weight: 600; letter-spacing: -0.02em; }
+    </style>
 </head>
 <body class="bg-slate-50 min-h-screen pb-10">
-    <div class="max-w-md mx-auto p-4 space-y-4">
-        <div class="flex justify-between items-start px-2">
-            <div class="flex items-center gap-3">
+    <div class="max-w-md mx-auto p-4 space-y-5">
+        
+        <div class="flex justify-between items-center px-2 py-4">
+            <div class="flex items-center gap-4">
                 <div class="relative">
                     <img id="userImg" src="https://ui-avatars.com/api/?name=User&background=random" 
-                         class="w-16 h-16 rounded-full border-4 border-white shadow-lg object-cover bg-gray-100 transition-all">
-                    <label class="absolute bottom-0 right-0 bg-blue-600 p-1.5 rounded-full shadow-md cursor-pointer border-2 border-white active:scale-90 transition">
+                         class="w-16 h-16 rounded-full border-4 border-white shadow-md object-cover">
+                    <label class="absolute -bottom-1 -right-1 bg-blue-500 p-1.5 rounded-full shadow-lg cursor-pointer border-2 border-white">
                         <input type="file" class="hidden" accept="image/*" onchange="previewProfile(this)">
                         <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
                     </label>
                 </div>
                 <div>
-                    <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest">ยินดีต้อนรับ</p>
-                    <h2 id="userNameDisplay" class="font-black text-gray-800 text-xl tracking-tight">...</h2>
-                    <button id="savePicBtn" onclick="uploadProfile()" class="hidden mt-1 bg-emerald-500 text-white text-[10px] px-3 py-1 rounded-full font-bold shadow-sm animate-bounce">💾 บันทึกรูปโปรไฟล์</button>
+                    <p class="text-[10px] text-slate-400 font-medium tracking-widest uppercase">ยินดีต้อนรับ</p>
+                    <h2 id="userNameDisplay" class="font-semibold text-slate-800 text-lg">...</h2>
+                    <button id="savePicBtn" onclick="uploadProfile()" class="hidden mt-1 bg-green-500 text-white text-[10px] px-3 py-1 rounded-full font-medium">💾 บันทึกรูป</button>
                 </div>
             </div>
-            <div class="flex gap-2">
-                <button onclick="exportReport()" id="exportBtn" class="text-[10px] font-bold text-green-600 bg-green-50 px-3 py-2 rounded-xl active:scale-95 transition">📄 รายงาน</button>
-                <button onclick="logout()" class="text-[10px] font-bold text-red-500 bg-red-100 px-3 py-2 rounded-xl">ออก</button>
+            <div class="flex flex-col gap-2">
+                <button onclick="logout()" class="text-[10px] font-medium text-slate-400 bg-white border border-slate-100 px-4 py-1.5 rounded-full shadow-sm">ออก</button>
             </div>
         </div>
 
-        <div class="bg-white rounded-[2.5rem] shadow-sm border-t-4 border-green-500 overflow-hidden">
-            <div class="bg-green-50 p-3 border-b border-green-100 grid grid-cols-4 text-center gap-1">
-                <div><p class="text-[8px] text-gray-500 font-bold uppercase">🏆 ลงทุน</p><p id="saveInvest" class="text-[10px] font-bold text-yellow-600">0</p></div>
-                <div><p class="text-[8px] text-gray-500 font-bold uppercase">🏥 สุขภาพ</p><p id="saveHealth" class="text-[10px] font-bold text-green-600">0</p></div>
-                <div><p class="text-[8px] text-gray-500 font-bold uppercase">✈️ รางวัล</p><p id="saveReward" class="text-[10px] font-bold text-purple-600">0</p></div>
-                <div><p class="text-[8px] text-gray-500 font-bold uppercase">💰 รวมออม</p><p id="saveTotal" class="text-[10px] font-bold text-green-700">0</p></div>
+        <div class="bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden">
+            <div class="bg-slate-50/50 p-4 grid grid-cols-3 text-center gap-2 border-b border-slate-50">
+                <div class="p-2"><p class="text-[9px] text-slate-400 font-medium uppercase tracking-wider">🏆 ลงทุน</p><p id="saveInvest" class="text-sm number-soft text-yellow-600">0</p></div>
+                <div class="p-2 border-x border-slate-200"><p class="text-[9px] text-slate-400 font-medium uppercase tracking-wider">🏥 สุขภาพ</p><p id="saveHealth" class="text-sm number-soft text-emerald-600">0</p></div>
+                <div class="p-2"><p class="text-[9px] text-slate-400 font-medium uppercase tracking-wider">✈️ รางวัลชีวิต</p><p id="saveReward" class="text-sm number-soft text-indigo-600">0</p></div>
             </div>
-            <div class="p-8 text-center"><p class="text-[10px] text-gray-400 font-bold tracking-widest uppercase">💰 เงินหมุนเวียนกองกลาง (รวม)</p><h1 id="sharedCircular" class="text-5xl font-black text-gray-800 mt-1 tracking-tighter">0 ฿</h1></div>
-            <div class="grid grid-cols-2 border-t border-gray-100 bg-gray-50/50 divide-x"><div class="p-5 text-center"><p id="u1NameDisp" class="text-[11px] font-bold text-gray-400 truncate">...</p><p id="u1Bal" class="text-2xl font-black text-gray-800 tracking-tight">0</p></div><div class="p-5 text-center"><p id="u2NameDisp" class="text-[11px] font-bold text-gray-400 truncate">...</p><p id="u2Bal" class="text-2xl font-black text-gray-800 tracking-tight">0</p></div></div>
+            <div class="p-8 text-center bg-white">
+                <p class="text-[11px] text-slate-400 font-medium uppercase tracking-widest mb-1">เงินหมุนเวียนรวม</p>
+                <h1 id="sharedCircular" class="text-4xl number-soft text-slate-800">0 ฿</h1>
+            </div>
+            <div class="grid grid-cols-2 bg-slate-50/50 border-t border-slate-100">
+                <div class="p-5 text-center"><p id="u1NameDisp" class="text-[10px] font-medium text-slate-400 truncate uppercase">...</p><p id="u1Bal" class="text-xl number-soft text-slate-700">0</p></div>
+                <div class="p-5 text-center border-l border-slate-100"><p id="u2NameDisp" class="text-[10px] font-medium text-slate-400 truncate uppercase">...</p><p id="u2Bal" class="text-xl number-soft text-slate-700">0</p></div>
+            </div>
         </div>
-        <div class="bg-gradient-to-br from-blue-600 to-indigo-700 p-6 rounded-[2.5rem] text-white shadow-xl flex justify-between items-center px-10"><p class="text-[11px] font-bold uppercase tracking-widest opacity-80">ส่วนตัวของคุณ</p><h1 id="myBalance" class="text-4xl font-black tracking-tighter">0.00 ฿</h1></div>
-        <button onclick="window.location.href='add_transaction.html'" class="w-full bg-white border-2 border-blue-600 text-blue-700 py-5 rounded-[2rem] font-black text-lg shadow-md active:scale-95 transition-all">+ บันทึกรายการใหม่</button>
-        <div id="logsArea" class="pt-4"><h3 class="font-bold text-gray-700 text-[10px] text-center uppercase tracking-[0.2em] mb-4">ความเคลื่อนไหวล่าสุด</h3><div class="grid grid-cols-2 gap-3"><div id="u1Logs" class="space-y-2"></div><div id="u2Logs" class="space-y-2"></div></div></div>
+
+        <div class="bg-indigo-600 p-6 rounded-[2.2rem] text-white shadow-xl flex justify-between items-center px-10">
+            <p class="text-[10px] font-medium uppercase tracking-widest opacity-70">ส่วนตัวของคุณ</p>
+            <h1 id="myBalance" class="text-3xl number-soft">0.00 ฿</h1>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+            <button onclick="window.location.href='add_transaction.html'" class="bg-white border border-slate-200 text-slate-700 py-4 rounded-3xl font-medium text-sm shadow-sm active:scale-95 transition-all">
+                ✚ บันทึกรายการ
+            </button>
+            <button onclick="window.location.href='bucket_calculator.html'" class="bg-white border border-blue-100 text-blue-600 py-4 rounded-3xl font-medium text-sm shadow-sm active:scale-95 transition-all">
+                🌀 วางแผนงบ
+            </button>
+        </div>
+        <button id="exportBtn" onclick="exportReport()" class="w-full bg-slate-800 text-white py-4 rounded-3xl font-medium text-sm shadow-lg active:scale-95 transition-all">
+            📄 ออกรายงานสรุป (PDF)
+        </button>
+
+        <div class="pt-4">
+            <h3 class="font-medium text-slate-400 text-[10px] text-center uppercase tracking-[0.3em] mb-4">ความเคลื่อนไหวล่าสุด</h3>
+            <div class="grid grid-cols-2 gap-3">
+                <div id="u1Logs" class="space-y-2"></div>
+                <div id="u2Logs" class="space-y-2"></div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -66,60 +98,18 @@
                     document.getElementById('u1NameDisp').innerText = data.user1.name; document.getElementById('u1Bal').innerText = data.user1.balance.toLocaleString();
                     document.getElementById('u2NameDisp').innerText = data.user2.name; document.getElementById('u2Bal').innerText = data.user2.balance.toLocaleString();
                     document.getElementById('myBalance').innerText = data.myBalance.toLocaleString() + " ฿";
-                    const renderLog = (log) => `<div class="bg-white p-3 rounded-2xl shadow-sm border-l-4 ${log.amount > 0 ? 'border-blue-400' : 'border-red-400'}"><p class="text-[10px] font-bold text-gray-800 truncate">${log.note}</p><div class="flex justify-between items-center mt-1"><span class="text-[8px] text-gray-400">${log.date}</span><span class="text-[10px] font-black ${log.amount > 0 ? 'text-blue-600' : 'text-red-500'}">${log.amount.toLocaleString()}</span></div></div>`;
-                    document.getElementById('u1Logs').innerHTML = data.user1.logs.map(renderLog).join(''); 
-                    document.getElementById('u2Logs').innerHTML = data.user2.logs.map(renderLog).join('');
+                    const renderLog = (log) => `<div class="bg-white p-3 rounded-2xl shadow-sm border-l-2 ${log.amount > 0 ? 'border-blue-400' : 'border-rose-400'}"><p class="text-[9px] font-medium text-slate-700 truncate">${log.note}</p><div class="flex justify-between items-center mt-1"><span class="text-[7px] text-slate-400">${log.date}</span><span class="text-[9px] font-semibold ${log.amount > 0 ? 'text-blue-600' : 'text-rose-500'}">${log.amount.toLocaleString()}</span></div></div>`;
+                    document.getElementById('u1Logs').innerHTML = data.user1.logs.map(renderLog).join(''); document.getElementById('u2Logs').innerHTML = data.user2.logs.map(renderLog).join('');
                 }
-            } catch (e) { alert("เชื่อมต่อล้มเหลว: " + e); }
+            } catch (e) { alert("เชื่อมต่อล้มเหลว"); }
         }
 
-        // 1. เลือกรูปแล้วแสดงตัวอย่างก่อน (Preview)
-        function previewProfile(input) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    tempImageData = e.target.result;
-                    document.getElementById('userImg').src = tempImageData; // แสดงรูปตัวอย่างทันที
-                    document.getElementById('savePicBtn').classList.remove('hidden'); // โชว์ปุ่มสีเขียว
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-        // 2. กดปุ่มบันทึกเพื่อส่งข้อมูลไป Drive
+        function previewProfile(input) { if (input.files && input.files[0]) { const r = new FileReader(); r.onload = (e) => { tempImageData = e.target.result; document.getElementById('userImg').src = tempImageData; document.getElementById('savePicBtn').classList.remove('hidden'); }; r.readAsDataURL(input.files[0]); } }
         async function uploadProfile() {
-            if (!tempImageData) return;
-            const user = JSON.parse(localStorage.getItem('userData'));
-            const btn = document.getElementById('savePicBtn');
-            const img = document.getElementById('userImg');
-            
-            btn.innerText = "⌛ กำลังบันทึก..."; btn.disabled = true; img.style.opacity = "0.4";
-
-            try {
-                const res = await fetch(WEB_APP_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: 'update_profile_pic', data: { userId: user.userId, imageFile: tempImageData } })
-                });
-                const result = await res.json();
-                if (result.status === 'success') {
-                    img.src = result.url;
-                    alert('✅ บันทึกรูปโปรไฟล์เรียบร้อย!');
-                    btn.classList.add('hidden'); // ซ่อนปุ่มหลังบันทึกเสร็จ
-                } else { alert('❌ Error: ' + result.message); }
-            } catch (e) { alert('❌ ระบบขัดข้อง กรุณาตรวจสอบสิทธิ์โฟลเดอร์'); }
-            
-            btn.disabled = false; btn.innerText = "💾 บันทึกรูปโปรไฟล์"; img.style.opacity = "1";
+            const user = JSON.parse(localStorage.getItem('userData')); const btn = document.getElementById('savePicBtn'); btn.innerText = "กำลังเซฟ...";
+            try { const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'update_profile_pic', data: { userId: user.userId, imageFile: tempImageData } }) }); const result = await res.json(); if (result.status === 'success') { alert('บันทึกสำเร็จ'); btn.classList.add('hidden'); } } catch (e) { alert('ผิดพลาด'); } btn.innerText = "💾 บันทึกรูป";
         }
-
-        async function exportReport() {
-            const user = JSON.parse(localStorage.getItem('userData')); const btn = document.getElementById('exportBtn'); btn.innerText = "⏳..."; btn.disabled = true;
-            try {
-                const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'export_pdf', data: { userId: user.userId } }) });
-                const result = await res.json();
-                if (result.status === 'success') { window.open(result.url, '_blank'); } else { alert('❌ ' + result.message); }
-            } catch (e) { alert('❌ เชื่อมต่อไม่ได้'); }
-            btn.innerText = "📄 รายงาน"; btn.disabled = false;
-        }
+        async function exportReport() { const user = JSON.parse(localStorage.getItem('userData')); const btn = document.getElementById('exportBtn'); btn.innerText = "กำลังสร้างไฟล์..."; try { const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'export_pdf', data: { userId: user.userId } }) }); const result = await res.json(); if (result.status === 'success') { window.open(result.url, '_blank'); } } catch (e) { alert('ล้มเหลว'); } btn.innerText = "📄 ออกรายงานสรุป (PDF)"; }
         function logout() { localStorage.removeItem('userData'); window.location.href = 'index.html'; }
         window.onload = init;
     </script>
