@@ -2,115 +2,87 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>💰 แดชบอร์ด - MyFamily Money</title>
+    <title>💰 แผงควบคุม - MyFamily Money</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;700;900&display=swap'); body { font-family: 'Kanit', sans-serif; }</style>
 </head>
-<body class="bg-gray-50 min-h-screen pb-20 text-slate-800">
+<body class="bg-slate-50 min-h-screen pb-10">
     <div class="max-w-md mx-auto p-4 space-y-4">
-        <div class="flex justify-between items-center px-2 py-4">
+        <div class="flex justify-between items-center px-2">
             <div class="flex items-center gap-3">
-                <div class="relative group cursor-pointer" onclick="document.getElementById('profileInput').click()">
-                    <img id="userImg" src="https://ui-avatars.com/api/?name=User&background=random" class="w-14 h-14 rounded-full border-2 border-white shadow-md object-cover bg-gray-200">
-                    <div class="absolute inset-0 bg-black/20 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all"><span class="text-white text-[10px]">แก้ไข</span></div>
-                    <input type="file" id="profileInput" class="hidden" accept="image/*" onchange="uploadProfile(this)">
+                <div class="relative group">
+                    <img id="userImg" src="https://ui-avatars.com/api/?name=User&background=random" class="w-14 h-14 rounded-full border-2 border-white shadow-md object-cover">
+                    <label class="absolute bottom-0 right-0 bg-white p-1 rounded-full shadow-sm cursor-pointer border border-gray-100">
+                        <input type="file" class="hidden" accept="image/*" onchange="uploadProfile(this)">
+                        <span class="text-[8px]">📸</span>
+                    </label>
                 </div>
-                <div><p class="text-[10px] text-gray-400 uppercase tracking-widest">สวัสดีคุณ</p><h2 id="userNameDisplay" class="font-black text-gray-800 text-lg">...</h2></div>
+                <div><p class="text-[10px] text-gray-400 uppercase tracking-widest">ยินดีต้อนรับ</p><h2 id="userNameDisplay" class="font-black text-gray-800 text-lg">...</h2></div>
             </div>
-            <div class="flex gap-1">
-                <button id="exportBtn" onclick="exportReport()" class="text-[9px] font-bold text-green-600 bg-white border border-green-100 px-3 py-2 rounded-xl shadow-sm">📄 รายงาน</button>
-                <button onclick="logout()" class="text-[9px] font-bold text-red-500 bg-red-50 px-3 py-2 rounded-xl">ออก</button>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-[2.5rem] shadow-xl border-t-4 border-green-500 overflow-hidden">
-            <div class="bg-green-50/50 p-4 border-b border-green-100 grid grid-cols-4 text-center gap-1">
-                <div><p class="text-[8px] text-gray-400 font-bold uppercase">🏆 ลงทุน</p><p id="saveInvest" class="text-[10px] font-black text-yellow-600">0</p></div>
-                <div><p class="text-[8px] text-gray-400 font-bold uppercase">🏥 สุขภาพ</p><p id="saveHealth" class="text-[10px] font-black text-green-600">0</p></div>
-                <div><p class="text-[8px] text-gray-400 font-bold uppercase">✈️ รางวัล</p><p id="saveReward" class="text-[10px] font-black text-purple-600">0</p></div>
-                <div><p class="text-[8px] text-gray-400 font-bold uppercase">💰 รวมออม</p><p id="saveTotal" class="text-[10px] font-black text-green-800">0</p></div>
-            </div>
-            <div class="p-8 text-center"><p class="text-[10px] text-gray-400 font-bold tracking-[0.2em] uppercase">💰 เงินหมุนเวียนกองกลาง (รวม)</p><h1 id="sharedCircular" class="text-5xl font-black text-slate-800 mt-2">0 ฿</h1></div>
-            <div class="grid grid-cols-2 border-t border-gray-100 bg-gray-50 divide-x">
-                <div class="p-5 text-center"><p id="u1NameDisp" class="text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">...</p><p id="u1Bal" class="text-xl font-black text-gray-800">0</p></div>
-                <div class="p-5 text-center"><p id="u2NameDisp" class="text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">...</p><p id="u2Bal" class="text-xl font-black text-gray-800">0</p></div>
+            <div class="flex gap-2">
+                <button id="exportBtn" onclick="exportReport()" class="text-[10px] font-bold text-green-600 bg-green-50 px-3 py-2 rounded-xl">📄 รายงาน</button>
+                <button onclick="window.location.href='bucket_calculator.html'" class="text-[10px] font-bold text-blue-600 bg-blue-50 px-3 py-2 rounded-xl">🌀 จัดงบ</button>
+                <button onclick="logout()" class="text-[10px] font-bold text-red-500 bg-red-50 px-3 py-2 rounded-xl">ออก</button>
             </div>
         </div>
-
-        <div class="bg-gradient-to-r from-blue-600 to-indigo-600 p-6 rounded-[2.2rem] text-white shadow-lg flex justify-between items-center px-10"><p class="text-xs opacity-80 font-bold uppercase tracking-widest">ส่วนตัวของคุณ</p><h1 id="myBalance" class="text-3xl font-black">0.00 ฿</h1></div>
-
-        <div class="grid grid-cols-2 gap-3">
-            <button onclick="window.location.href='add_transaction.html'" class="bg-white border-2 border-blue-600 text-blue-700 py-4 rounded-2xl font-black shadow-md active:scale-95 transition-all">+ บันทึก</button>
-            <button onclick="window.location.href='bucket_calculator.html'" class="bg-blue-50 text-blue-700 py-4 rounded-2xl font-black active:scale-95 transition-all">🌀 จัดงบ</button>
+        <div class="bg-white rounded-[2.5rem] shadow-sm border-t-4 border-green-500 overflow-hidden">
+            <div class="bg-green-50 p-3 border-b border-green-100 grid grid-cols-4 text-center gap-1">
+                <div><p class="text-[8px] text-gray-500 font-bold uppercase">🏆 ลงทุน</p><p id="saveInvest" class="text-[10px] font-bold text-yellow-600">0</p></div>
+                <div><p class="text-[8px] text-gray-500 font-bold uppercase">🏥 สุขภาพ</p><p id="saveHealth" class="text-[10px] font-bold text-green-600">0</p></div>
+                <div><p class="text-[8px] text-gray-500 font-bold uppercase">✈️ รางวัล</p><p id="saveReward" class="text-[10px] font-bold text-purple-600">0</p></div>
+                <div><p class="text-[8px] text-gray-500 font-bold uppercase">💰 รวมออม</p><p id="saveTotal" class="text-[10px] font-bold text-green-700">0</p></div>
+            </div>
+            <div class="p-6 text-center"><p class="text-[10px] text-gray-400 font-bold tracking-widest uppercase">💰 เงินหมุนเวียนกองกลาง (รวม)</p><h1 id="sharedCircular" class="text-4xl font-black text-gray-800 mt-1">0 ฿</h1></div>
+            <div class="grid grid-cols-2 border-t border-gray-100 bg-gray-50/50 divide-x"><div class="p-4 text-center"><p id="u1NameDisp" class="text-[11px] font-bold text-gray-400">...</p><p id="u1Bal" class="text-xl font-black text-gray-800">0</p></div><div class="p-4 text-center"><p id="u2NameDisp" class="text-[11px] font-bold text-gray-400">...</p><p id="u2Bal" class="text-xl font-black text-gray-800">0</p></div></div>
         </div>
-
-        <div class="space-y-3 pt-4">
-            <h3 class="font-black text-slate-400 text-[10px] text-center uppercase tracking-[0.3em] mb-4">ความเคลื่อนไหวล่าสุด</h3>
-            <div class="grid grid-cols-2 gap-2"><div id="u1Logs" class="space-y-2"></div><div id="u2Logs" class="space-y-2"></div></div>
-        </div>
+        <div class="bg-gradient-to-r from-blue-600 to-blue-500 p-5 rounded-[2.2rem] text-white shadow-lg flex justify-between items-center px-8"><p class="text-[11px] font-bold uppercase tracking-tight">ยอดส่วนตัวของคุณ</p><h1 id="myBalance" class="text-3xl font-black">0.00 ฿</h1></div>
+        <button onclick="window.location.href='add_transaction.html'" class="w-full bg-white border-2 border-blue-600 text-blue-700 py-4 rounded-2xl font-black shadow-md active:scale-95 transition-all">+ บันทึกรายการใหม่</button>
+        <div class="space-y-2 pt-4"><h3 class="font-bold text-gray-700 text-[10px] text-center uppercase tracking-[0.2em] mb-4">ความเคลื่อนไหวล่าสุด</h3><div class="grid grid-cols-2 gap-2"><div id="u1Logs" class="space-y-1"></div><div id="u2Logs" class="space-y-1"></div></div></div>
     </div>
-
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwNothBrUbARXK3Gge3nc3xV5VaiN2URvu1hRSnnwGc8FNASACngAv6Iwmysw_A4boC/exec"; //
-
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwNothBrUbARXK3Gge3nc3xV5VaiN2URvu1hRSnnwGc8FNASACngAv6Iwmysw_A4boC/exec";
         async function init() {
             const user = JSON.parse(localStorage.getItem('userData'));
             if (!user) { window.location.href = 'index.html'; return; }
             document.getElementById('userNameDisplay').innerText = user.name;
-            if (user.profilePic) document.getElementById('userImg').src = user.profilePic;
-
             try {
                 const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_dashboard_data', data: { userId: user.userId } }) });
                 const data = await res.json();
                 if (data.status === 'success') {
+                    if (data.userPic) document.getElementById('userImg').src = data.userPic;
                     document.getElementById('saveInvest').innerText = data.savings.invest.toLocaleString();
                     document.getElementById('saveHealth').innerText = data.savings.health.toLocaleString();
                     document.getElementById('saveReward').innerText = data.savings.reward.toLocaleString();
                     document.getElementById('saveTotal').innerText = data.savings.total.toLocaleString();
                     document.getElementById('sharedCircular').innerText = data.sharedCircular.toLocaleString() + " ฿";
-                    document.getElementById('u1NameDisp').innerText = data.user1.name;
-                    document.getElementById('u1Bal').innerText = data.user1.balance.toLocaleString();
-                    document.getElementById('u2NameDisp').innerText = data.user2.name;
-                    document.getElementById('u2Bal').innerText = data.user2.balance.toLocaleString();
+                    document.getElementById('u1NameDisp').innerText = data.user1.name; document.getElementById('u1Bal').innerText = data.user1.balance.toLocaleString();
+                    document.getElementById('u2NameDisp').innerText = data.user2.name; document.getElementById('u2Bal').innerText = data.user2.balance.toLocaleString();
                     document.getElementById('myBalance').innerText = data.myBalance.toLocaleString() + " ฿";
-                    if (data.myProfilePic) document.getElementById('userImg').src = data.myProfilePic;
-
-                    const renderLog = (log) => `<div class="bg-white p-3 rounded-2xl shadow-sm border-l-4 ${log.amount > 0 ? 'border-blue-400' : 'border-red-400'}"><p class="text-[9px] font-bold text-gray-800 truncate">${log.note}</p><div class="flex justify-between items-center mt-1"><span class="text-[7px] text-gray-400">${log.date}</span><span class="text-[10px] font-black ${log.amount > 0 ? 'text-blue-600' : 'text-red-500'}">${log.amount.toLocaleString()}</span></div></div>`;
-                    document.getElementById('u1Logs').innerHTML = data.user1.logs.map(renderLog).join('');
-                    document.getElementById('u2Logs').innerHTML = data.user2.logs.map(renderLog).join('');
+                    const renderLog = (log) => `<div class="bg-white p-2 rounded-xl shadow-sm border-l-2 ${log.amount > 0 ? 'border-blue-400' : 'border-red-400'}"><p class="text-[9px] font-bold text-gray-800 truncate">${log.note}</p><div class="flex justify-between items-center mt-1"><span class="text-[7px] text-gray-400">${log.date}</span><span class="text-[9px] font-black ${log.amount > 0 ? 'text-blue-600' : 'text-red-500'}">${log.amount.toLocaleString()}</span></div></div>`;
+                    document.getElementById('u1Logs').innerHTML = data.user1.logs.map(renderLog).join(''); document.getElementById('u2Logs').innerHTML = data.user2.logs.map(renderLog).join('');
                 }
-            } catch (e) { alert("เชื่อมต่อไม่ได้"); }
+            } catch (e) { console.error(e); }
         }
-
         async function uploadProfile(input) {
-            if (!input.files || !input.files[0]) return;
-            const user = JSON.parse(localStorage.getItem('userData'));
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                document.getElementById('userImg').classList.add('opacity-50');
-                const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'update_profile_pic', data: { userId: user.userId, imageFile: e.target.result } }) });
-                const result = await res.json();
-                if (result.status === 'success') {
-                    document.getElementById('userImg').src = result.url;
-                    user.profilePic = result.url;
-                    localStorage.setItem('userData', JSON.stringify(user));
-                } else { alert("อัปโหลดไม่สำเร็จ"); }
-                document.getElementById('userImg').classList.remove('opacity-50');
-            };
-            reader.readAsDataURL(input.files[0]);
+            if (input.files && input.files[0]) {
+                const user = JSON.parse(localStorage.getItem('userData'));
+                const reader = new FileReader();
+                reader.onload = async (e) => {
+                    const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'update_profile_pic', data: { userId: user.userId, imageFile: e.target.result, imageName: input.files[0].name } }) });
+                    const result = await res.json();
+                    if (result.status === 'success') { document.getElementById('userImg').src = result.url; alert('✅ อัปเดตรูปแล้ว'); }
+                }; reader.readAsDataURL(input.files[0]);
+            }
         }
-
         async function exportReport() {
-            const btn = document.getElementById('exportBtn'); btn.innerText = "⏳ รอ..."; btn.disabled = true;
-            const user = JSON.parse(localStorage.getItem('userData'));
+            const user = JSON.parse(localStorage.getItem('userData')); const btn = document.getElementById('exportBtn'); btn.innerText = "⏳..."; btn.disabled = true;
             try {
                 const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'export_pdf', data: { userId: user.userId } }) });
                 const result = await res.json();
-                if (result.status === 'success') { window.open(result.url, '_blank'); } else { alert('❌ ผิดพลาด: ' + result.message); }
+                if (result.status === 'success') { alert('✅ สร้างสำเร็จ! กำลังเปิดไฟล์...'); window.open(result.url, '_blank'); } else { alert('❌ ผิดพลาด: ' + result.message); }
             } catch (e) { alert('❌ เชื่อมต่อไม่ได้'); }
             btn.innerText = "📄 รายงาน"; btn.disabled = false;
         }
-
         function logout() { localStorage.removeItem('userData'); window.location.href = 'index.html'; }
         window.onload = init;
     </script>
