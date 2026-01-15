@@ -24,21 +24,13 @@
                 <div><p class="text-[8px] text-gray-500">💵 เงินสด</p><p id="saveCash" class="text-[10px] font-bold text-purple-600">0</p></div>
                 <div><p class="text-[8px] text-gray-500">💰 รวมออม</p><p id="saveTotal" class="text-[10px] font-bold text-green-700">0</p></div>
             </div>
-            
             <div class="p-6 text-center">
                 <p class="text-[10px] text-gray-400 font-bold tracking-widest uppercase">💰 เงินหมุนเวียนกองกลาง (รวม)</p>
                 <h1 id="sharedCircular" class="text-4xl font-black text-gray-800 mt-1">0.00 ฿</h1>
             </div>
-
             <div class="grid grid-cols-2 border-t border-gray-100 bg-gray-50/50 divide-x">
-                <div class="p-3 text-center">
-                    <p id="u1NameDisp" class="text-[11px] font-bold text-gray-400">...</p>
-                    <p id="u1Bal" class="text-lg font-bold text-gray-700">0</p>
-                </div>
-                <div class="p-3 text-center">
-                    <p id="u2NameDisp" class="text-[11px] font-bold text-gray-400">...</p>
-                    <p id="u2Bal" class="text-lg font-bold text-gray-700">0</p>
-                </div>
+                <div class="p-3 text-center"><p id="u1NameDisp" class="text-[11px] font-bold text-gray-400">...</p><p id="u1Bal" class="text-lg font-bold text-gray-700">0</p></div>
+                <div class="p-3 text-center"><p id="u2NameDisp" class="text-[11px] font-bold text-gray-400">...</p><p id="u2Bal" class="text-lg font-bold text-gray-700">0</p></div>
             </div>
         </div>
 
@@ -47,19 +39,21 @@
             <h1 id="myBalance" class="text-3xl font-black">0.00 ฿</h1>
         </div>
 
-        <button onclick="window.location.href='add_transaction.html'" class="w-full bg-white border-2 border-blue-600 text-blue-700 py-4 rounded-2xl font-bold shadow-md active:scale-95 transition">+ บันทึกรายการใหม่</button>
+        <button onclick="window.location.href='add_transaction.html'" 
+                class="w-full bg-white border-2 border-blue-600 text-blue-700 py-4 rounded-2xl font-black shadow-md active:scale-95 transition">
+            + บันทึกรายการใหม่
+        </button>
 
-        <div class="space-y-2">
+        <button onclick="window.location.href='bucket_calculator.html'" 
+                class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black shadow-lg shadow-blue-200 active:scale-95 transition flex items-center justify-center gap-2">
+            <span>🌀 วางแผนงบประมาณ 3 วงกลม</span>
+        </button>
+
+        <div class="space-y-2 pt-2">
             <h3 class="font-bold text-gray-700 ml-2 text-xs text-center uppercase tracking-widest">ความเคลื่อนไหวล่าสุด</h3>
             <div class="grid grid-cols-2 gap-2">
-                <div class="space-y-2">
-                    <p id="u1ColName" class="text-[9px] font-bold text-center text-blue-500"></p>
-                    <div id="u1Logs" class="space-y-1"></div>
-                </div>
-                <div class="space-y-2">
-                    <p id="u2ColName" class="text-[9px] font-bold text-center text-purple-500"></p>
-                    <div id="u2Logs" class="space-y-1"></div>
-                </div>
+                <div class="space-y-2"><p id="u1ColName" class="text-[9px] font-bold text-center text-blue-500 uppercase"></p><div id="u1Logs" class="space-y-1"></div></div>
+                <div class="space-y-2"><p id="u2ColName" class="text-[9px] font-bold text-center text-purple-500 uppercase"></p><div id="u2Logs" class="space-y-1"></div></div>
             </div>
         </div>
     </div>
