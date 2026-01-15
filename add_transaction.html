@@ -19,78 +19,27 @@
         </div>
         <form id="transForm" class="space-y-4">
             <div id="catArea" class="space-y-3">
-                <select id="mainCat" required class="w-full p-4 border-2 border-gray-100 rounded-2xl bg-gray-50 outline-none"><option value="">กำลังโหลดหมวดหมู่...</option></select>
+                <select id="mainCat" onchange="filterSub()" required class="w-full p-4 border-2 border-gray-100 rounded-2xl bg-gray-50 outline-none"><option value="">-- กลุ่มหลัก --</option></select>
+                <select id="catId" required class="w-full p-4 border-2 border-gray-100 rounded-2xl bg-gray-50 outline-none"><option value="">-- รายการย่อย --</option></select>
             </div>
             <div id="amtBox" class="bg-blue-50/50 p-4 rounded-3xl border-2 border-dashed border-blue-200">
-                <p id="amtLabel" class="text-center text-[10px] text-blue-400 uppercase font-bold mb-1">ระบุจำนวนเงิน</p>
+                <p id="amtLabel" class="text-center text-[10px] text-blue-400 font-bold mb-1 uppercase">ระบุจำนวนเงิน</p>
                 <input type="number" id="amount" placeholder="0.00" required step="any" class="w-full bg-transparent text-4xl text-center font-black text-gray-800 outline-none">
             </div>
-            <input type="text" id="note" placeholder="บันทึกหมายเหตุ (ถ้ามี)" class="w-full p-4 border-2 border-gray-100 rounded-2xl bg-gray-50 outline-none">
+            <input type="text" id="note" placeholder="บันทึกหมายเหตุ..." class="w-full p-4 border-2 border-gray-100 rounded-2xl bg-gray-50 outline-none">
             <button type="submit" id="saveBtn" class="w-full bg-blue-600 text-white py-5 rounded-[2rem] font-bold text-xl shadow-lg active:scale-95 transition-all mt-4">บันทึกข้อมูล</button>
-            <button type="button" onclick="window.location.href='dashboard.html'" class="w-full text-gray-400 text-sm mt-2 text-center font-bold">กลับหน้าหลัก</button>
+            <button type="button" onclick="window.location.href='dashboard.html'" class="w-full text-gray-400 text-sm mt-2 text-center">กลับหน้าหลัก</button>
         </form>
     </div>
     <script>
-        // ⚠️ อย่าลืมใส่ URL ของคุณเองที่บรรทัดนี้
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby8yABKroMQ0VD0XS-SaX_PNXfVlIh84Nx97VQMICJnryO24ciDqQdc_qSrGIvpkrWg/exec";
-        
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz9-bKyKpCp_auOPIWgtH78F0Kc_IQpK0aMoJ0nWvzv1GrMp4Ka9DXxr9A-Fjwr3ifm/exec";
         let currentAcc = 'Circular'; let currentType = 'Income'; let allCats = [];
-
-        async function load() {
-            try {
-                const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_categories' }) });
-                const data = await res.json();
-                if (data.status === 'success') { allCats = data.categories; changeAcc('Circular'); }
-            } catch(e) { alert("โหลดหมวดหมู่ไม่สำเร็จ"); }
-        }
-
-        function changeAcc(acc) {
-            currentAcc = acc; const isSave = acc === 'Savings';
-            document.getElementById('btnCirc').className = !isSave ? "flex-1 py-2 rounded-xl font-bold bg-white shadow text-blue-600" : "flex-1 py-2 rounded-xl font-bold text-gray-400";
-            document.getElementById('btnSave').className = isSave ? "flex-1 py-2 rounded-xl font-bold bg-white shadow text-green-600" : "flex-1 py-2 rounded-xl font-bold text-gray-400";
-            // เปลี่ยนสีปุ่มบันทึกและกล่องเงินตามบัญชี
-            document.getElementById('saveBtn').className = isSave ? "w-full bg-green-600 text-white py-5 rounded-[2rem] font-bold text-xl shadow-lg active:scale-95 transition-all mt-4" : "w-full bg-blue-600 text-white py-5 rounded-[2rem] font-bold text-xl shadow-lg active:scale-95 transition-all mt-4";
-            document.getElementById('amtBox').className = isSave ? "bg-green-50/50 p-4 rounded-3xl border-2 border-dashed border-green-200" : "bg-blue-50/50 p-4 rounded-3xl border-2 border-dashed border-blue-200";
-            document.getElementById('amtLabel').className = isSave ? "text-center text-[10px] text-green-400 uppercase font-bold mb-1" : "text-center text-[10px] text-blue-400 uppercase font-bold mb-1";
-            renderOptions();
-        }
-
-        function changeType(type) {
-            currentType = type; const isInc = type === 'Income';
-            document.getElementById('typeInc').className = isInc ? "py-3 rounded-2xl font-black border-2 border-green-500 bg-green-50 text-green-600 shadow-sm" : "py-3 rounded-2xl font-black border-2 border-gray-100 text-gray-400";
-            document.getElementById('typeExp').className = !isInc ? "py-3 rounded-2xl font-black border-2 border-red-500 bg-red-50 text-red-600 shadow-sm" : "py-3 rounded-2xl font-black border-2 border-gray-100 text-gray-400";
-            renderOptions();
-        }
-
-        function renderOptions() {
-            const catArea = document.getElementById('catArea');
-            if (currentAcc === 'Savings') {
-                const savCats = allCats.filter(c => c.parent === 'เงินเก็บ');
-                catArea.innerHTML = `<p class="text-xs text-gray-400 ml-2 font-bold">รายการทรัพย์สิน:</p><select id="catId" required class="w-full p-4 border-2 border-gray-100 rounded-2xl bg-gray-50 font-bold outline-none">${savCats.map(c => { let dName = c.name; if (currentType === 'Expense') { if (dName.includes('ทองคำ')) dName = "ขายทองคำ"; if (dName.includes('เงินสด')) dName = "ถอนเงินสด/ใช้เงินออม"; if (dName.includes('ลงทุน')) dName = "ขายหน่วยลงทุน"; } return `<option value="${c.id}">${dName}</option>`; }).join('')}</select>`;
-            } else {
-                catArea.innerHTML = `<select id="mainCat" onchange="filterSub()" required class="w-full p-4 border-2 border-gray-100 rounded-2xl bg-gray-50 outline-none"><option value="">-- กลุ่มหลัก --</option></select><select id="catId" required class="w-full p-4 border-2 border-gray-100 rounded-2xl bg-gray-50 outline-none"><option value="">-- รายการย่อย --</option></select>`;
-                const filtered = allCats.filter(c => c.parent !== 'เงินเก็บ' && c.type === currentType);
-                const uniqueParents = [...new Set(filtered.map(c => c.parent))];
-                document.getElementById('mainCat').innerHTML += uniqueParents.map(p => `<option value="${p}">${p}</option>`).join('');
-            }
-        }
-
-        function filterSub() {
-            const pName = document.getElementById('mainCat').value;
-            const subs = allCats.filter(c => c.parent === pName && c.type === currentType);
-            document.getElementById('catId').innerHTML = '<option value="">-- รายการย่อย --</option>' + subs.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-        }
-
-        document.getElementById('transForm').addEventListener('submit', async (e) => {
-            e.preventDefault(); const btn = document.getElementById('saveBtn'); btn.disabled = true; btn.innerText = "กำลังบันทึก...";
-            const user = JSON.parse(localStorage.getItem('userData'));
-            const amtVal = Math.abs(parseFloat(document.getElementById('amount').value));
-            const finalAmount = currentType === 'Expense' ? -amtVal : amtVal;
-            try {
-                await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'add_transaction', data: { userId: user.userId, catId: document.getElementById('catId').value, amount: finalAmount, note: document.getElementById('note').value, type: currentType, accType: currentAcc } }) });
-                window.location.href = 'dashboard.html';
-            } catch(e) { alert("บันทึกไม่สำเร็จ"); btn.disabled = false; btn.innerText = "บันทึกข้อมูล"; }
-        });
+        async function load() { const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_categories' }) }); const data = await res.json(); if (data.status === 'success') { allCats = data.categories; renderOptions(); } }
+        function changeAcc(acc) { currentAcc = acc; const isSave = acc === 'Savings'; document.getElementById('btnCirc').className = !isSave ? "flex-1 py-2 rounded-xl font-bold bg-white shadow text-blue-600" : "flex-1 py-2 rounded-xl font-bold text-gray-400"; document.getElementById('btnSave').className = isSave ? "flex-1 py-2 rounded-xl font-bold bg-white shadow text-green-600" : "flex-1 py-2 rounded-xl font-bold text-gray-400"; document.getElementById('saveBtn').className = isSave ? "w-full bg-green-600 text-white py-5 rounded-[2rem] font-bold text-xl shadow-lg mt-4" : "w-full bg-blue-600 text-white py-5 rounded-[2rem] font-bold text-xl shadow-lg mt-4"; renderOptions(); }
+        function changeType(type) { currentType = type; const isInc = type === 'Income'; document.getElementById('typeInc').className = isInc ? "py-3 rounded-2xl font-black border-2 border-green-500 bg-green-50 text-green-600 shadow-sm" : "py-3 rounded-2xl font-black border-2 border-gray-100 text-gray-400"; document.getElementById('typeExp').className = !isInc ? "py-3 rounded-2xl font-black border-2 border-red-500 bg-red-50 text-red-600 shadow-sm" : "py-3 rounded-2xl font-black border-2 border-gray-100 text-gray-400"; renderOptions(); }
+        function renderOptions() { const catArea = document.getElementById('catArea'); if (currentAcc === 'Savings') { const savCats = allCats.filter(c => c.parent === 'เงินเก็บ'); catArea.innerHTML = `<select id="catId" required class="w-full p-4 border-2 border-gray-100 rounded-2xl bg-gray-50 outline-none">${savCats.map(c => { let dName = c.name; if (currentType === 'Expense') { if (dName.includes('ทองคำ')) dName = "ขายทองคำ"; if (dName.includes('เงินสด')) dName = "ถอนเงินสด/ใช้เงินออม"; if (dName.includes('ลงทุน')) dName = "ขายหน่วยลงทุน"; } return `<option value="${c.id}">${dName}</option>`; }).join('')}</select>`; } else { catArea.innerHTML = `<select id="mainCat" onchange="filterSub()" required class="w-full p-4 border-2 border-gray-100 rounded-2xl bg-gray-50 outline-none"><option value="">-- กลุ่มหลัก --</option></select><select id="catId" required class="w-full p-4 border-2 border-gray-100 rounded-2xl bg-gray-50 outline-none"><option value="">-- รายการย่อย --</option></select>`; const filtered = allCats.filter(c => c.parent !== 'เงินเก็บ' && c.type === currentType); const uniqueParents = [...new Set(filtered.map(c => c.parent))]; document.getElementById('mainCat').innerHTML += uniqueParents.map(p => `<option value="${p}">${p}</option>`).join(''); } }
+        function filterSub() { const pName = document.getElementById('mainCat').value; const subs = allCats.filter(c => c.parent === pName && c.type === currentType); document.getElementById('catId').innerHTML = '<option value="">-- รายการย่อย --</option>' + subs.map(c => `<option value="${c.id}">${c.name}</option>`).join(''); }
+        document.getElementById('transForm').addEventListener('submit', async (e) => { e.preventDefault(); const user = JSON.parse(localStorage.getItem('userData')); const amtVal = Math.abs(parseFloat(document.getElementById('amount').value)); const finalAmount = currentType === 'Expense' ? -amtVal : amtVal; document.getElementById('saveBtn').innerText = "กำลังบันทึก..."; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'add_transaction', data: { userId: user.userId, catId: document.getElementById('catId').value, amount: finalAmount, note: document.getElementById('note').value, type: currentType, accType: currentAcc } }) }); window.location.href = 'dashboard.html'; });
         window.onload = load;
     </script>
 </body>
