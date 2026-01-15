@@ -9,30 +9,22 @@
 </head>
 <body class="bg-gradient-to-br from-green-50 to-green-100 min-h-screen flex items-center justify-center p-4">
     <div class="bg-white p-8 rounded-[2.5rem] shadow-xl w-full max-w-md text-center border border-white">
-        <div class="mb-8">
-            <span class="text-6xl">💰</span>
-            <h1 class="text-3xl font-black text-green-700 mt-4">คลังเงินครอบครัว</h1>
-        </div>
+        <div class="mb-8"><span class="text-6xl">💰</span><h1 class="text-3xl font-black text-green-700 mt-4">คลังเงินครอบครัว</h1></div>
         <form id="loginForm" class="space-y-4">
-            <input type="email" id="email" placeholder="อีเมลผู้ใช้งาน" required class="w-full p-4 border rounded-2xl bg-gray-50 outline-none focus:ring-2 focus:ring-green-500">
-            <input type="password" id="password" placeholder="รหัสผ่าน" required class="w-full p-4 border rounded-2xl bg-gray-50 outline-none focus:ring-2 focus:ring-green-500">
+            <input type="email" id="email" placeholder="อีเมลผู้ใช้งาน" required class="w-full p-4 border rounded-2xl bg-gray-50 outline-none">
+            <input type="password" id="password" placeholder="รหัสผ่าน" required class="w-full p-4 border rounded-2xl bg-gray-50 outline-none">
             <button type="submit" id="btn" class="w-full bg-green-600 text-white py-4 rounded-2xl font-bold text-lg shadow-lg active:scale-95 transition">เข้าสู่ระบบ</button>
         </form>
     </div>
     <script>
-        // ⚠️ อย่าลืมใส่ URL ของคุณเองที่บรรทัดนี้
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby8yABKroMQ0VD0XS-SaX_PNXfVlIh84Nx97VQMICJnryO24ciDqQdc_qSrGIvpkrWg/exec";
-
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz9-bKyKpCp_auOPIWgtH78F0Kc_IQpK0aMoJ0nWvzv1GrMp4Ka9DXxr9A-Fjwr3ifm/exec";
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault(); const btn = document.getElementById('btn'); btn.disabled = true; btn.innerText = "กำลังตรวจสอบ...";
-            try {
-                const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'login', data: { email: document.getElementById('email').value, password: document.getElementById('password').value } }) });
-                const result = await res.json();
-                if (result.status === 'success') { localStorage.setItem('userData', JSON.stringify(result.user)); window.location.href = 'dashboard.html'; } 
-                else { alert(result.message || "ข้อมูลไม่ถูกต้อง"); btn.disabled = false; btn.innerText = "เข้าสู่ระบบ"; }
-            } catch(e) { alert("เกิดข้อผิดพลาดในการเชื่อมต่อ"); btn.disabled = false; btn.innerText = "เข้าสู่ระบบ"; }
+            const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'login', data: { email: document.getElementById('email').value, password: document.getElementById('password').value } }) });
+            const result = await res.json();
+            if (result.status === 'success') { localStorage.setItem('userData', JSON.stringify(result.user)); window.location.href = 'dashboard.html'; } 
+            else { alert("ข้อมูลไม่ถูกต้อง"); btn.disabled = false; btn.innerText = "เข้าสู่ระบบ"; }
         });
     </script>
 </body>
 </html>
- 
