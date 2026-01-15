@@ -1,32 +1,149 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚙️ จัดการตัวเลือก</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚙️ จัดการตัวเลือก - คลังเงินครอบครัว</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚙️</text></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>body { font-family: 'Kanit', sans-serif; }</style>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;700;900&display=swap');
+        body { font-family: 'Kanit', sans-serif; }
+    </style>
 </head>
-<body class="bg-gray-50 min-h-screen p-4">
+<body class="bg-gray-50 min-h-screen p-4 pb-20">
     <div class="max-w-md mx-auto space-y-4">
         <div class="flex items-center justify-between bg-white p-6 rounded-[2rem] shadow-sm border-t-4 border-blue-500">
             <h2 class="text-xl font-black text-gray-800">⚙️ ตั้งค่าหมวดหมู่</h2>
             <button onclick="window.location.href='dashboard.html'" class="text-xs text-blue-500 font-bold">กลับ</button>
         </div>
-        <div class="bg-white p-6 rounded-[2.5rem] shadow-xl space-y-3">
-            <select id="accType" class="w-full p-3 border rounded-xl"><option value="Circular">💳 เงินหมุนเวียน</option><option value="Savings">💰 เงินเก็บ/ออม</option></select>
-            <select id="catType" class="w-full p-3 border rounded-xl"><option value="Income">🔺 รายรับ</option><option value="Expense">🔻 รายจ่าย</option></select>
-            <input type="text" id="catParent" placeholder="กลุ่มหลัก (เช่น อาหาร)" class="w-full p-4 border rounded-2xl bg-gray-50 outline-none">
-            <input type="text" id="catName" placeholder="รายการย่อย (เช่น มื้อเที่ยง)" class="w-full p-4 border rounded-2xl bg-gray-50 outline-none">
-            <button onclick="addCat()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg">เพิ่มรายการ</button>
+
+        <div class="bg-white p-6 rounded-[2.5rem] shadow-xl">
+            <p class="text-[10px] font-bold text-gray-400 mb-4 uppercase text-center tracking-widest">➕ เพิ่มรายการใหม่</p>
+            <form id="catForm" class="space-y-3">
+                <div class="grid grid-cols-2 gap-2">
+                    <select id="accType" onchange="toggleParentInput()" class="p-3 border rounded-xl bg-gray-50 text-xs font-bold outline-none focus:ring-2 focus:ring-blue-400">
+                        <option value="Circular">💳 เงินหมุนเวียน</option>
+                        <option value="Savings">💰 เงินเก็บ/ออม</option>
+                    </select>
+                    <select id="catType" class="p-3 border rounded-xl bg-gray-50 text-xs font-bold outline-none focus:ring-2 focus:ring-blue-400">
+                        <option value="Income">🔺 รายรับ</option>
+                        <option value="Expense">🔻 รายจ่าย</option>
+                    </select>
+                </div>
+                <input type="text" id="catParent" placeholder="ชื่อกลุ่มหลัก (เช่น ค่าอาหาร, รายได้เสริม)" required class="w-full p-4 border rounded-2xl bg-gray-50 outline-none focus:border-blue-500 transition-all">
+                <input type="text" id="catName" placeholder="รายการย่อย (เช่น มื้อเที่ยง, ค่าคอมมิชชัน)" required class="w-full p-4 border rounded-2xl bg-gray-50 outline-none focus:border-blue-500 transition-all">
+                
+                <button type="submit" id="saveBtn" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg active:scale-95 transition mt-2">เพิ่มรายการ</button>
+            </form>
         </div>
-        <div id="catList" class="space-y-2 pb-10"></div>
+
+        <div class="space-y-2 pb-10">
+            <p class="text-[10px] font-bold text-gray-400 ml-2 uppercase tracking-widest">📋 รายการปัจจุบัน</p>
+            <div id="catList" class="space-y-2 text-center py-10 text-gray-300">กำลังโหลดรายการ...</div>
+        </div>
     </div>
+
     <script>
+        // ⚠️ สำคัญ: ใส่ URL เว็บแอปจาก Apps Script ของคุณที่นี่
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzZZpDPyHZjKTm4IdVsHSat6wuzSaxsV-6EZGnF-YCDar632A9DV0ZULzXcNrLwGLB3/exec";
-        async function load() { const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_categories' }) }); const data = await res.json(); document.getElementById('catList').innerHTML = data.categories.reverse().map(c => `<div class="bg-white p-4 rounded-2xl shadow-sm flex justify-between items-center border-l-4 ${c.type === 'Income' ? 'border-green-400' : 'border-red-400'}"><div><p class="text-[9px] text-gray-400 font-bold">${c.parent}</p><p class="text-sm font-black text-gray-800">${c.name}</p></div><button onclick="delCat('${c.id}')" class="text-red-500 font-bold">🗑️</button></div>`).join(''); }
-        async function addCat() { await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'add_category', data: { name: document.getElementById('catName').value, type: document.getElementById('catType').value, parent: document.getElementById('accType').value === 'Savings' ? 'เงินเก็บ' : document.getElementById('catParent').value } }) }); load(); }
-        async function delCat(id) { if(confirm('ลบ?')) { await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'update_category_status', data: { id: id, status: 'Inactive' } }) }); load(); } }
-        window.onload = load;
+        let allCats = [];
+
+        function toggleParentInput() {
+            const accType = document.getElementById('accType').value;
+            const parentInput = document.getElementById('catParent');
+            if (accType === 'Savings') {
+                parentInput.value = 'เงินเก็บ';
+                parentInput.readOnly = true;
+                parentInput.classList.add('bg-gray-200');
+            } else {
+                parentInput.value = '';
+                parentInput.readOnly = false;
+                parentInput.classList.remove('bg-gray-200');
+            }
+        }
+
+        async function loadCategories() {
+            try {
+                const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_categories' }) });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    allCats = data.categories;
+                    renderList();
+                }
+            } catch (e) {
+                document.getElementById('catList').innerText = "โหลดข้อมูลไม่สำเร็จ กรุณาตรวจสอบการตั้งค่า";
+            }
+        }
+
+        function renderList() {
+            const listDiv = document.getElementById('catList');
+            if (allCats.length === 0) {
+                listDiv.innerHTML = '<p class="text-center text-gray-300 py-10">ไม่พบข้อมูลรายการ</p>';
+                return;
+            }
+            listDiv.innerHTML = allCats.slice().reverse().map(c => `
+                <div class="bg-white p-4 rounded-2xl shadow-sm flex justify-between items-center border-l-4 ${c.type === 'Income' ? 'border-green-400' : 'border-red-400'}">
+                    <div class="text-left">
+                        <p class="text-[9px] text-gray-400 font-bold">${c.parent} (${c.type === 'Income' ? 'รับ' : 'จ่าย'})</p>
+                        <p class="text-sm font-black text-gray-800">${c.name}</p>
+                    </div>
+                    <button onclick="deleteCat('${c.id}')" class="bg-red-50 text-red-500 px-3 py-2 rounded-xl text-[10px] font-bold active:scale-95 transition">🗑️ ลบ</button>
+                </div>`).join('');
+        }
+
+        document.getElementById('catForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('saveBtn');
+            const name = document.getElementById('catName').value;
+            const type = document.getElementById('catType').value;
+            const parent = document.getElementById('catParent').value;
+
+            btn.disabled = true;
+            btn.innerText = "กำลังบันทึก...";
+
+            try {
+                const res = await fetch(WEB_APP_URL, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ 
+                        action: 'add_category', 
+                        data: { name, type, parent } 
+                    }) 
+                });
+                const result = await res.json();
+                if (result.status === 'success') {
+                    alert('✅ เพิ่มรายการสำเร็จ!');
+                    document.getElementById('catName').value = '';
+                    loadCategories();
+                }
+            } catch (e) {
+                alert('❌ เกิดข้อผิดพลาดในการบันทึก');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "เพิ่มรายการ";
+            }
+        });
+
+        async function deleteCat(id) {
+            if (!confirm('ยืนยันที่จะลบรายการนี้ใช่หรือไม่?')) return;
+            try {
+                const res = await fetch(WEB_APP_URL, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ 
+                        action: 'update_category_status', 
+                        data: { id, status: 'Inactive' } 
+                    }) 
+                });
+                const result = await res.json();
+                if (result.status === 'success') {
+                    loadCategories();
+                }
+            } catch (e) {
+                alert('❌ ลบรายการไม่สำเร็จ');
+            }
+        }
+
+        window.onload = loadCategories;
     </script>
 </body>
 </html>
