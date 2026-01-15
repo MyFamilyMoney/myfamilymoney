@@ -8,15 +8,18 @@
 </head>
 <body class="bg-gray-50 min-h-screen p-4">
     <div class="max-w-md mx-auto space-y-4">
-        <div class="bg-white p-6 rounded-[2rem] shadow-sm flex justify-between items-center"><h2 class="text-xl font-black">⚙️ จัดการหมวดหมู่</h2><button onclick="window.location.href='dashboard.html'" class="text-xs text-blue-500">กลับ</button></div>
+        <div class="flex items-center justify-between bg-white p-6 rounded-[2rem] shadow-sm border-t-4 border-blue-500">
+            <h2 class="text-xl font-black text-gray-800">⚙️ ตั้งค่าหมวดหมู่</h2>
+            <button onclick="window.location.href='dashboard.html'" class="text-xs text-blue-500 font-bold">กลับ</button>
+        </div>
         <div class="bg-white p-6 rounded-[2.5rem] shadow-xl space-y-3">
             <select id="accType" class="w-full p-3 border rounded-xl"><option value="Circular">💳 เงินหมุนเวียน</option><option value="Savings">💰 เงินเก็บ/ออม</option></select>
             <select id="catType" class="w-full p-3 border rounded-xl"><option value="Income">🔺 รายรับ</option><option value="Expense">🔻 รายจ่าย</option></select>
-            <input type="text" id="catParent" placeholder="กลุ่มหลัก (เช่น อาหาร)" class="w-full p-4 border rounded-2xl outline-none">
-            <input type="text" id="catName" placeholder="รายการย่อย (เช่น มื้อเที่ยง)" class="w-full p-4 border rounded-2xl outline-none">
-            <button onclick="addCat()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold">เพิ่มรายการ</button>
+            <input type="text" id="catParent" placeholder="กลุ่มหลัก (เช่น อาหาร)" class="w-full p-4 border rounded-2xl bg-gray-50 outline-none">
+            <input type="text" id="catName" placeholder="รายการย่อย (เช่น มื้อเที่ยง)" class="w-full p-4 border rounded-2xl bg-gray-50 outline-none">
+            <button onclick="addCat()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg">เพิ่มรายการ</button>
         </div>
-        <div id="catList" class="space-y-2"></div>
+        <div id="catList" class="space-y-2 pb-10"></div>
     </div>
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzZZpDPyHZjKTm4IdVsHSat6wuzSaxsV-6EZGnF-YCDar632A9DV0ZULzXcNrLwGLB3/exec";
