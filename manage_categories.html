@@ -2,13 +2,13 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚙️ ตั้งค่าระบบ - MyFamily Money</title>
+    <title>⚙️ ตั้งค่าหมวดหมู่ - MyFamily Money</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap'); body { font-family: 'Kanit', sans-serif; background-color: #f8fafc; }</style>
 </head>
 <body class="min-h-screen p-4 pb-20 text-slate-700">
     <div class="max-w-md mx-auto space-y-4">
-        <div class="flex items-center gap-3 mb-6"><button onclick="window.location.href='dashboard.html'" class="p-2 bg-white rounded-full shadow-sm text-slate-400 active:scale-90 transition">❮</button><h1 class="text-xl font-bold">⚙️ จัดการระบบ</h1></div>
+        <div class="flex items-center gap-3 mb-6"><button onclick="window.location.href='dashboard.html'" class="p-2 bg-white rounded-full shadow-sm text-slate-400 active:scale-90 transition">❮</button><h1 class="text-xl font-bold">⚙️ จัดการหมวดหมู่</h1></div>
 
         <div class="bg-white p-6 rounded-[2.5rem] shadow-sm space-y-4 border border-slate-100">
             <div class="grid grid-cols-2 gap-2">
@@ -17,32 +17,39 @@
                 <div><label class="text-[10px] font-bold text-slate-400 ml-2">ประเภท (Type)</label>
                 <select id="catType" onchange="updateGroupOptions()" class="w-full p-3 bg-slate-50 rounded-2xl border-none text-sm outline-none"><option value="Expense">รายจ่าย</option><option value="Income">รายรับ</option></select></div>
             </div>
-            <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-2">กลุ่มหมวดหมู่หลัก</label>
+            <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-2">กลุ่มหมวดหมู่หลัก (Main Group)</label>
             <select id="catGroup" class="w-full p-4 bg-slate-50 rounded-3xl border-none outline-none font-medium appearance-none"></select></div>
-            <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-2">ชื่อรายการย่อย</label>
+            <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-2">ระบุชื่อรายการย่อย</label>
             <input type="text" id="catName" placeholder="เช่น เงินเดือน, ค่าน้ำไฟ" class="w-full p-4 bg-slate-50 rounded-3xl border-none font-medium outline-none"></div>
             <button onclick="addCat()" id="addBtn" class="w-full bg-blue-600 text-white py-4 rounded-3xl font-bold active:scale-95 transition-all shadow-lg">เพิ่มหมวดหมู่ตอนนี้</button>
         </div>
 
-        <div id="catList" class="space-y-2"><h3 class="text-xs font-bold text-slate-400 uppercase ml-4 mt-6 tracking-widest text-center">หมวดหมู่ปัจจุบัน</h3></div>
-
-        <div class="pt-10 border-t border-slate-200 mt-10">
-            <h3 class="text-[10px] font-bold text-rose-400 uppercase tracking-widest text-center mb-4">พื้นที่อันตราย (DANGER ZONE)</h3>
-            <button onclick="clearData()" id="clearBtn" class="w-full bg-white border-2 border-rose-100 text-rose-500 py-4 rounded-3xl font-bold active:scale-95 transition-all text-sm">🗑️ ล้างข้อมูลรายการทั้งหมด</button>
-            <p class="text-[8px] text-slate-400 text-center mt-2 px-6">คำเตือน: การล้างข้อมูลจะลบประวัติการบันทึกเงินเข้า-ออกทั้งหมด เพื่อเริ่มยอดเงินเป็น 0 ใหม่</p>
+        <div id="catList" class="space-y-2 text-center"><h3 class="text-xs font-bold text-slate-400 uppercase ml-4 mt-6 tracking-widest">หมวดหมู่ทั้งหมด</h3></div>
+        
+        <div class="pt-10 border-t border-slate-200 mt-10 text-center">
+            <h3 class="text-[10px] font-bold text-rose-400 uppercase tracking-widest mb-4">พื้นที่อันตราย (DANGER ZONE)</h3>
+            <button onclick="clearData()" id="clearBtn" class="w-full bg-white border-2 border-rose-100 text-rose-500 py-4 rounded-3xl font-bold active:scale-95 transition-all text-sm">🗑️ ล้างข้อมูลและเงินต้นทั้งหมดเป็น 0</button>
+            <p class="text-[8px] text-slate-400 mt-2 px-6">คำเตือน: ยอดเงินจะถูกรีเซ็ตเป็น 0 ฿ และประวัติจะหายไปทั้งหมด</p>
         </div>
     </div>
 
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx81rM_PBzEhCMORzZ9LYwUD64qH5zud5FGgse_CO4JLvYWGueYSo2uLVVAVJQql-Kj/exec";
         
+        // ✅ แก้ไข: กลุ่มหลักของรายรับเงินหมุนเวียนให้เหลือ 3 หัวข้อตามสั่งครับ
         function updateGroupOptions() {
             const acc = document.getElementById('catAcc').value;
             const type = document.getElementById('catType').value;
             const group = document.getElementById('catGroup');
-            if(acc === 'Savings') { group.innerHTML = '<option value="ลงทุน">🏆 ลงทุน</option><option value="สุขภาพ">🏥 สุขภาพ</option><option value="รางวัล">✈️ รางวัล</option>'; } 
-            else { if(type === 'Income') { group.innerHTML = '<option value="รายได้">💰 ช่องทางเงินเข้า</option>'; } 
-            else { group.innerHTML = '<option value="ค่าใช้จ่าย">💸 ค่าใช้จ่าย</option><option value="หนี้สิน">💳 หนี้สิน</option>'; } }
+            if(acc === 'Savings') {
+                group.innerHTML = '<option value="ลงทุน">🏆 ลงทุน</option><option value="สุขภาพ">🏥 สุขภาพ</option><option value="รางวัล">✈️ รางวัล</option>';
+            } else {
+                if(type === 'Income') {
+                    group.innerHTML = '<option value="รายได้">💰 รายได้</option><option value="รายได้พิเศษ">🧧 รายได้พิเศษ</option><option value="งบต้นเดือน">📈 งบต้นเดือน</option>';
+                } else {
+                    group.innerHTML = '<option value="ค่าใช้จ่าย">💸 ค่าใช้จ่าย</option><option value="หนี้สิน">💳 หนี้สิน</option>';
+                }
+            }
         }
 
         async function load() {
@@ -52,30 +59,31 @@
                 const list = document.getElementById('catList');
                 list.innerHTML = '<h3 class="text-xs font-bold text-slate-400 uppercase ml-4 mt-6 tracking-widest text-center">หมวดหมู่ปัจจุบัน</h3>';
                 data.categories.forEach(c => {
-                    list.innerHTML += `<div class="bg-white p-4 rounded-2xl flex justify-between items-center shadow-sm border border-slate-50"><div><p class="font-bold text-slate-800">${c.name}</p><p class="text-[9px] text-slate-400 font-bold uppercase">${c.parent} > ${c.group}</p></div><button onclick="toggleCat('${c.id}')" class="text-rose-300 font-bold text-xs p-2">ลบ</button></div>`;
+                    list.innerHTML += `<div class="bg-white p-4 rounded-2xl flex justify-between items-center shadow-sm border border-slate-50"><div><p class="font-bold text-slate-800">${c.name}</p><p class="text-[9px] text-slate-400 font-bold">${c.parent} > ${c.group} (${c.type})</p></div><button onclick="toggleCat('${c.id}')" class="text-rose-400 font-bold text-xs p-2">ลบ</button></div>`;
                 });
             }
         }
 
         async function addCat() {
             const name = document.getElementById('catName').value; if(!name) return;
-            const btn = document.getElementById('addBtn'); btn.disabled = true; btn.innerText = "⏳...";
+            const btn = document.getElementById('addBtn'); btn.disabled = true;
             await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'add_category', data: { name: name, type: document.getElementById('catType').value, parent: document.getElementById('catAcc').value, group: document.getElementById('catGroup').value } }) });
-            document.getElementById('catName').value = ''; btn.disabled = false; btn.innerText = "เพิ่มหมวดหมู่ตอนนี้"; load();
+            document.getElementById('catName').value = ''; btn.disabled = false; load();
         }
 
-        async function toggleCat(id) { if(!confirm('ยืนยันการลบหมวดหมู่?')) return; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'update_category_status', data: { id: id, status: 'Inactive' } }) }); load(); }
-
+        async function toggleCat(id) { if(!confirm('ลบหมวดหมู่นี้?')) return; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'update_category_status', data: { id: id, status: 'Inactive' } }) }); load(); }
+        
+        // ฟังก์ชันสั่งล้างข้อมูลรายการและรีเซ็ตเงินต้น
         async function clearData() {
-            if(!confirm('🚨 ยืนยันการล้างรายการทั้งหมดเพื่อเริ่มยอด 0 ใหม่ใช่หรือไม่?')) return;
+            if(!confirm('🚨 ยืนยันการล้างข้อมูลรายการและรีเซ็ตเงินต้นเป็น 0 ใช่หรือไม่?')) return;
             const btn = document.getElementById('clearBtn'); btn.disabled = true; btn.innerText = "⌛ กำลังล้างข้อมูล...";
             try {
                 const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'clear_transactions' }) });
                 const result = await res.json();
-                if(result.status === 'success') { alert('✅ ล้างข้อมูลเรียบร้อย!'); window.location.href = 'dashboard.html'; }
-            } catch (e) { alert('❌ ล้มเหลว'); btn.disabled = false; btn.innerText = "🗑️ ล้างข้อมูลรายการทั้งหมด"; }
+                if(result.status === 'success') { alert('✅ ล้างข้อมูลและรีเซ็ตเงินต้นเรียบร้อย!'); window.location.href = 'dashboard.html'; }
+            } catch (e) { alert('❌ ล้มเหลว'); btn.disabled = false; btn.innerText = "ล้างข้อมูลรายการทั้งหมด"; }
         }
-        
+
         window.onload = () => { updateGroupOptions(); load(); };
     </script>
 </body>
