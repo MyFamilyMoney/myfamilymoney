@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💬 แชทครอบครัว - MyFamily Money</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap'); body { font-family: 'Kanit', sans-serif; }</style>
+</head>
+<body class="bg-slate-50 flex flex-col h-screen overflow-hidden">
+    <div class="bg-white p-4 shadow-sm flex items-center justify-between border-b">
+        <div class="flex items-center gap-3">
+            <button onclick="window.location.href='dashboard.html'" class="p-2 text-slate-400 bg-slate-50 rounded-full active:scale-90 transition">❮</button>
+            <h1 class="font-bold text-slate-800 text-lg">💬 แชทครอบครัว</h1>
+        </div>
+        <button onclick="loadMsgs()" class="text-xs text-indigo-500 font-bold uppercase">รีเฟรช</button>
+    </div>
+
+    <div id="chatBox" class="flex-1 overflow-y-auto p-4 space-y-4 flex flex-col">
+        </div>
+
+    <div class="bg-white p-4 pb-8 border-t flex gap-2 shadow-2xl">
+        <input type="text" id="msgInp" placeholder="พิมพ์ข้อความที่นี่..." class="flex-1 bg-slate-50 rounded-[1.5rem] px-5 py-3 outline-none border border-slate-100 focus:border-indigo-300 transition-all">
+        <button onclick="sendMsg()" id="sendBtn" class="bg-indigo-600 text-white p-3.5 rounded-full shadow-lg active:scale-90 transition-all">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+        </button>
+    </div>
+
+    <script>
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwboo1TWNpl6fEr13YMgwfy8te9j4H5MW03iLu-0qXdUHmESaoAKlqFsUFx0DKe3FSf/exec"; // ⚠️ ตรวจสอบ URL ของคุณ
+        const user = JSON.parse(localStorage.getItem('userData'));
+
+        async function loadMsgs() {
+            try {
+                const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_messages' }) });
+                const data = await res.json();
+                if(data.status === 'success') {
+                    const box = document.getElementById('chatBox');
+                    const lastHeight = box.scrollHeight;
+                    box.innerHTML = '';
+                    data.messages.forEach(m => {
+                        const isMe = m.sender === user.userId;
+                        box.innerHTML += `
+                            <div class="${isMe ? 'self-end' : 'self-start'} max-w-[85%] flex flex-col ${isMe ? 'items-end' : 'items-start'}">
+                                <div class="${isMe ? 'bg-indigo-600 text-white rounded-l-[1.5rem] rounded-tr-[1.5rem]' : 'bg-white text-slate-700 shadow-sm border border-slate-100 rounded-r-[1.5rem] rounded-tl-[1.5rem]'} px-4 py-2.5">
+                                    <p class="text-sm leading-relaxed">${m.text}</p>
+                                </div>
+                                <span class="text-[9px] text-slate-300 mt-1 px-2 font-medium">${m.time}</span>
+                            </div>`;
+                    });
+                    // เลื่อนลงล่างสุดเฉพาะเมื่อมีข้อความใหม่
+                    if(box.scrollHeight > lastHeight) box.scrollTop = box.scrollHeight;
+                }
+            } catch (e) {}
+        }
+
+        async function sendMsg() {
+            const inp = document.getElementById('msgInp');
+            const btn = document.getElementById('sendBtn');
+            if(!inp.value.trim()) return;
+            
+            const msg = inp.value;
+            inp.value = '';
+            btn.disabled = true; btn.style.opacity = '0.5';
+
+            try {
+                await fetch(WEB_APP_URL, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ 
+                        action: 'send_message', 
+                        data: { senderId: user.userId, receiverId: user.userId === 'U-101' ? 'U-102' : 'U-101', message: msg } 
+                    }) 
+                });
+                await loadMsgs();
+            } catch (e) { alert("ส่งไม่สำเร็จ"); }
+            btn.disabled = false; btn.style.opacity = '1';
+        }
+
+        document.getElementById('msgInp').addEventListener('keypress', (e) => { if(e.key === 'Enter') sendMsg(); });
+        
+        // โหลดอัตโนมัติทุก 4 วินาที (กึ่ง Real-time)
+        setInterval(loadMsgs, 4000); 
+        window.onload = loadMsgs;
+    </script>
+</body>
+</html>
