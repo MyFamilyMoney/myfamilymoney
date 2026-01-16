@@ -4,82 +4,139 @@
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>💬 แชทครอบครัว - MyFamily Money</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap'); body { font-family: 'Kanit', sans-serif; }</style>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap');
+        body { font-family: 'Kanit', sans-serif; }
+        .chat-bubble { max-width: 85%; padding: 12px 16px; border-radius: 1.5rem; position: relative; }
+        .is-me { background-color: #059669; color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .is-other { background-color: white; color: #334155; align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    </style>
 </head>
-<body class="bg-slate-50 flex flex-col h-screen overflow-hidden">
-    <div class="bg-white p-4 shadow-sm flex items-center justify-between border-b">
+<body class="bg-slate-100 flex flex-col h-screen">
+    <div class="bg-white p-4 shadow-sm flex items-center justify-between">
         <div class="flex items-center gap-3">
-            <button onclick="window.location.href='dashboard.html'" class="p-2 text-slate-400 bg-slate-50 rounded-full active:scale-90 transition">❮</button>
+            <button onclick="window.location.href='dashboard.html'" class="p-2 text-slate-400">❮</button>
             <h1 class="font-bold text-slate-800 text-lg">💬 แชทครอบครัว</h1>
         </div>
-        <button onclick="loadMsgs()" class="text-xs text-indigo-500 font-bold uppercase">รีเฟรช</button>
+        <div id="status" class="text-[10px] text-emerald-500 font-bold uppercase tracking-widest">Online</div>
     </div>
 
     <div id="chatBox" class="flex-1 overflow-y-auto p-4 space-y-4 flex flex-col">
         </div>
 
-    <div class="bg-white p-4 pb-8 border-t flex gap-2 shadow-2xl">
-        <input type="text" id="msgInp" placeholder="พิมพ์ข้อความที่นี่..." class="flex-1 bg-slate-50 rounded-[1.5rem] px-5 py-3 outline-none border border-slate-100 focus:border-indigo-300 transition-all">
-        <button onclick="sendMsg()" id="sendBtn" class="bg-indigo-600 text-white p-3.5 rounded-full shadow-lg active:scale-90 transition-all">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+    <div id="mediaPreview" class="hidden bg-white p-4 border-t flex items-center justify-between">
+        <div id="previewContent"></div>
+        <button onclick="cancelMedia()" class="text-rose-500 font-bold text-xs px-3">ยกเลิก</button>
+    </div>
+
+    <div class="bg-white p-4 border-t flex items-end gap-2">
+        <label class="p-3 bg-slate-100 rounded-full cursor-pointer active:scale-90 transition">
+            <input type="file" id="mediaInp" class="hidden" accept="image/*,video/*" onchange="previewMedia(this)">
+            <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.587-1.587a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+        </label>
+        <textarea id="msgInp" rows="1" placeholder="พิมพ์ข้อความ..." class="flex-1 bg-slate-100 rounded-2xl px-4 py-3 outline-none resize-none text-sm"></textarea>
+        <button onclick="sendMsg()" id="sendBtn" class="bg-emerald-600 text-white p-3 rounded-full shadow-lg active:scale-90 transition-all">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
         </button>
     </div>
 
-    <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbznoPEf9m6Ih3RGk5E5f8B3cr9U0osbFGO4gWXsKjd6SLGmtHU8bVBOAlfL8gkKTcBm/exec"; // ⚠️ ตรวจสอบ URL ของคุณ
-        const user = JSON.parse(localStorage.getItem('userData'));
+    <audio id="notifSound" src="https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3" preload="auto"></audio>
 
-        async function loadMsgs() {
+    <script>
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx9kCVDsSXABbxodo2us4ZRbU08SHNwhU-n4lw7EhMK3Jlhk7y5FCr4gANcou6eTy6v/exec";
+        const user = JSON.parse(localStorage.getItem('userData'));
+        let lastMsgId = localStorage.getItem('lastMsgId') || "";
+        let mediaData = { file: null, type: 'text', mime: '' };
+
+        async function loadMsgs(isFirst = false) {
             try {
                 const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_messages' }) });
                 const data = await res.json();
                 if(data.status === 'success') {
                     const box = document.getElementById('chatBox');
-                    const lastHeight = box.scrollHeight;
                     box.innerHTML = '';
+                    let latestId = "";
+                    
                     data.messages.forEach(m => {
+                        latestId = m.id;
                         const isMe = m.sender === user.userId;
+                        let content = `<p class="text-sm">${m.text}</p>`;
+                        
+                        if(m.type === 'image') content = `<img src="${m.media}" class="rounded-lg max-h-60 w-full object-cover mb-2 pointer-events-auto" onclick="window.open('${m.media}')">` + content;
+                        if(m.type === 'video') content = `<video src="${m.media}" controls class="rounded-lg max-h-60 w-full mb-2"></video>` + content;
+
                         box.innerHTML += `
-                            <div class="${isMe ? 'self-end' : 'self-start'} max-w-[85%] flex flex-col ${isMe ? 'items-end' : 'items-start'}">
-                                <div class="${isMe ? 'bg-indigo-600 text-white rounded-l-[1.5rem] rounded-tr-[1.5rem]' : 'bg-white text-slate-700 shadow-sm border border-slate-100 rounded-r-[1.5rem] rounded-tl-[1.5rem]'} px-4 py-2.5">
-                                    <p class="text-sm leading-relaxed">${m.text}</p>
-                                </div>
-                                <span class="text-[9px] text-slate-300 mt-1 px-2 font-medium">${m.time}</span>
+                            <div class="chat-bubble ${isMe ? 'is-me' : 'is-other'}">
+                                ${content}
+                                <span class="text-[8px] opacity-60 block mt-1 ${isMe ? 'text-right' : 'text-left'}">${m.time}</span>
                             </div>`;
                     });
-                    // เลื่อนลงล่างสุดเฉพาะเมื่อมีข้อความใหม่
-                    if(box.scrollHeight > lastHeight) box.scrollTop = box.scrollHeight;
+
+                    // เล่นเสียงถ้ามีข้อความใหม่จากอีกฝั่ง
+                    if(!isFirst && latestId !== lastMsgId && data.messages[data.messages.length-1].sender !== user.userId) {
+                        document.getElementById('notifSound').play().catch(()=>{});
+                    }
+                    
+                    if(latestId !== lastMsgId) {
+                        lastMsgId = latestId;
+                        localStorage.setItem('lastMsgId', latestId);
+                        box.scrollTop = box.scrollHeight;
+                    }
                 }
             } catch (e) {}
         }
 
-        async function sendMsg() {
-            const inp = document.getElementById('msgInp');
-            const btn = document.getElementById('sendBtn');
-            if(!inp.value.trim()) return;
-            
-            const msg = inp.value;
-            inp.value = '';
-            btn.disabled = true; btn.style.opacity = '0.5';
-
-            try {
-                await fetch(WEB_APP_URL, { 
-                    method: 'POST', 
-                    body: JSON.stringify({ 
-                        action: 'send_message', 
-                        data: { senderId: user.userId, receiverId: user.userId === 'U-101' ? 'U-102' : 'U-101', message: msg } 
-                    }) 
-                });
-                await loadMsgs();
-            } catch (e) { alert("ส่งไม่สำเร็จ"); }
-            btn.disabled = false; btn.style.opacity = '1';
+        function previewMedia(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                const reader = new FileReader();
+                mediaData.type = file.type.startsWith('image') ? 'image' : 'video';
+                mediaData.mime = file.type;
+                
+                reader.onload = (e) => {
+                    mediaData.file = e.target.result;
+                    document.getElementById('mediaPreview').classList.remove('hidden');
+                    document.getElementById('previewContent').innerHTML = mediaData.type === 'image' 
+                        ? `<img src="${mediaData.file}" class="h-16 w-16 rounded object-cover border">`
+                        : `<div class="bg-slate-100 h-16 w-16 rounded flex items-center justify-center text-xs">🎥 Video</div>`;
+                };
+                reader.readAsDataURL(file);
+            }
         }
 
-        document.getElementById('msgInp').addEventListener('keypress', (e) => { if(e.key === 'Enter') sendMsg(); });
-        
-        // โหลดอัตโนมัติทุก 4 วินาที (กึ่ง Real-time)
-        setInterval(loadMsgs, 4000); 
-        window.onload = loadMsgs;
+        function cancelMedia() {
+            mediaData = { file: null, type: 'text', mime: '' };
+            document.getElementById('mediaPreview').classList.add('hidden');
+            document.getElementById('mediaInp').value = '';
+        }
+
+        async function sendMsg() {
+            const inp = document.getElementById('msgInp');
+            if(!inp.value && !mediaData.file) return;
+            
+            const btn = document.getElementById('sendBtn');
+            const originalInp = inp.value;
+            btn.disabled = true; btn.style.opacity = "0.5";
+            
+            const payload = {
+                senderId: user.userId,
+                receiverId: user.userId === 'U-101' ? 'U-102' : 'U-101',
+                message: inp.value,
+                mediaFile: mediaData.file,
+                mediaType: mediaData.type,
+                mimeType: mediaData.mime
+            };
+
+            inp.value = ''; cancelMedia();
+            try {
+                await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'send_message', data: payload }) });
+                loadMsgs();
+            } catch (e) { alert("ส่งไม่สำเร็จ"); inp.value = originalInp; }
+            btn.disabled = false; btn.style.opacity = "1";
+        }
+
+        setInterval(() => loadMsgs(false), 4000);
+        window.onload = () => loadMsgs(true);
     </script>
 </body>
 </html>
