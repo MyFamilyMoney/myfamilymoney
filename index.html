@@ -6,27 +6,57 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;700;900&display=swap'); body { font-family: 'Kanit', sans-serif; }</style>
 </head>
-<body class="bg-gradient-to-br from-green-500 to-emerald-700 min-h-screen flex items-center justify-center p-6">
+<body class="bg-gradient-to-br from-green-600 to-emerald-800 min-h-screen flex items-center justify-center p-6">
     <div class="bg-white/95 p-10 rounded-[3rem] shadow-2xl w-full max-w-md text-center border-t-8 border-white">
-        <div class="mb-10"><h1 class="text-4xl font-black text-green-800">คลังเงินครอบครัว</h1><p class="text-green-600 text-sm mt-2 font-bold uppercase tracking-widest">Secure Login System</p></div>
+        <div class="mb-10">
+            <h1 class="text-4xl font-black text-green-800">คลังเงินครอบครัว</h1>
+            <p class="text-green-600 text-sm mt-2 font-bold uppercase tracking-widest">SECURE LOGIN SYSTEM</p>
+        </div>
         <form id="loginForm" class="space-y-5 text-left">
-            <div class="space-y-1"><label class="text-[10px] font-bold text-gray-400 ml-4 uppercase">Username</label><input type="email" id="email" placeholder="อีเมลของคุณ" required class="w-full p-5 border-2 border-gray-100 rounded-2xl bg-gray-50 outline-none focus:border-green-400 focus:bg-white transition-all"></div>
-            <div class="space-y-1"><label class="text-[10px] font-bold text-gray-400 ml-4 uppercase">Password</label><input type="password" id="password" placeholder="รหัสผ่าน" required class="w-full p-5 border-2 border-gray-100 rounded-2xl bg-gray-50 outline-none focus:border-green-400 focus:bg-white transition-all"></div>
+            <div class="space-y-1">
+                <label class="text-[10px] font-bold text-gray-400 ml-4 uppercase">Username</label>
+                <input type="email" id="email" placeholder="อีเมลของคุณ" required class="w-full p-5 border-2 border-gray-100 rounded-2xl bg-gray-50 outline-none focus:border-green-400 focus:bg-white transition-all">
+            </div>
+            <div class="space-y-1">
+                <label class="text-[10px] font-bold text-gray-400 ml-4 uppercase">Password</label>
+                <input type="password" id="password" placeholder="รหัสผ่าน" required class="w-full p-5 border-2 border-gray-100 rounded-2xl bg-gray-50 outline-none focus:border-green-400 focus:bg-white transition-all">
+            </div>
             <button type="submit" id="btn" class="w-full bg-green-600 hover:bg-green-700 text-white py-5 rounded-2xl font-black text-xl shadow-lg active:scale-95 transition-all">เข้าสู่ระบบ</button>
         </form>
     </div>
+
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzzMZZqTIhNaGA4RDdaPyq7NnJh5NLdDzJHwkbUemc_QowG-zK7sDpJcHAI5Kqi2LHf/exec
+        // ⚠️ สำคัญ: นำลิงก์จาก New Deployment ล่าสุดมาใส่ที่นี่ครับ
+        const WEB_APP_URL = "";
+
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault(); const btn = document.getElementById('btn'); btn.disabled = true; btn.innerText = "กำลังตรวจสอบ...";
+            e.preventDefault();
+            const btn = document.getElementById('btn');
+            btn.disabled = true; btn.innerText = "⌛ กำลังตรวจสอบ...";
+            
+            const payload = {
+                action: 'login',
+                data: {
+                    email: document.getElementById('email').value,
+                    password: document.getElementById('password').value
+                }
+            };
+
             try {
-                const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'login', data: { email: document.getElementById('email').value, password: document.getElementById('password').value } }) });
+                const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
                 const result = await res.json();
-                if (result.status === 'success') { localStorage.setItem('userData', JSON.stringify(result.user)); window.location.href = 'dashboard.html'; } 
-                else { alert(result.message || "ข้อมูลไม่ถูกต้อง"); btn.disabled = false; btn.innerText = "เข้าสู่ระบบ"; }
-            } catch (e) { alert("เชื่อมต่อระบบไม่สำเร็จ"); btn.disabled = false; btn.innerText = "เข้าสู่ระบบ"; }
+                if (result.status === 'success') {
+                    localStorage.setItem('userData', JSON.stringify(result.user));
+                    window.location.href = 'dashboard.html';
+                } else {
+                    alert(result.message || "❌ ข้อมูลไม่ถูกต้อง");
+                    btn.disabled = false; btn.innerText = "เข้าสู่ระบบ";
+                }
+            } catch (e) {
+                alert("⚠️ เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ กรุณาตรวจสอบลิงก์ WEB_APP_URL");
+                btn.disabled = false; btn.innerText = "เข้าสู่ระบบ";
+            }
         });
     </script>
 </body>
 </html>
- 
