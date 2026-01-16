@@ -2,26 +2,72 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚙️ จัดการหมวดหมู่</title>
+    <title>⚙️ ตั้งค่าหมวดหมู่ - MyFamily Money</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>body { font-family: 'Kanit', sans-serif; }</style>
+    <style>@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap'); body { font-family: 'Kanit', sans-serif; }</style>
 </head>
-<body class="bg-gray-50 min-h-screen p-4 pb-20 text-slate-800">
+<body class="bg-slate-50 min-h-screen p-4">
     <div class="max-w-md mx-auto space-y-4">
-        <div class="bg-white p-6 rounded-[2rem] shadow-sm border-t-4 border-blue-500 flex justify-between items-center"><h2 class="text-xl font-black">⚙️ ตั้งค่าหมวดหมู่</h2><button onclick="window.location.href='dashboard.html'" class="text-xs text-blue-500 font-bold">กลับ</button></div>
-        <div class="bg-white p-6 rounded-[2.5rem] shadow-xl space-y-3">
-            <p class="text-[10px] font-bold text-gray-400 mb-4 uppercase text-center tracking-widest">➕ เพิ่มรายการใหม่</p>
-            <div class="grid grid-cols-2 gap-2"><select id="accType" class="p-3 border rounded-xl bg-gray-50 text-xs font-bold outline-none"><option value="Circular">💳 เงินหมุนเวียน</option><option value="Savings">💰 เงินเก็บ/ออม</option></select><select id="catType" class="p-3 border rounded-xl bg-gray-50 text-xs font-bold outline-none"><option value="Income">🔺 รายรับ</option><option value="Expense">🔻 รายจ่าย</option></select></div>
-            <input type="text" id="catParent" placeholder="กลุ่มหลัก (เช่น อาหาร)" class="w-full p-4 border rounded-2xl bg-gray-50 outline-none"><input type="text" id="catName" placeholder="รายการย่อย (เช่น มื้อเที่ยง)" class="w-full p-4 border rounded-2xl bg-gray-50 outline-none">
-            <button onclick="addCat()" id="addBtn" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg active:scale-95 transition">เพิ่มรายการ</button>
+        <div class="flex items-center gap-3 mb-6">
+            <button onclick="window.location.href='dashboard.html'" class="p-2 bg-white rounded-full shadow-sm text-slate-400">❮</button>
+            <h1 class="text-xl font-bold">⚙️ จัดการหมวดหมู่</h1>
         </div>
-        <div id="catList" class="space-y-2 pb-10"></div>
+
+        <div class="bg-white p-6 rounded-[2.5rem] shadow-sm space-y-4 border border-slate-100">
+            <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-2">ระบุชื่อหมวดหมู่</label>
+            <input type="text" id="catName" placeholder="เช่น ค่าข้าว, ออมเพื่อลงทุน" class="w-full p-4 bg-slate-50 rounded-3xl border-none outline-none font-medium"></div>
+
+            <div class="grid grid-cols-2 gap-2">
+                <div><label class="text-[10px] font-bold text-slate-400 ml-2">ถังเงิน (Account)</label>
+                <select id="catAcc" class="w-full p-3 bg-slate-50 rounded-2xl border-none outline-none text-sm">
+                    <option value="Circular">เงินหมุนเวียน</option>
+                    <option value="Savings">เงินเก็บออม</option>
+                </select></div>
+                <div><label class="text-[10px] font-bold text-slate-400 ml-2">ประเภท (Type)</label>
+                <select id="catType" class="w-full p-3 bg-slate-50 rounded-2xl border-none outline-none text-sm">
+                    <option value="Expense">รายจ่าย</option>
+                    <option value="Income">รายรับ</option>
+                </select></div>
+            </div>
+
+            <button onclick="addCat()" id="addBtn" class="w-full bg-blue-600 text-white py-4 rounded-3xl font-bold shadow-lg shadow-blue-100 active:scale-95 transition-all">เพิ่มหมวดหมู่ตอนนี้</button>
+        </div>
+
+        <div id="catList" class="space-y-2">
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest ml-4 mt-6">หมวดหมู่ทั้งหมด</h3>
+            </div>
     </div>
+
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwLWvfg86IeiMxjcGEyb4BeDyCgpvRJW0rP3rHejeZa_BCN5k9qleV1lcwz-CVQ2lWw/exec";
-        async function load() { const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_categories' }) }); const data = await res.json(); if (data.status === 'success') { document.getElementById('catList').innerHTML = data.categories.reverse().map(c => `<div class="bg-white p-4 rounded-2xl shadow-sm flex justify-between items-center border-l-4 ${c.type === 'Income' ? 'border-green-400' : 'border-red-400'}"><div><p class="text-[9px] text-gray-400 font-bold">${c.parent}</p><p class="text-sm font-black text-gray-800">${c.name}</p></div><button onclick="delCat('${c.id}')" class="text-red-500 font-bold">🗑️</button></div>`).join(''); } }
-        async function addCat() { const btn = document.getElementById('addBtn'); btn.disabled=true; btn.innerText="⏳..."; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'add_category', data: { name: document.getElementById('catName').value, type: document.getElementById('catType').value, parent: document.getElementById('accType').value === 'Savings' ? 'เงินเก็บ' : document.getElementById('catParent').value } }) }); document.getElementById('catName').value=''; btn.disabled=false; btn.innerText="เพิ่มรายการ"; load(); }
-        async function delCat(id) { if(confirm('ลบรายการ?')) { await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'update_category_status', data: { id: id, status: 'Inactive' } }) }); load(); } }
+        
+        async function load() {
+            const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_categories' }) });
+            const data = await res.json();
+            if(data.status === 'success') {
+                const list = document.getElementById('catList');
+                list.innerHTML = '<h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest ml-4 mt-6">หมวดหมู่ทั้งหมด</h3>';
+                data.categories.forEach(c => {
+                    list.innerHTML += `<div class="bg-white p-4 rounded-2xl flex justify-between items-center shadow-sm border border-slate-50">
+                        <div><p class="font-bold text-slate-800">${c.name}</p><p class="text-[9px] text-slate-400 uppercase font-bold">${c.parent} | ${c.type}</p></div>
+                        <button onclick="toggleCat('${c.id}')" class="text-rose-400 font-bold text-xs p-2">ลบ</button>
+                    </div>`;
+                });
+            }
+        }
+
+        async function addCat() {
+            const name = document.getElementById('catName').value; if(!name) return;
+            const btn = document.getElementById('addBtn'); btn.disabled = true; btn.innerText = "⏳...";
+            await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'add_category', data: { name: name, type: document.getElementById('catType').value, parent: document.getElementById('catAcc').value } }) });
+            document.getElementById('catName').value = ''; btn.disabled = false; btn.innerText = "เพิ่มหมวดหมู่ตอนนี้"; load();
+        }
+
+        async function toggleCat(id) {
+            if(!confirm('ยืนยันการลบหมวดหมู่นี้?')) return;
+            await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'update_category_status', data: { id: id, status: 'Inactive' } }) });
+            load();
+        }
         window.onload = load;
     </script>
 </body>
