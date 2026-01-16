@@ -9,7 +9,6 @@
         body { font-family: 'Kanit', sans-serif; background-color: #f8fafc; -webkit-font-smoothing: antialiased; }
         .number-soft { font-weight: 500; letter-spacing: 0.05em; } 
         .shared-balance { font-weight: 600; letter-spacing: -0.01em; font-size: 2.3rem; }
-        /* สไตล์สำหรับจุดแดงแจ้งเตือน */
         .unread-badge { position: absolute; top: -2px; right: -2px; width: 10px; height: 10px; background-color: #ef4444; border-radius: 99px; border: 2px solid white; display: none; }
     </style>
 </head>
@@ -27,10 +26,7 @@
             <div class="flex flex-col gap-1.5">
                 <div class="flex gap-1.5">
                     <button onclick="exportReport()" id="exportBtn" class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full shadow-sm">📄 รายงาน</button>
-                    <div class="relative">
-                        <button onclick="window.location.href='chat.html'" class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-full shadow-sm">💬 แชท</button>
-                        <div id="chatBadge" class="unread-badge"></div>
-                    </div>
+                    <div class="relative"><button onclick="window.location.href='chat.html'" class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-full shadow-sm">💬 แชท</button><div id="chatBadge" class="unread-badge"></div></div>
                 </div>
                 <button onclick="window.location.href='manage_categories.html'" class="text-[10px] font-bold text-slate-500 bg-slate-100 px-4 py-1.5 rounded-full shadow-sm w-full">⚙️ ตั้งค่า</button>
             </div>
@@ -44,17 +40,21 @@
                 <div class="bg-emerald-100/30 rounded-lg"><p class="text-[8px] text-emerald-600 font-bold uppercase">💰 รวมออม</p><p id="saveTotal" class="text-[11px] font-bold text-emerald-700">0</p></div>
             </div>
             <div class="p-8 text-center bg-white"><p class="text-[10px] text-slate-400 font-medium uppercase tracking-[0.2em] mb-1">เงินหมุนเวียนกองกลางรวม</p><h1 id="sharedCircular" class="shared-balance text-slate-800">0 ฿</h1></div>
-            <div class="grid grid-cols-2 bg-slate-50/50 border-t border-slate-50"><div class="p-5 text-center"><p id="u1NameDisp" class="text-[10px] font-medium text-slate-400 uppercase truncate">...</p><p id="u1Bal" class="text-xl number-soft text-slate-700">0</p></div><div class="p-5 text-center border-l border-slate-100"><p id="u2NameDisp" class="text-[10px] font-medium text-slate-400 uppercase truncate">...</p><p id="u2Bal" class="text-xl number-soft text-slate-700">0</p></div></div>
+            <div class="grid grid-cols-2 bg-slate-50/50 border-t border-slate-50"><div class="p-5 text-center"><p id="u1NameDisp" class="text-[10px] font-medium text-slate-400 uppercase">...</p><p id="u1Bal" class="text-xl number-soft text-slate-700">0</p></div><div class="p-5 text-center border-l border-slate-100"><p id="u2NameDisp" class="text-[10px] font-medium text-slate-400 uppercase">...</p><p id="u2Bal" class="text-xl number-soft text-slate-700">0</p></div></div>
         </div>
 
         <div class="bg-gradient-to-br from-indigo-600 to-blue-700 p-6 rounded-[2.5rem] text-white shadow-xl flex justify-between items-center px-10"><p class="text-[11px] font-medium uppercase tracking-[0.2em] opacity-80">ส่วนตัวของคุณ</p><h1 id="myBalance" class="text-4xl number-soft">0.00 ฿</h1></div>
         
         <div class="grid grid-cols-2 gap-3">
-             <button onclick="window.location.href='add_transaction.html'" class="w-full bg-white border-2 border-indigo-600 text-indigo-600 py-4 rounded-[2rem] font-bold text-base shadow-sm">✚ บันทึกรายการ</button>
-             <button onclick="window.location.href='bucket_calculator.html'" class="w-full bg-white border-2 border-blue-400 text-blue-500 py-4 rounded-[2rem] font-bold text-base shadow-sm">🌀 วางแผนงบ</button>
+             <button onclick="window.location.href='add_transaction.html'" class="w-full bg-white border-2 border-indigo-600 text-indigo-600 py-4 rounded-[2rem] font-bold text-base shadow-sm active:scale-95 transition">✚ บันทึกรายการ</button>
+             <button onclick="window.location.href='bucket_calculator.html'" class="w-full bg-white border-2 border-blue-400 text-blue-500 py-4 rounded-[2rem] font-bold text-base shadow-sm active:scale-95 transition">🌀 วางแผนงบ</button>
         </div>
 
-        <div class="pt-4 text-center"><h3 class="font-medium text-slate-400 text-[10px] uppercase tracking-[0.3em] mb-4">ความเคลื่อนไหวล่าสุด</h3><div id="logs" class="grid grid-cols-2 gap-3"></div></div>
+        <div class="pt-4">
+            <h3 class="font-medium text-slate-400 text-[10px] uppercase tracking-[0.3em] mb-4 text-center">ความเคลื่อนไหวล่าสุด (15 รายการ)</h3>
+            <div id="logsContainer" class="space-y-2">
+                </div>
+        </div>
     </div>
 
     <script>
@@ -77,12 +77,25 @@
                     document.getElementById('u1NameDisp').innerText = data.user1.name; document.getElementById('u1Bal').innerText = data.user1.balance.toLocaleString();
                     document.getElementById('u2NameDisp').innerText = data.user2.name; document.getElementById('u2Bal').innerText = data.user2.balance.toLocaleString();
                     document.getElementById('myBalance').innerText = data.myBalance.toLocaleString() + " ฿";
+
+                    // ✅ แสดงผล Logs 15 แถว
+                    const container = document.getElementById('logsContainer');
+                    container.innerHTML = data.logs.map(log => `
+                        <div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 ${log.amount > 0 ? 'border-indigo-400' : 'border-rose-400'} flex justify-between items-center">
+                            <div class="flex-1 min-w-0 pr-3">
+                                <p class="text-[10px] font-bold text-slate-400 uppercase mb-0.5">${log.user} | ${log.date}</p>
+                                <p class="text-sm font-medium text-slate-700 truncate">${log.note}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-base font-bold ${log.amount > 0 ? 'text-indigo-600' : 'text-rose-500'}">${log.amount.toLocaleString()}</p>
+                            </div>
+                        </div>
+                    `).join('');
                 }
-                checkNewMessages(); // ตรวจสอบข้อความใหม่
+                checkNewMessages();
             } catch (e) { console.error(e); }
         }
 
-        // ฟังก์ชันตรวจสอบข้อความที่ยังไม่ได้อ่าน [New Logic]
         async function checkNewMessages() {
             try {
                 const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_messages' }) });
@@ -90,17 +103,13 @@
                 if(data.status === 'success' && data.messages.length > 0) {
                     const lastMsg = data.messages[data.messages.length - 1];
                     const lastReadId = localStorage.getItem('lastReadMsgId');
-                    // ถ้า ID ล่าสุดไม่ตรงกับที่เคยอ่าน และคนส่งไม่ใช่เรา ให้ขึ้นจุดแดง
-                    if(lastMsg.id !== lastReadId && lastMsg.sender !== user.userId) {
-                        document.getElementById('chatBadge').style.display = 'block';
-                    }
+                    if(lastMsg.id !== lastReadId && lastMsg.sender !== user.userId) { document.getElementById('chatBadge').style.display = 'block'; }
                 }
             } catch (e) {}
         }
 
         function logout() { localStorage.removeItem('userData'); window.location.href = 'index.html'; }
         window.onload = init;
-        setInterval(checkNewMessages, 10000); // เช็คทุก 10 วินาที
     </script>
 </body>
 </html>
