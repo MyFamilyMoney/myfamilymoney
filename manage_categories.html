@@ -19,7 +19,7 @@
             </div>
             <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-2">กลุ่มหมวดหมู่หลัก (Main Group)</label>
             <select id="catGroup" class="w-full p-4 bg-slate-50 rounded-3xl border-none outline-none font-medium appearance-none"></select></div>
-            <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-2">ระบุชื่อรายการย่อย</label>
+            <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-2">ชื่อรายการย่อย</label>
             <input type="text" id="catName" placeholder="เช่น เงินเดือน, ค่าน้ำไฟ" class="w-full p-4 bg-slate-50 rounded-3xl border-none font-medium outline-none"></div>
             <button onclick="addCat()" id="addBtn" class="w-full bg-blue-600 text-white py-4 rounded-3xl font-bold active:scale-95 transition-all shadow-lg">เพิ่มหมวดหมู่ตอนนี้</button>
         </div>
@@ -29,22 +29,23 @@
         <div class="pt-10 border-t border-slate-200 mt-10 text-center">
             <h3 class="text-[10px] font-bold text-rose-400 uppercase tracking-widest mb-4">พื้นที่อันตราย (DANGER ZONE)</h3>
             <button onclick="clearData()" id="clearBtn" class="w-full bg-white border-2 border-rose-100 text-rose-500 py-4 rounded-3xl font-bold active:scale-95 transition-all text-sm">🗑️ ล้างข้อมูลและเงินต้นทั้งหมดเป็น 0</button>
-            <p class="text-[8px] text-slate-400 mt-2 px-6">คำเตือน: ยอดเงินจะถูกรีเซ็ตเป็น 0 ฿ และประวัติจะหายไปทั้งหมด</p>
         </div>
     </div>
 
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx81rM_PBzEhCMORzZ9LYwUD64qH5zud5FGgse_CO4JLvYWGueYSo2uLVVAVJQql-Kj/exec";
         
-        // ✅ แก้ไข: กลุ่มหลักของรายรับเงินหมุนเวียนให้เหลือ 3 หัวข้อตามสั่งครับ
+        // ✅ แก้ไขเงื่อนไขให้แสดงเฉพาะ "รายได้, รายได้พิเศษ, งบต้นเดือน" ตามที่คุณสั่งครับ
         function updateGroupOptions() {
             const acc = document.getElementById('catAcc').value;
             const type = document.getElementById('catType').value;
             const group = document.getElementById('catGroup');
+            
             if(acc === 'Savings') {
                 group.innerHTML = '<option value="ลงทุน">🏆 ลงทุน</option><option value="สุขภาพ">🏥 สุขภาพ</option><option value="รางวัล">✈️ รางวัล</option>';
             } else {
                 if(type === 'Income') {
+                    // ล็อกตัวเลือกตามที่คุณระบุ: รายได้, รายได้พิเศษ, งบต้นเดือน
                     group.innerHTML = '<option value="รายได้">💰 รายได้</option><option value="รายได้พิเศษ">🧧 รายได้พิเศษ</option><option value="งบต้นเดือน">📈 งบต้นเดือน</option>';
                 } else {
                     group.innerHTML = '<option value="ค่าใช้จ่าย">💸 ค่าใช้จ่าย</option><option value="หนี้สิน">💳 หนี้สิน</option>';
@@ -59,7 +60,7 @@
                 const list = document.getElementById('catList');
                 list.innerHTML = '<h3 class="text-xs font-bold text-slate-400 uppercase ml-4 mt-6 tracking-widest text-center">หมวดหมู่ปัจจุบัน</h3>';
                 data.categories.forEach(c => {
-                    list.innerHTML += `<div class="bg-white p-4 rounded-2xl flex justify-between items-center shadow-sm border border-slate-50"><div><p class="font-bold text-slate-800">${c.name}</p><p class="text-[9px] text-slate-400 font-bold">${c.parent} > ${c.group} (${c.type})</p></div><button onclick="toggleCat('${c.id}')" class="text-rose-400 font-bold text-xs p-2">ลบ</button></div>`;
+                    list.innerHTML += `<div class="bg-white p-4 rounded-2xl flex justify-between items-center shadow-sm border border-slate-50"><div><p class="font-bold text-slate-800">${c.name}</p><p class="text-[9px] text-slate-400 font-bold uppercase">${c.parent} > ${c.group}</p></div><button onclick="toggleCat('${c.id}')" class="text-rose-400 font-bold text-xs p-2">ลบ</button></div>`;
                 });
             }
         }
@@ -71,19 +72,17 @@
             document.getElementById('catName').value = ''; btn.disabled = false; load();
         }
 
-        async function toggleCat(id) { if(!confirm('ลบหมวดหมู่นี้?')) return; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'update_category_status', data: { id: id, status: 'Inactive' } }) }); load(); }
-        
-        // ฟังก์ชันสั่งล้างข้อมูลรายการและรีเซ็ตเงินต้น
+        async function toggleCat(id) { if(!confirm('ลบหมวดหมู่?')) return; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'update_category_status', data: { id: id, status: 'Inactive' } }) }); load(); }
+
         async function clearData() {
-            if(!confirm('🚨 ยืนยันการล้างข้อมูลรายการและรีเซ็ตเงินต้นเป็น 0 ใช่หรือไม่?')) return;
+            if(!confirm('🚨 ยืนยันการล้างข้อมูลและยอด 5,000 ให้เป็น 0 ทั้งหมด?')) return;
             const btn = document.getElementById('clearBtn'); btn.disabled = true; btn.innerText = "⌛ กำลังล้างข้อมูล...";
             try {
                 const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'clear_transactions' }) });
-                const result = await res.json();
-                if(result.status === 'success') { alert('✅ ล้างข้อมูลและรีเซ็ตเงินต้นเรียบร้อย!'); window.location.href = 'dashboard.html'; }
-            } catch (e) { alert('❌ ล้มเหลว'); btn.disabled = false; btn.innerText = "ล้างข้อมูลรายการทั้งหมด"; }
+                if((await res.json()).status === 'success') { alert('✅ รีเซ็ตเป็น 0 ฿ เรียบร้อย!'); window.location.href = 'dashboard.html'; }
+            } catch (e) { alert('❌ ล้มเหลว'); btn.disabled = false; }
         }
-
+        
         window.onload = () => { updateGroupOptions(); load(); };
     </script>
 </body>
