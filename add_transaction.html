@@ -19,8 +19,8 @@
         </div>
 
         <div class="bg-white p-2 rounded-[2rem] shadow-sm flex gap-2 border border-slate-50">
-            <button id="btnCirc" onclick="selectAcc('Circular')" class="flex-1 py-4 rounded-[1.6rem] font-bold text-sm transition-all border btn-active">🔄 เงินหมุนเวียน</button>
-            <button id="btnSave" onclick="selectAcc('Savings')" class="flex-1 py-4 rounded-[1.6rem] font-bold text-sm transition-all border btn-inactive">💰 เงินเก็บออม</button>
+            <button id="btnCirc" onclick="selectAcc('Circular')" class="flex-1 py-4 rounded-[1.6rem] font-bold text-sm border btn-active">🔄 เงินหมุนเวียน</button>
+            <button id="btnSave" onclick="selectAcc('Savings')" class="flex-1 py-4 rounded-[1.6rem] font-bold text-sm border btn-inactive">💰 เงินเก็บออม</button>
         </div>
 
         <div class="grid grid-cols-2 gap-3">
@@ -42,27 +42,19 @@
                 <input type="number" id="amount" placeholder="0.00" class="w-full p-4 bg-slate-50 rounded-3xl border-none outline-none text-3xl font-bold text-slate-800">
             </div>
 
-            <div>
-                <label class="text-[10px] font-bold text-slate-400 uppercase ml-2 tracking-widest">บันทึกช่วยจำ</label>
-                <input type="text" id="note" placeholder="ระบุรายละเอียด..." class="w-full p-4 bg-slate-50 rounded-3xl border-none outline-none font-medium">
-            </div>
+            <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-2 tracking-widest">บันทึกช่วยจำ</label>
+            <input type="text" id="note" placeholder="ระบุรายละเอียด..." class="w-full p-4 bg-slate-50 rounded-3xl border-none outline-none font-medium"></div>
 
-            <div class="pt-2">
-                <label class="block w-full border-2 border-dashed border-slate-200 rounded-3xl p-4 text-center cursor-pointer hover:bg-slate-50 transition" id="imgPreview">
-                    <input type="file" id="imgInp" class="hidden" accept="image/*" onchange="handleImg(this)">
-                    <span class="text-2xl">📸</span><br>
-                    <span class="text-[10px] font-bold text-slate-400 uppercase">ถ่ายรูปหรือแนบใบเสร็จ</span>
-                </label>
-            </div>
+            <div class="pt-2"><label class="block w-full border-2 border-dashed border-slate-200 rounded-3xl p-4 text-center cursor-pointer hover:bg-slate-50 transition" id="imgPreview">
+                <input type="file" id="imgInp" class="hidden" accept="image/*" onchange="handleImg(this)"><span class="text-2xl">📸</span><br><span class="text-[10px] font-bold text-slate-400 uppercase">ถ่ายรูปหรือแนบใบเสร็จ</span>
+            </label></div>
 
             <button id="submitBtn" onclick="submitData()" class="w-full bg-slate-800 text-white py-5 rounded-[2rem] font-bold text-lg shadow-xl active:scale-95 transition-all">บันทึกข้อมูลตอนนี้</button>
         </div>
     </div>
 
     <script>
-        // ⚠️ สำคัญ: ต้องใส่ลิงก์ Web App URL ของคุณเองที่นี่เพื่อให้บันทึกได้
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwLWvfg86IeiMxjcGEyb4BeDyCgpvRJW0rP3rHejeZa_BCN5k9qleV1lcwz-CVQ2lWw/exec";
-        
         let currentAcc = 'Circular', currentType = 'Expense', allCats = [], imgBase64 = null;
 
         async function init() {
@@ -70,7 +62,7 @@
                 const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_categories' }) });
                 const data = await res.json();
                 if(data.status === 'success') { allCats = data.categories; filterCats(); }
-            } catch (e) { console.error("ไม่สามารถโหลดหมวดหมู่ได้"); }
+            } catch (e) { console.error("Error loading categories"); }
         }
 
         function filterCats() {
@@ -83,8 +75,8 @@
 
         function selectAcc(v) { 
             currentAcc = v; 
-            document.getElementById('btnCirc').className = v === 'Circular' ? "flex-1 py-4 rounded-[1.6rem] font-bold text-sm transition-all border btn-active" : "flex-1 py-4 rounded-[1.6rem] font-bold text-sm transition-all border btn-inactive";
-            document.getElementById('btnSave').className = v === 'Savings' ? "flex-1 py-4 rounded-[1.6rem] font-bold text-sm transition-all border btn-active" : "flex-1 py-4 rounded-[1.6rem] font-bold text-sm transition-all border btn-inactive";
+            document.getElementById('btnCirc').className = v === 'Circular' ? "flex-1 py-4 rounded-[1.6rem] font-bold text-sm border btn-active" : "flex-1 py-4 rounded-[1.6rem] font-bold text-sm border btn-inactive";
+            document.getElementById('btnSave').className = v === 'Savings' ? "flex-1 py-4 rounded-[1.6rem] font-bold text-sm border btn-active" : "flex-1 py-4 rounded-[1.6rem] font-bold text-sm border btn-inactive";
             filterCats(); 
         }
 
@@ -97,65 +89,27 @@
 
         function handleImg(i) { 
             if(i.files && i.files[0]) { 
-                const r = new FileReader(); 
-                r.onload = (e) => { 
+                const reader = new FileReader(); 
+                reader.onload = (e) => { 
                     imgBase64 = e.target.result; 
-                    document.getElementById('imgPreview').innerHTML = `<img src="${imgBase64}" class="h-20 mx-auto rounded-xl shadow-sm">`; 
+                    document.getElementById('imgPreview').innerHTML = `<img src="${imgBase64}" class="h-24 mx-auto rounded-xl shadow-md border-2 border-white">`; 
                 }; 
-                r.readAsDataURL(i.files[0]); 
+                reader.readAsDataURL(i.files[0]); 
             } 
         }
 
         async function submitData() {
             const amountVal = document.getElementById('amount').value;
             const catId = document.getElementById('catId').value;
-            
             if(!amountVal || !catId) { alert("กรุณาระบุจำนวนเงินและหมวดหมู่ด้วยครับ"); return; }
-            
             const user = JSON.parse(localStorage.getItem('userData'));
-            if(!user || !user.userId) { alert("กรุณาล็อกอินใหม่"); window.location.href = 'index.html'; return; }
-
-            const btn = document.getElementById('submitBtn'); 
-            btn.disabled = true; 
-            btn.innerText = "⌛ กำลังส่งข้อมูล...";
-
-            const payload = {
-                action: 'add_transaction',
-                data: {
-                    userId: user.userId,
-                    amount: currentType === 'Expense' ? -Math.abs(parseFloat(amountVal)) : Math.abs(parseFloat(amountVal)),
-                    catId: catId,
-                    note: document.getElementById('note').value || "",
-                    accType: currentAcc,
-                    imageFile: imgBase64
-                }
-            };
-
+            const btn = document.getElementById('submitBtn'); btn.disabled = true; btn.innerText = "⏳ กำลังส่งข้อมูล...";
             try {
-                // เพิ่ม Timeout เพื่อป้องกันการค้าง
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 วินาที
-
-                const res = await fetch(WEB_APP_URL, { 
-                    method: 'POST', 
-                    body: JSON.stringify(payload),
-                    signal: controller.signal
-                });
-                
+                const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'add_transaction', data: { userId: user.userId, amount: currentType==='Expense' ? -Math.abs(amountVal) : Math.abs(amountVal), catId: catId, note: document.getElementById('note').value, accType: currentAcc, imageFile: imgBase64 } }) });
                 const result = await res.json();
-                clearTimeout(timeoutId);
-
-                if(result.status === 'success') {
-                    alert("✅ บันทึกรายการสำเร็จ!");
-                    window.location.href = 'dashboard.html';
-                } else {
-                    alert("❌ เกิดข้อผิดพลาดจากระบบ: " + result.message);
-                    btn.disabled = false; btn.innerText = "บันทึกข้อมูลตอนนี้";
-                }
-            } catch (e) { 
-                alert("❌ การเชื่อมต่อล้มเหลว หรือรูปภาพอาจมีขนาดใหญ่เกินไป"); 
-                btn.disabled = false; btn.innerText = "บันทึกข้อมูลตอนนี้"; 
-            }
+                if(result.status === 'success') window.location.href = 'dashboard.html';
+                else { alert("❌ " + result.message); btn.disabled = false; btn.innerText = "บันทึกข้อมูลตอนนี้"; }
+            } catch (e) { alert("❌ การเชื่อมต่อล้มเหลว หรือรูปภาพอาจมีขนาดใหญ่เกินไป"); btn.disabled = false; btn.innerText = "บันทึกข้อมูลตอนนี้"; }
         }
         window.onload = init;
     </script>
