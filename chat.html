@@ -7,135 +7,111 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap');
         body { font-family: 'Kanit', sans-serif; }
-        .chat-bubble { max-width: 85%; padding: 12px 16px; border-radius: 1.5rem; position: relative; }
-        .is-me { background-color: #059669; color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
-        .is-other { background-color: white; color: #334155; align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .chat-bubble { max-width: 85%; padding: 12px 16px; border-radius: 1.5rem; position: relative; animation: fadeIn 0.3s ease; }
+        .is-me { background-color: #4f46e5; color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .is-other { background-color: white; color: #334155; align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="bg-slate-100 flex flex-col h-screen">
-    <div class="bg-white p-4 shadow-sm flex items-center justify-between">
+<body class="bg-slate-100 flex flex-col h-screen overflow-hidden">
+    <div class="bg-white p-4 shadow-sm flex items-center justify-between z-10">
         <div class="flex items-center gap-3">
             <button onclick="window.location.href='dashboard.html'" class="p-2 text-slate-400">❮</button>
             <h1 class="font-bold text-slate-800 text-lg">💬 แชทครอบครัว</h1>
         </div>
-        <div id="status" class="text-[10px] text-emerald-500 font-bold uppercase tracking-widest">Online</div>
+        <div class="flex items-center gap-1.5">
+            <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+            <span class="text-[10px] text-emerald-600 font-bold uppercase tracking-widest">ONLINE</span>
+        </div>
     </div>
 
     <div id="chatBox" class="flex-1 overflow-y-auto p-4 space-y-4 flex flex-col">
         </div>
 
-    <div id="mediaPreview" class="hidden bg-white p-4 border-t flex items-center justify-between">
-        <div id="previewContent"></div>
-        <button onclick="cancelMedia()" class="text-rose-500 font-bold text-xs px-3">ยกเลิก</button>
+    <div id="mediaPreview" class="hidden bg-white p-3 border-t flex items-center justify-between">
+        <div id="previewContent" class="flex items-center gap-3"></div>
+        <button onclick="cancelMedia()" class="text-rose-500 font-bold text-xs">ยกเลิก</button>
     </div>
 
-    <div class="bg-white p-4 border-t flex items-end gap-2">
-        <label class="p-3 bg-slate-100 rounded-full cursor-pointer active:scale-90 transition">
+    <div class="bg-white p-4 border-t flex items-end gap-2 pb-8">
+        <label class="p-3 bg-slate-50 rounded-full cursor-pointer active:scale-90 transition border border-slate-100">
             <input type="file" id="mediaInp" class="hidden" accept="image/*,video/*" onchange="previewMedia(this)">
-            <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.587-1.587a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+            <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.587-1.587a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
         </label>
-        <textarea id="msgInp" rows="1" placeholder="พิมพ์ข้อความ..." class="flex-1 bg-slate-100 rounded-2xl px-4 py-3 outline-none resize-none text-sm"></textarea>
-        <button onclick="sendMsg()" id="sendBtn" class="bg-emerald-600 text-white p-3 rounded-full shadow-lg active:scale-90 transition-all">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+        <textarea id="msgInp" rows="1" placeholder="พิมพ์ข้อความ..." class="flex-1 bg-slate-50 rounded-2xl px-4 py-3 outline-none border border-slate-100 text-sm"></textarea>
+        <button onclick="sendMsg()" id="sendBtn" class="bg-indigo-600 text-white p-3.5 rounded-full shadow-lg active:scale-90 transition-all">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
         </button>
     </div>
 
-    <audio id="notifSound" src="https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3" preload="auto"></audio>
+    <audio id="notifSound" src="https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3" preload="auto"></audio>
 
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx9kCVDsSXABbxodo2us4ZRbU08SHNwhU-n4lw7EhMK3Jlhk7y5FCr4gANcou6eTy6v/exec";
         const user = JSON.parse(localStorage.getItem('userData'));
-        let lastMsgId = localStorage.getItem('lastMsgId') || "";
+        let lastKnownMsgId = localStorage.getItem('lastReadMsgId') || "";
         let mediaData = { file: null, type: 'text', mime: '' };
 
         async function loadMsgs(isFirst = false) {
             try {
                 const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_messages' }) });
                 const data = await res.json();
-                if(data.status === 'success') {
+                if(data.status === 'success' && data.messages.length > 0) {
                     const box = document.getElementById('chatBox');
                     box.innerHTML = '';
-                    let latestId = "";
+                    const latestMsg = data.messages[data.messages.length - 1];
                     
                     data.messages.forEach(m => {
-                        latestId = m.id;
                         const isMe = m.sender === user.userId;
                         let content = `<p class="text-sm">${m.text}</p>`;
-                        
-                        if(m.type === 'image') content = `<img src="${m.media}" class="rounded-lg max-h-60 w-full object-cover mb-2 pointer-events-auto" onclick="window.open('${m.media}')">` + content;
+                        if(m.type === 'image') content = `<img src="${m.media}" class="rounded-lg max-h-60 w-full object-cover mb-2" onclick="window.open('${m.media}')">` + content;
                         if(m.type === 'video') content = `<video src="${m.media}" controls class="rounded-lg max-h-60 w-full mb-2"></video>` + content;
 
-                        box.innerHTML += `
-                            <div class="chat-bubble ${isMe ? 'is-me' : 'is-other'}">
-                                ${content}
-                                <span class="text-[8px] opacity-60 block mt-1 ${isMe ? 'text-right' : 'text-left'}">${m.time}</span>
-                            </div>`;
+                        box.innerHTML += `<div class="chat-bubble ${isMe ? 'is-me' : 'is-other'}">${content}<span class="text-[8px] opacity-60 block mt-1 ${isMe ? 'text-right' : 'text-left'}">${m.time}</span></div>`;
                     });
 
-                    // เล่นเสียงถ้ามีข้อความใหม่จากอีกฝั่ง
-                    if(!isFirst && latestId !== lastMsgId && data.messages[data.messages.length-1].sender !== user.userId) {
+                    // 🔉 เล่นเสียงเฉพาะถ้ามีข้อความใหม่จากคนอื่นเข้ามา
+                    if(!isFirst && latestMsg.id !== lastKnownMsgId && latestMsg.sender !== user.userId) {
                         document.getElementById('notifSound').play().catch(()=>{});
                     }
                     
-                    if(latestId !== lastMsgId) {
-                        lastMsgId = latestId;
-                        localStorage.setItem('lastMsgId', latestId);
-                        box.scrollTop = box.scrollHeight;
-                    }
+                    // บันทึกว่าอ่านถึงข้อความนี้แล้ว
+                    lastKnownMsgId = latestMsg.id;
+                    localStorage.setItem('lastReadMsgId', latestMsg.id);
+                    if(isFirst || latestMsg.id !== lastKnownMsgId) box.scrollTop = box.scrollHeight;
                 }
             } catch (e) {}
         }
 
         function previewMedia(input) {
             if (input.files && input.files[0]) {
-                const file = input.files[0];
                 const reader = new FileReader();
-                mediaData.type = file.type.startsWith('image') ? 'image' : 'video';
-                mediaData.mime = file.type;
-                
+                mediaData.type = input.files[0].type.startsWith('image') ? 'image' : 'video';
+                mediaData.mime = input.files[0].type;
                 reader.onload = (e) => {
                     mediaData.file = e.target.result;
                     document.getElementById('mediaPreview').classList.remove('hidden');
-                    document.getElementById('previewContent').innerHTML = mediaData.type === 'image' 
-                        ? `<img src="${mediaData.file}" class="h-16 w-16 rounded object-cover border">`
-                        : `<div class="bg-slate-100 h-16 w-16 rounded flex items-center justify-center text-xs">🎥 Video</div>`;
-                };
-                reader.readAsDataURL(file);
+                    document.getElementById('previewContent').innerHTML = `<span class="text-xs font-bold text-slate-400">เตรียมส่ง ${mediaData.type}...</span>`;
+                }; reader.readAsDataURL(input.files[0]);
             }
         }
-
-        function cancelMedia() {
-            mediaData = { file: null, type: 'text', mime: '' };
-            document.getElementById('mediaPreview').classList.add('hidden');
-            document.getElementById('mediaInp').value = '';
-        }
+        function cancelMedia() { mediaData = { file: null, type: 'text', mime: '' }; document.getElementById('mediaPreview').classList.add('hidden'); document.getElementById('mediaInp').value = ''; }
 
         async function sendMsg() {
             const inp = document.getElementById('msgInp');
             if(!inp.value && !mediaData.file) return;
-            
-            const btn = document.getElementById('sendBtn');
-            const originalInp = inp.value;
+            const msg = inp.value; inp.value = ''; const btn = document.getElementById('sendBtn');
             btn.disabled = true; btn.style.opacity = "0.5";
-            
-            const payload = {
-                senderId: user.userId,
-                receiverId: user.userId === 'U-101' ? 'U-102' : 'U-101',
-                message: inp.value,
-                mediaFile: mediaData.file,
-                mediaType: mediaData.type,
-                mimeType: mediaData.mime
-            };
-
-            inp.value = ''; cancelMedia();
+            const payload = { senderId: user.userId, receiverId: user.userId === 'U-101' ? 'U-102' : 'U-101', message: msg, mediaFile: mediaData.file, mediaType: mediaData.type, mimeType: mediaData.mime };
+            cancelMedia();
             try {
                 await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'send_message', data: payload }) });
                 loadMsgs();
-            } catch (e) { alert("ส่งไม่สำเร็จ"); inp.value = originalInp; }
+            } catch (e) { alert("ส่งไม่สำเร็จ"); }
             btn.disabled = false; btn.style.opacity = "1";
         }
 
-        setInterval(() => loadMsgs(false), 4000);
+        setInterval(() => loadMsgs(false), 4000); // อัปเดตทุก 4 วินาที
         window.onload = () => loadMsgs(true);
     </script>
 </body>
