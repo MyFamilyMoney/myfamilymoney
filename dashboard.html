@@ -9,7 +9,8 @@
         body { font-family: 'Kanit', sans-serif; background-color: #f8fafc; -webkit-font-smoothing: antialiased; }
         .number-soft { font-weight: 500; letter-spacing: 0.05em; } 
         .shared-balance { font-weight: 600; letter-spacing: -0.01em; font-size: 2.3rem; }
-        .modal-overlay { background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); }
+        /* สไตล์สำหรับจุดแดงแจ้งเตือน */
+        .unread-badge { position: absolute; top: -2px; right: -2px; width: 10px; height: 10px; background-color: #ef4444; border-radius: 99px; border: 2px solid white; display: none; }
     </style>
 </head>
 <body class="min-h-screen pb-10 text-slate-700">
@@ -24,12 +25,14 @@
                 <div><h2 id="userNameDisplay" class="font-semibold text-slate-800 text-base">...</h2><button id="savePicBtn" onclick="uploadProfile()" class="hidden mt-0.5 bg-emerald-500 text-white text-[9px] px-2 py-0.5 rounded-full font-medium">💾 บันทึกรูป</button><button onclick="logout()" class="text-[9px] font-bold text-slate-300 uppercase tracking-tighter">ออกจากระบบ</button></div>
             </div>
             <div class="flex flex-col gap-1.5">
-                <div class="flex gap-1">
-                    <button onclick="exportReport()" id="exportBtn" class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1.5 rounded-full shadow-sm">📄 รายงาน</button>
-                    <button onclick="window.location.href='chat.html'" class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1.5 rounded-full shadow-sm">💬 แชท</button>
-                    <button onclick="window.location.href='manage_categories.html'" class="text-[10px] font-bold text-slate-500 bg-slate-100 px-2.5 py-1.5 rounded-full shadow-sm">⚙️</button>
+                <div class="flex gap-1.5">
+                    <button onclick="exportReport()" id="exportBtn" class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full shadow-sm">📄 รายงาน</button>
+                    <div class="relative">
+                        <button onclick="window.location.href='chat.html'" class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-full shadow-sm">💬 แชท</button>
+                        <div id="chatBadge" class="unread-badge"></div>
+                    </div>
                 </div>
-                <button onclick="window.location.href='bucket_calculator.html'" class="text-[10px] font-bold text-blue-600 bg-blue-50 px-4 py-1.5 rounded-full shadow-sm w-full">🌀 วางแผนงบ</button>
+                <button onclick="window.location.href='manage_categories.html'" class="text-[10px] font-bold text-slate-500 bg-slate-100 px-4 py-1.5 rounded-full shadow-sm w-full">⚙️ ตั้งค่า</button>
             </div>
         </div>
 
@@ -44,26 +47,21 @@
             <div class="grid grid-cols-2 bg-slate-50/50 border-t border-slate-50"><div class="p-5 text-center"><p id="u1NameDisp" class="text-[10px] font-medium text-slate-400 uppercase truncate">...</p><p id="u1Bal" class="text-xl number-soft text-slate-700">0</p></div><div class="p-5 text-center border-l border-slate-100"><p id="u2NameDisp" class="text-[10px] font-medium text-slate-400 uppercase truncate">...</p><p id="u2Bal" class="text-xl number-soft text-slate-700">0</p></div></div>
         </div>
 
-        <div class="bg-gradient-to-br from-indigo-600 to-blue-700 p-6 rounded-[2.5rem] text-white shadow-xl flex justify-between items-center px-10"><p class="text-[11px] font-medium uppercase tracking-[0.2em] opacity-80">ส่วนตัวของคุณ</p><h1 id="myBalance" class="text-3xl number-soft">0.00 ฿</h1></div>
-        <button onclick="window.location.href='add_transaction.html'" class="w-full bg-white border-2 border-indigo-600 text-indigo-600 py-5 rounded-[2.2rem] font-bold text-lg shadow-md active:scale-95 transition-all">✚ บันทึกรายการใหม่</button>
-        <div class="pt-4 text-center"><h3 class="font-medium text-slate-400 text-[10px] uppercase tracking-[0.3em] mb-4">ความเคลื่อนไหวล่าสุด</h3><div class="grid grid-cols-2 gap-3"><div id="u1Logs" class="space-y-2"></div><div id="u2Logs" class="space-y-2"></div></div></div>
-    </div>
-
-    <div id="reportModal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-center hidden p-6">
-        <div class="bg-white w-full max-w-sm rounded-[2.5rem] p-8 text-center shadow-2xl">
-            <div class="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">📄</div>
-            <h3 class="text-xl font-bold text-slate-800 mb-2">สรุปรายงานเรียบร้อย!</h3>
-            <p class="text-sm text-slate-500 mb-8">ไฟล์ถูกบันทึกเข้าโฟลเดอร์ Reports_Exports แล้วครับ</p>
-            <div class="flex flex-col gap-3"><a id="viewReportBtn" href="#" target="_blank" class="w-full bg-emerald-600 text-white py-4 rounded-[1.5rem] font-bold shadow-lg">👀 เปิดดู / ดาวน์โหลด</a><button onclick="closeReportModal()" class="w-full text-slate-400 font-bold py-2 text-sm uppercase">ปิดหน้าต่างนี้</button></div>
+        <div class="bg-gradient-to-br from-indigo-600 to-blue-700 p-6 rounded-[2.5rem] text-white shadow-xl flex justify-between items-center px-10"><p class="text-[11px] font-medium uppercase tracking-[0.2em] opacity-80">ส่วนตัวของคุณ</p><h1 id="myBalance" class="text-4xl number-soft">0.00 ฿</h1></div>
+        
+        <div class="grid grid-cols-2 gap-3">
+             <button onclick="window.location.href='add_transaction.html'" class="w-full bg-white border-2 border-indigo-600 text-indigo-600 py-4 rounded-[2rem] font-bold text-base shadow-sm">✚ บันทึกรายการ</button>
+             <button onclick="window.location.href='bucket_calculator.html'" class="w-full bg-white border-2 border-blue-400 text-blue-500 py-4 rounded-[2rem] font-bold text-base shadow-sm">🌀 วางแผนงบ</button>
         </div>
+
+        <div class="pt-4 text-center"><h3 class="font-medium text-slate-400 text-[10px] uppercase tracking-[0.3em] mb-4">ความเคลื่อนไหวล่าสุด</h3><div id="logs" class="grid grid-cols-2 gap-3"></div></div>
     </div>
 
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbznoPEf9m6Ih3RGk5E5f8B3cr9U0osbFGO4gWXsKjd6SLGmtHU8bVBOAlfL8gkKTcBm/exec"; 
-        let tempImageData = null;
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx9kCVDsSXABbxodo2us4ZRbU08SHNwhU-n4lw7EhMK3Jlhk7y5FCr4gANcou6eTy6v/exec"; 
+        const user = JSON.parse(localStorage.getItem('userData'));
 
         async function init() {
-            const user = JSON.parse(localStorage.getItem('userData'));
             if (!user) { window.location.href = 'index.html'; return; }
             document.getElementById('userNameDisplay').innerText = user.name;
             try {
@@ -79,30 +77,30 @@
                     document.getElementById('u1NameDisp').innerText = data.user1.name; document.getElementById('u1Bal').innerText = data.user1.balance.toLocaleString();
                     document.getElementById('u2NameDisp').innerText = data.user2.name; document.getElementById('u2Bal').innerText = data.user2.balance.toLocaleString();
                     document.getElementById('myBalance').innerText = data.myBalance.toLocaleString() + " ฿";
-                    const renderLog = (log) => `<div class="bg-white p-3 rounded-2xl shadow-sm border-l-2 ${log.amount > 0 ? 'border-indigo-400' : 'border-rose-400'}"><p class="text-[10px] font-medium text-slate-700 truncate">${log.note}</p><div class="flex justify-between items-center mt-1"><span class="text-[8px] text-slate-400">${log.date}</span><span class="text-[10px] number-font ${log.amount > 0 ? 'text-indigo-600' : 'text-rose-500'}">${log.amount.toLocaleString()}</span></div></div>`;
-                    document.getElementById('u1Logs').innerHTML = data.user1.logs.map(renderLog).join(''); document.getElementById('u2Logs').innerHTML = data.user2.logs.map(renderLog).join('');
                 }
-            } catch (e) { alert("⚠️ เชื่อมต่อล้มเหลว"); }
+                checkNewMessages(); // ตรวจสอบข้อความใหม่
+            } catch (e) { console.error(e); }
         }
 
-        async function exportReport() {
-            const user = JSON.parse(localStorage.getItem('userData'));
-            const btn = document.getElementById('exportBtn'); btn.innerText = "⏳...";
+        // ฟังก์ชันตรวจสอบข้อความที่ยังไม่ได้อ่าน [New Logic]
+        async function checkNewMessages() {
             try {
-                const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'export_pdf', data: { userId: user.userId } }) });
-                const result = await res.json();
-                if (result.status === 'success') { document.getElementById('viewReportBtn').href = result.url; document.getElementById('reportModal').classList.remove('hidden'); }
-            } catch (e) { alert('❌ ล้มเหลว'); } btn.innerText = "📄 รายงาน";
+                const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_messages' }) });
+                const data = await res.json();
+                if(data.status === 'success' && data.messages.length > 0) {
+                    const lastMsg = data.messages[data.messages.length - 1];
+                    const lastReadId = localStorage.getItem('lastReadMsgId');
+                    // ถ้า ID ล่าสุดไม่ตรงกับที่เคยอ่าน และคนส่งไม่ใช่เรา ให้ขึ้นจุดแดง
+                    if(lastMsg.id !== lastReadId && lastMsg.sender !== user.userId) {
+                        document.getElementById('chatBadge').style.display = 'block';
+                    }
+                }
+            } catch (e) {}
         }
 
-        function closeReportModal() { document.getElementById('reportModal').classList.add('hidden'); }
-        function previewProfile(input) { if (input.files && input.files[0]) { const reader = new FileReader(); reader.onload = (e) => { tempImageData = e.target.result; document.getElementById('userImg').src = tempImageData; document.getElementById('savePicBtn').classList.remove('hidden'); }; reader.readAsDataURL(input.files[0]); } }
-        async function uploadProfile() {
-            const user = JSON.parse(localStorage.getItem('userData'));
-            try { const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'update_profile_pic', data: { userId: user.userId, imageFile: tempImageData } }) }); if ((await res.json()).status === 'success') { alert('✅ สำเร็จ'); document.getElementById('savePicBtn').classList.add('hidden'); } } catch (e) { alert('❌ ผิดพลาด'); }
-        }
         function logout() { localStorage.removeItem('userData'); window.location.href = 'index.html'; }
         window.onload = init;
+        setInterval(checkNewMessages, 10000); // เช็คทุก 10 วินาที
     </script>
 </body>
 </html>
