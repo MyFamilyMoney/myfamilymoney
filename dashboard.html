@@ -48,8 +48,8 @@
         <div class="bg-gradient-to-br from-indigo-600 to-blue-700 p-6 rounded-[2.5rem] text-white shadow-xl flex justify-between items-center px-10"><p class="text-[11px] font-medium uppercase tracking-[0.2em] opacity-80">ส่วนตัวของคุณ</p><h1 id="myBalance" class="text-4xl number-soft">0.00 ฿</h1></div>
         
         <div class="grid grid-cols-2 gap-3">
-             <button onclick="window.location.href='add_transaction.html'" class="w-full bg-white border-2 border-indigo-600 text-indigo-600 py-4 rounded-[2rem] font-bold text-base shadow-sm">✚ บันทึกรายการ</button>
-             <button onclick="window.location.href='bucket_calculator.html'" class="w-full bg-white border-2 border-blue-400 text-blue-500 py-4 rounded-[2rem] font-bold text-base shadow-sm">🌀 วางแผนงบ</button>
+             <button onclick="window.location.href='add_transaction.html'" class="w-full bg-white border-2 border-indigo-600 text-indigo-600 py-4 rounded-[2rem] font-bold text-base shadow-sm active:scale-95 transition">✚ บันทึกรายการ</button>
+             <button onclick="window.location.href='bucket_calculator.html'" class="w-full bg-white border-2 border-blue-400 text-blue-500 py-4 rounded-[2rem] font-bold text-base shadow-sm active:scale-95 transition">🌀 วางแผนงบ</button>
         </div>
 
         <div class="pt-4">
@@ -64,10 +64,10 @@
     <div id="reportModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-6">
         <div class="bg-white w-full max-w-sm rounded-[2.5rem] p-8 text-center shadow-2xl">
             <div class="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">📄</div>
-            <h3 class="text-xl font-bold text-slate-800 mb-2">รายงานพร้อมแล้ว!</h3>
-            <p class="text-sm text-slate-500 mb-8 leading-relaxed">ข้อมูลถูกสรุปแยกหมวดหมู่ย่อยเรียบร้อยครับ</p>
+            <h3 class="text-xl font-bold text-slate-800 mb-2">สรุปรายงานเรียบร้อย!</h3>
+            <p class="text-sm text-slate-500 mb-8 leading-relaxed">แยกหมวดหมู่ย่อยและยอดรายบุคคลพร้อมแล้วครับ</p>
             <div class="flex flex-col gap-3">
-                <a id="viewReportBtn" href="#" target="_blank" class="w-full bg-emerald-600 text-white py-4 rounded-[1.5rem] font-bold shadow-lg text-center">👀 เปิดดู / ดาวน์โหลด</a>
+                <a id="viewReportBtn" href="#" target="_blank" class="w-full bg-emerald-600 text-white py-4 rounded-[1.5rem] font-bold shadow-lg shadow-emerald-100 text-center active:scale-95 transition-all">👀 เปิดดู / ดาวน์โหลด</a>
                 <button onclick="closeReportModal()" class="w-full text-slate-400 font-bold py-2 text-sm uppercase tracking-widest">ปิดหน้าต่าง</button>
             </div>
         </div>
@@ -93,15 +93,7 @@
                     document.getElementById('u1NameDisp').innerText = data.user1.name; document.getElementById('u1Bal').innerText = data.user1.balance.toLocaleString();
                     document.getElementById('u2NameDisp').innerText = data.user2.name; document.getElementById('u2Bal').innerText = data.user2.balance.toLocaleString();
                     document.getElementById('myBalance').innerText = data.myBalance.toLocaleString() + " ฿";
-
-                    const createLogHTML = (log) => `
-                        <div class="bg-white p-3 rounded-2xl shadow-sm border-l-2 ${log.amount > 0 ? 'border-indigo-400' : 'border-rose-400'}">
-                            <p class="text-[8px] font-bold text-slate-300 uppercase">${log.date}</p>
-                            <p class="text-[10px] font-medium text-slate-700 truncate mb-1">${log.note}</p>
-                            <p class="text-[11px] font-bold ${log.amount > 0 ? 'text-indigo-600' : 'text-rose-500'}">${log.amount.toLocaleString()}</p>
-                        </div>`;
-
-                    // ✅ แสดงผลแยกคอลัมน์ซ้าย-ขวา
+                    const createLogHTML = (log) => `<div class="bg-white p-3 rounded-2xl shadow-sm border-l-2 ${log.amount > 0 ? 'border-indigo-400' : 'border-rose-400'}"><p class="text-[8px] font-bold text-slate-300 uppercase">${log.date}</p><p class="text-[10px] font-medium text-slate-700 truncate mb-1">${log.note}</p><p class="text-[11px] font-bold ${log.amount > 0 ? 'text-indigo-600' : 'text-rose-500'}">${log.amount.toLocaleString()}</p></div>`;
                     document.getElementById('u1LogsContainer').innerHTML = data.user1.logs.map(createLogHTML).join('');
                     document.getElementById('u2LogsContainer').innerHTML = data.user2.logs.map(createLogHTML).join('');
                 }
@@ -109,6 +101,7 @@
             } catch (e) {}
         }
 
+        // ✅ ฟังก์ชันเรียก Pop-up รายงาน
         async function exportReport() {
             const btn = document.getElementById('exportBtn'); btn.innerText = "⏳..."; btn.disabled = true;
             try {
