@@ -2,36 +2,150 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌀 จัดงบ</title>
-    <script src="https://cdn.tailwindcss.com"></script><script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>body { font-family: 'Kanit', sans-serif; }</style>
+    <title>🌀 วางแผนงบประมาณ - MyFamily Money</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;900&display=swap');
+        body { font-family: 'Kanit', sans-serif; background-color: #f8fafc; }
+        .planning-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .gradient-text { background: linear-gradient(to right, #4f46e5, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    </style>
 </head>
-<body class="bg-slate-50 min-h-screen p-4 pb-10 text-slate-800">
-    <div class="max-w-md mx-auto space-y-4">
-        <div class="bg-white p-8 rounded-[2.5rem] shadow-xl text-center border-t-8 border-blue-600"><h1 class="text-xl font-black">🌀 วางแผนงบประมาณ</h1><input type="number" id="incomeInput" oninput="runPlanning()" placeholder="รายได้รวม ฿" class="w-full mt-6 p-5 border-2 border-blue-50 rounded-3xl text-2xl font-black text-center outline-none bg-slate-50 shadow-inner"></div>
-        <div class="bg-white p-6 rounded-[2rem] shadow-md space-y-2 border-l-4 border-red-400"><h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">⭕ รายจ่ายคงที่</h3><div id="fixedDetails" class="space-y-1 text-sm"></div><div class="text-center bg-red-50 p-2 rounded-xl mt-2"><p class="text-xs font-black text-red-500">ต้องหักรวม: <span id="totalFixed">0 ฿</span></p></div></div>
-        <div id="c3Section" class="bg-white p-6 rounded-[2.5rem] shadow-xl hidden"><div class="text-center mb-6 text-blue-600"><p class="text-xs font-bold uppercase tracking-widest">เงินเหลือสำหรับออม</p><h2 id="balanceC3" class="text-4xl font-black">0.00</h2></div><div id="savingsDetails" class="space-y-3"></div><div class="mt-6"><canvas id="planningChart"></canvas></div></div>
-        <button onclick="window.location.href='dashboard.html'" class="w-full py-4 text-slate-400 text-sm font-bold active:scale-95 transition">กลับหน้าหลัก</button>
+<body class="min-h-screen p-4 pb-12 text-slate-800">
+    <div class="max-w-md mx-auto space-y-5">
+        <div class="bg-white p-8 rounded-[2.5rem] shadow-xl text-center border-t-8 border-indigo-600 relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-4 opacity-5 text-6xl">💰</div>
+            <h1 class="text-2xl font-black gradient-text">🌀 วางแผนงบประมาณ</h1>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">Income Planning System</p>
+            <input type="number" id="incomeInput" oninput="runPlanning()" placeholder="ใส่รายได้รวม ฿" class="w-full mt-8 p-6 border-2 border-indigo-50 rounded-[2rem] text-3xl font-black text-center outline-none bg-slate-50 shadow-inner focus:border-indigo-200 focus:bg-white transition-all">
+        </div>
+
+        <div class="bg-white p-6 rounded-[2.5rem] shadow-md space-y-3 border-l-8 border-rose-400">
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest flex justify-between items-center px-2">
+                <span>⭕ รายจ่ายประจำ (Fixed)</span>
+                <span class="text-[10px] text-rose-400">Circle 1 & 2</span>
+            </h3>
+            <div id="fixedDetails" class="space-y-1.5 text-sm px-2 max-h-60 overflow-y-auto">
+                </div>
+            <div class="text-center bg-rose-50 p-4 rounded-3xl mt-4 border border-rose-100">
+                <p class="text-[10px] font-bold text-rose-400 uppercase mb-1">รวมรายจ่ายที่ต้องหัก</p>
+                <p id="totalFixed" class="text-2xl font-black text-rose-600">0 ฿</p>
+            </div>
+        </div>
+
+        <div id="c3Section" class="hidden space-y-5 animate-fade-in">
+            <div class="bg-white p-8 rounded-[3rem] shadow-2xl border-t-8 border-emerald-500 relative overflow-hidden">
+                <div class="text-center mb-8">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em] mb-2">เงินคงเหลือสำหรับออม</p>
+                    <h2 id="balanceC3" class="text-5xl font-black text-slate-800">0.00</h2>
+                    <div class="w-24 h-1 bg-emerald-100 mx-auto mt-4 rounded-full"></div>
+                </div>
+
+                <div id="savingsDetails" class="space-y-3">
+                    </div>
+
+                <div class="mt-10 relative">
+                    <canvas id="planningChart" class="max-w-[200px] mx-auto"></canvas>
+                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <span class="text-[10px] font-bold text-slate-300 uppercase tracking-tighter">Savings Mix</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-indigo-50 p-4 rounded-3xl text-center border border-indigo-100">
+                <p class="text-[9px] text-indigo-400 font-bold uppercase leading-relaxed">หมายเหตุ: ระบบจัดสัดส่วนแบบ 40:30:30<br>เพื่อความมั่งคั่งอย่างสมดุล</p>
+            </div>
+        </div>
+
+        <button onclick="window.location.href='dashboard.html'" class="w-full py-5 text-slate-400 text-xs font-bold active:scale-95 transition uppercase tracking-[0.3em]">⬅ กลับสู่แผงควบคุม</button>
     </div>
+
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwkRheIvYk-SY0UQc9N4pP9hwYf5Vq3JQYq4PSOSW6HPnnKFzW-zZbqYFMExSsxnBHj/exec";
-        let config = {}; let chart;
+        let config = {}; 
+        let chart;
+
         async function init() {
-            const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_bucket_config' }) }); const data = await res.json();
-            if (data.status === 'success') { config = data.config; let h = ""; let t = 0; config.circle1.concat(config.circle2).forEach(i => { h += `<div class="flex justify-between"><span>${i.name}</span><span class="font-bold">${i.value.toLocaleString()}</span></div>`; t += i.value; }); document.getElementById('fixedDetails').innerHTML = h; document.getElementById('totalFixed').innerText = t.toLocaleString() + " ฿"; }
+            try {
+                const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_bucket_config' }) });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    config = data.config;
+                    let h = "";
+                    let t = 0;
+                    // รวมข้อมูลจาก Circle 1 และ 2
+                    config.circle1.concat(config.circle2).forEach(item => {
+                        h += `<div class="flex justify-between items-center py-1 border-b border-slate-50 last:border-0">
+                                <span class="text-slate-500 font-medium">${item.name}</span>
+                                <span class="font-bold text-slate-700">${item.value.toLocaleString()}</span>
+                              </div>`;
+                        t += item.value;
+                    });
+                    document.getElementById('fixedDetails').innerHTML = h;
+                    document.getElementById('totalFixed').innerText = t.toLocaleString() + " ฿";
+                }
+            } catch (e) { alert("เชื่อมต่อข้อมูลไม่สำเร็จ"); }
         }
+
         function runPlanning() {
-            const inc = parseFloat(document.getElementById('incomeInput').value) || 0; const fix = config.circle1.concat(config.circle2).reduce((a, c) => a + c.value, 0); const bal = Math.max(0, inc - fix);
+            const inc = parseFloat(document.getElementById('incomeInput').value) || 0;
+            const fix = config.circle1.concat(config.circle2).reduce((a, c) => a + c.value, 0);
+            const bal = Math.max(0, inc - fix);
+            
+            const section = document.getElementById('c3Section');
             if (bal > 0) {
-                document.getElementById('c3Section').classList.remove('hidden'); document.getElementById('balanceC3').innerText = bal.toLocaleString() + " ฿";
-                const inv = bal * config.circle3.C3_INVEST_PCT, hea = bal * config.circle3.C3_HEALTH_PCT, tra = bal * config.circle3.C3_TRAVEL_PCT;
-                document.getElementById('savingsDetails').innerHTML = `<div class="p-4 bg-yellow-50 rounded-2xl flex justify-between border-l-4 border-yellow-400"><span>🏆 ลงทุน (40%)</span><span class="font-black">${inv.toLocaleString()}</span></div><div class="p-4 bg-green-50 rounded-2xl flex justify-between border-l-4 border-green-400"><span>🏥 สุขภาพ (30%)</span><span class="font-black">${hea.toLocaleString()}</span></div><div class="p-4 bg-purple-50 rounded-2xl flex justify-between border-l-4 border-purple-400"><span>✈️ รางวัล (30%)</span><span class="font-black">${tra.toLocaleString()}</span></div>`;
-                updateChart([inv, hea, tra]);
-            } else { document.getElementById('c3Section').classList.add('hidden'); }
+                section.classList.remove('hidden');
+                document.getElementById('balanceC3').innerText = bal.toLocaleString() + " ฿";
+                
+                // คำนวณ 3 กองทุน (ลงทุน 40%, สุขภาพ 30%, รางวัล 30%)
+                const inv = bal * 0.40;
+                const hea = bal * 0.30;
+                const rew = bal * 0.30;
+                
+                document.getElementById('savingsDetails').innerHTML = `
+                    <div class="p-4 bg-amber-50 rounded-2xl flex justify-between border-l-4 border-amber-400 items-center">
+                        <div><p class="text-[9px] font-bold text-amber-500 uppercase tracking-widest">🏆 ลงทุน (40%)</p><p class="text-sm font-bold text-slate-700">Investment Fund</p></div>
+                        <span class="text-lg font-black text-amber-600">${inv.toLocaleString()}</span>
+                    </div>
+                    <div class="p-4 bg-emerald-50 rounded-2xl flex justify-between border-l-4 border-emerald-400 items-center">
+                        <div><p class="text-[9px] font-bold text-emerald-500 uppercase tracking-widest">🏥 สุขภาพ (30%)</p><p class="text-sm font-bold text-slate-700">Health Care</p></div>
+                        <span class="text-lg font-black text-emerald-600">${hea.toLocaleString()}</span>
+                    </div>
+                    <div class="p-4 bg-indigo-50 rounded-2xl flex justify-between border-l-4 border-indigo-400 items-center">
+                        <div><p class="text-[9px] font-bold text-indigo-500 uppercase tracking-widest">✈️ รางวัล (30%)</p><p class="text-sm font-bold text-slate-700">Reward & Travel</p></div>
+                        <span class="text-lg font-black text-indigo-600">${rew.toLocaleString()}</span>
+                    </div>
+                `;
+                updateChart([inv, hea, rew]);
+            } else {
+                section.classList.add('hidden');
+            }
         }
-        function updateChart(d) { const ctx = document.getElementById('planningChart').getContext('2d'); if (chart) chart.destroy(); chart = new Chart(ctx, { type: 'doughnut', data: { labels: ['ลงทุน', 'สุขภาพ', 'รางวัล'], datasets: [{ data: d, backgroundColor: ['#EAB308', '#22C55E', '#A855F7'], borderWidth: 0 }] }, options: { cutout: '75%', plugins: { legend: { position: 'bottom' } } } }); }
+
+        function updateChart(dataValues) {
+            const ctx = document.getElementById('planningChart').getContext('2d');
+            if (chart) chart.destroy();
+            chart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['ลงทุน', 'สุขภาพ', 'รางวัล'],
+                    datasets: [{
+                        data: dataValues,
+                        backgroundColor: ['#f59e0b', '#10b981', '#6366f1'],
+                        borderWidth: 0,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    cutout: '80%',
+                    plugins: { legend: { display: false } },
+                    animation: { animateScale: true }
+                }
+            });
+        }
+
         window.onload = init;
     </script>
 </body>
 </html>
-   
