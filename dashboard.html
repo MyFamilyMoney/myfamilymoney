@@ -26,28 +26,22 @@
         
         <div class="grid grid-cols-2 gap-3"><button onclick="window.location.href='add_transaction.html'" class="w-full bg-white border-2 border-indigo-600 text-indigo-600 py-4 rounded-[2rem] font-bold text-base shadow-sm active:scale-95 transition">✚ บันทึกรายการ</button><button onclick="window.location.href='bucket_calculator.html'" class="w-full bg-white border-2 border-blue-400 text-blue-500 py-4 rounded-[2rem] font-bold text-base shadow-sm active:scale-95 transition">🌀 วางแผนงบ</button></div>
 
-        <div class="pt-4">
-            <h3 class="font-medium text-slate-400 text-[10px] uppercase tracking-[0.3em] mb-4 text-center">ความเคลื่อนไหวล่าสุด (15 รายการต่อคน)</h3>
+        <div class="pt-4"><h3 class="font-medium text-slate-400 text-[10px] uppercase tracking-[0.3em] mb-4 text-center">ความเคลื่อนไหวล่าสุด (15 รายการต่อคน)</h3>
             <div class="grid grid-cols-2 gap-3 items-start">
-                <div>
-                    <p class="text-[10px] font-bold text-indigo-400 uppercase mb-2 ml-2 tracking-tighter">สมเจต เสมาทอง</p>
-                    <div id="u1LogsContainer" class="space-y-2"></div>
-                </div>
-                <div>
-                    <p class="text-[10px] font-bold text-rose-400 uppercase mb-2 ml-2 tracking-tighter">รัชนี เสมาทอง</p>
-                    <div id="u2LogsContainer" class="space-y-2"></div>
-                </div>
+                <div><p class="text-[10px] font-bold text-indigo-400 uppercase mb-2 ml-2 tracking-tighter">สมเจต เสมาทอง</p><div id="u1LogsContainer" class="space-y-2"></div></div>
+                <div><p class="text-[10px] font-bold text-rose-400 uppercase mb-2 ml-2 tracking-tighter">รัชนี เสมาทอง</p><div id="u2LogsContainer" class="space-y-2"></div></div>
             </div>
         </div>
     </div>
 
     <div id="reportModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-6">
-        <div class="bg-white w-full max-w-sm rounded-[2.5rem] p-8 text-center shadow-2xl">
+        <div class="bg-white w-full max-w-sm rounded-[2.5rem] p-8 text-center shadow-2xl border-t-8 border-emerald-500">
             <div class="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">📄</div>
-            <h3 class="text-xl font-bold text-slate-800 mb-2">สรุปรายงานเรียบร้อย!</h3>
-            <div class="flex flex-col gap-3 mt-8">
+            <h3 class="text-xl font-bold text-slate-800 mb-2">สร้างรายงานเรียบร้อย!</h3>
+            <p class="text-sm text-slate-500 mb-8 leading-relaxed">ไฟล์ PDF ถูกบันทึกลงในโฟลเดอร์เรียบร้อยแล้วครับ</p>
+            <div class="flex flex-col gap-3">
                 <a id="viewReportBtn" href="#" target="_blank" class="w-full bg-emerald-600 text-white py-4 rounded-[1.5rem] font-bold shadow-lg shadow-emerald-100 text-center active:scale-95 transition-all">👀 เปิดดู / ดาวน์โหลด</a>
-                <button onclick="closeReportModal()" class="w-full text-slate-400 font-bold py-2 text-sm uppercase tracking-widest">ปิดหน้าต่าง</button>
+                <button onclick="closeReportModal()" class="w-full text-slate-400 font-bold py-2 text-sm uppercase tracking-widest">ปิดหน้าต่างนี้</button>
             </div>
         </div>
     </div>
@@ -72,24 +66,23 @@
                     document.getElementById('u1NameDisp').innerText = data.user1.name; document.getElementById('u1Bal').innerText = data.user1.balance.toLocaleString();
                     document.getElementById('u2NameDisp').innerText = data.user2.name; document.getElementById('u2Bal').innerText = data.user2.balance.toLocaleString();
                     document.getElementById('myBalance').innerText = data.myBalance.toLocaleString() + " ฿";
-                    
                     const createLogHTML = (log) => `<div class="bg-white p-3 rounded-2xl shadow-sm border-l-2 ${log.amount > 0 ? 'border-indigo-400' : 'border-rose-400'}"><p class="text-[8px] font-bold text-slate-300 uppercase">${log.date}</p><p class="text-[10px] font-medium text-slate-700 truncate mb-1 leading-tight">${log.note}</p><p class="text-[11px] font-bold ${log.amount > 0 ? 'text-indigo-600' : 'text-rose-500'}">${log.amount.toLocaleString()}</p></div>`;
-                    
-                    // ✅ แสดงประวัติคนละ 15 รายการ
-                    document.getElementById('u1LogsContainer').innerHTML = data.user1.logs.map(createLogHTML).join('') || "<p class='text-[8px] text-center text-slate-300'>ยังไม่มีประวัติ</p>";
-                    document.getElementById('u2LogsContainer').innerHTML = data.user2.logs.map(createLogHTML).join('') || "<p class='text-[8px] text-center text-slate-300'>ยังไม่มีประวัติ</p>";
+                    document.getElementById('u1LogsContainer').innerHTML = data.user1.logs.map(createLogHTML).join('');
+                    document.getElementById('u2LogsContainer').innerHTML = data.user2.logs.map(createLogHTML).join('');
                 }
                 checkNewMessages();
             } catch (e) {}
         }
 
+        // ✅ กู้คืนฟังก์ชัน Pop-up
         async function exportReport() {
             const btn = document.getElementById('exportBtn'); btn.innerText = "⏳..."; btn.disabled = true;
             try {
                 const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'export_pdf', data: { userId: user.userId } }) });
                 const result = await res.json();
                 if (result.status === 'success') { document.getElementById('viewReportBtn').href = result.url; document.getElementById('reportModal').classList.remove('hidden'); }
-            } catch (e) { alert('ขัดข้อง'); }
+                else { alert('❌ ล้มเหลว: กรุณากด Run ฟังก์ชัน testDriveAccess ใน Apps Script'); }
+            } catch (e) { alert('❌ ขัดข้อง'); }
             btn.innerText = "📄 รายงาน"; btn.disabled = false;
         }
 
