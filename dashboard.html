@@ -8,35 +8,45 @@
 </head>
 <body class="min-h-screen pb-10 text-slate-700">
     <div class="max-w-md mx-auto p-4 space-y-4">
-        <div class="bg-gradient-to-r from-amber-400 to-orange-500 p-5 rounded-[2rem] text-white shadow-lg flex justify-between items-center px-8 border-b-4 border-orange-600">
+        
+        <div onclick="window.location.href='reservoir.html'" class="bg-gradient-to-r from-amber-400 to-orange-500 p-5 rounded-[2rem] text-white shadow-lg flex justify-between items-center px-8 border-b-4 border-orange-600 cursor-pointer active:scale-95 transition-all">
             <div><p class="text-[10px] font-bold uppercase tracking-widest opacity-80">📥 รายรับสะสม (รอจัดสรร)</p><h2 id="reservoirBal" class="text-3xl font-black">0 ฿</h2></div>
-            <button onclick="window.location.href='bucket_calculator.html'" class="bg-white/20 p-2 rounded-full active:scale-90 transition">🌀</button>
+            <div class="bg-white/20 p-2 rounded-full">📊</div>
         </div>
 
         <div class="flex justify-between items-center bg-white p-4 rounded-[2rem] shadow-sm border border-slate-50">
-            <div class="flex items-center gap-3"><div class="relative"><img id="userImg" src="https://ui-avatars.com/api/?name=User" class="w-14 h-14 rounded-full border-2 border-slate-100 object-cover"></div><div><h2 id="userNameDisplay" class="font-semibold text-slate-800 text-base">...</h2><button onclick="logout()" class="text-[9px] font-bold text-slate-300 uppercase">ออกจากระบบ</button></div></div>
-            <div class="flex flex-col gap-1.5"><div class="flex gap-1.5"><button onclick="exportReport()" id="exportBtn" class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full shadow-sm">📄 รายงาน</button><div class="relative"><button onclick="window.location.href='chat.html'" class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-full shadow-sm">💬 แชท</button><div id="chatBadge" class="unread-badge"></div></div></div><button onclick="window.location.href='manage_categories.html'" class="text-[10px] font-bold text-slate-500 bg-slate-100 px-4 py-1.5 rounded-full shadow-sm w-full">⚙️ ตั้งค่า</button></div>
+            <div class="flex items-center gap-3">
+                <div class="relative"><img id="userImg" src="https://ui-avatars.com/api/?name=User" class="w-14 h-14 rounded-full border-2 border-slate-100 object-cover"></div>
+                <div><h2 id="userNameDisplay" class="font-semibold text-slate-800 text-base">...</h2><button onclick="logout()" class="text-[9px] font-bold text-slate-300 uppercase">ออกจากระบบ</button></div>
+            </div>
+            <div class="flex flex-col gap-1.5">
+                <div class="flex gap-1.5"><button onclick="exportReport()" id="exportBtn" class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full shadow-sm">📄 รายงาน</button><div class="relative"><button onclick="window.location.href='chat.html'" class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-full shadow-sm">💬 แชท</button><div id="chatBadge" class="unread-badge"></div></div></div>
+                <button onclick="window.location.href='manage_categories.html'" class="text-[10px] font-bold text-slate-500 bg-slate-100 px-4 py-1.5 rounded-full shadow-sm w-full">⚙️ ตั้งค่า</button>
+            </div>
         </div>
 
         <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
             <div class="bg-slate-50/80 p-3 grid grid-cols-4 text-center gap-1 border-b border-slate-50"><div><p class="text-[8px] text-slate-400 font-medium uppercase">🏆 ลงทุน</p><p id="saveInvest" class="text-[11px] number-soft text-yellow-600">0</p></div><div><p class="text-[8px] text-slate-400 font-medium uppercase">🏥 สุขภาพ</p><p id="saveHealth" class="text-[11px] number-soft text-emerald-600">0</p></div><div><p class="text-[8px] text-slate-400 font-medium uppercase">✈️ รางวัล</p><p id="saveReward" class="text-[11px] number-soft text-indigo-600">0</p></div><div class="bg-emerald-100/30 rounded-lg"><p class="text-[8px] text-emerald-600 font-bold uppercase">💰 รวมออม</p><p id="saveTotal" class="text-[11px] font-bold text-emerald-700">0</p></div></div>
             <div class="p-8 text-center bg-white"><p class="text-[10px] text-slate-400 font-medium uppercase tracking-[0.2em] mb-1">เงินหมุนเวียนกองกลางรวม</p><h1 id="sharedCircular" class="shared-balance text-slate-800">0 ฿</h1></div>
-            <div class="grid grid-cols-2 bg-slate-50/50 border-t border-slate-50"><div class="p-5 text-center"><p id="u1NameDisp" class="text-[10px] font-medium text-slate-400 uppercase">...</p><p id="u1Bal" class="text-xl number-soft text-slate-700">0</p></div><div class="p-5 text-center border-l border-slate-100"><p id="u2NameDisp" class="text-[10px] font-medium text-slate-400 uppercase">...</p><p id="u2Bal" class="text-xl number-soft text-slate-700">0</p></div></div>
+            <div class="grid grid-cols-2 bg-slate-50/50 border-t border-slate-50"><div class="p-5 text-center"><p id="u1NameDisp" class="text-[10px] font-medium text-slate-400 uppercase truncate">...</p><p id="u1Bal" class="text-xl number-soft text-slate-700">0</p></div><div class="p-5 text-center border-l border-slate-100"><p id="u2NameDisp" class="text-[10px] font-medium text-slate-400 uppercase truncate">...</p><p id="u2Bal" class="text-xl number-soft text-slate-700">0</p></div></div>
         </div>
 
         <div class="bg-gradient-to-br from-indigo-600 to-blue-700 p-6 rounded-[2.5rem] text-white shadow-xl flex justify-between items-center px-10"><p class="text-[11px] font-medium uppercase tracking-[0.2em] opacity-80">ส่วนตัวของคุณ</p><h1 id="myBalance" class="text-4xl number-soft">0 ฿</h1></div>
         
-        <div class="grid grid-cols-2 gap-3"><button onclick="window.location.href='add_transaction.html'" class="w-full bg-white border-2 border-indigo-600 text-indigo-600 py-4 rounded-[2rem] font-bold text-base shadow-sm">✚ บันทึกรายการ</button><button onclick="window.location.href='bucket_calculator.html'" class="w-full bg-white border-2 border-blue-400 text-blue-500 py-4 rounded-[2rem] font-bold text-base shadow-sm">🌀 วางแผนงบ</button></div>
+        <div class="grid grid-cols-2 gap-3">
+             <button onclick="window.location.href='add_transaction.html'" class="w-full bg-white border-2 border-indigo-600 text-indigo-600 py-4 rounded-[2rem] font-bold text-base shadow-sm">✚ บันทึกรายการ</button>
+             <button onclick="window.location.href='bucket_calculator.html'" class="w-full bg-white border-2 border-blue-400 text-blue-500 py-4 rounded-[2rem] font-bold text-base shadow-sm">🌀 วางแผนงบ</button>
+        </div>
 
-        <div class="pt-4"><h3 class="font-medium text-slate-400 text-[10px] uppercase tracking-[0.3em] mb-4 text-center">ความเคลื่อนไหวล่าสุด (15 รายการ)</h3>
+        <div class="pt-4"><h3 class="font-medium text-slate-400 text-[10px] uppercase tracking-[0.3em] mb-4 text-center">ความเคลื่อนไหวล่าสุด (คนละ 15 รายการ)</h3>
             <div class="grid grid-cols-2 gap-3 items-start">
-                <div><p class="text-[10px] font-bold text-indigo-400 uppercase mb-2 tracking-tighter">สมเจต เสมาทอง</p><div id="u1LogsContainer" class="space-y-2"></div></div>
-                <div><p class="text-[10px] font-bold text-rose-400 uppercase mb-2 tracking-tighter">รัชนี เสมาทอง</p><div id="u2LogsContainer" class="space-y-2"></div></div>
+                <div><p class="text-[10px] font-bold text-indigo-400 uppercase mb-2 ml-2 tracking-tighter">สมเจต เสมาทอง</p><div id="u1LogsContainer" class="space-y-2"></div></div>
+                <div><p class="text-[10px] font-bold text-rose-400 uppercase mb-2 ml-2 tracking-tighter">รัชนี เสมาทอง</p><div id="u2LogsContainer" class="space-y-2"></div></div>
             </div>
         </div>
     </div>
 
-    <div id="reportModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-6"><div class="bg-white w-full max-w-sm rounded-[2.5rem] p-8 text-center shadow-2xl border-t-8 border-emerald-500"><div class="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">📄</div><h3 class="text-xl font-bold text-slate-800 mb-2">สรุปรายงานเรียบร้อย!</h3><div class="flex flex-col gap-3 mt-8"><a id="viewReportBtn" href="#" target="_blank" class="w-full bg-emerald-600 text-white py-4 rounded-[1.5rem] font-bold shadow-lg text-center">👀 เปิดดู / ดาวน์โหลด</a><button onclick="closeReportModal()" class="w-full text-slate-400 font-bold py-2 text-sm uppercase">ปิดหน้าต่าง</button></div></div></div>
+    <div id="reportModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-6"><div class="bg-white w-full max-w-sm rounded-[2.5rem] p-8 text-center shadow-2xl border-t-8 border-emerald-500"><div class="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">📄</div><h3 class="text-xl font-bold text-slate-800 mb-2">สร้างรายงานเรียบร้อย!</h3><div class="flex flex-col gap-3 mt-8"><a id="viewReportBtn" href="#" target="_blank" class="w-full bg-emerald-600 text-white py-4 rounded-[1.5rem] font-bold shadow-lg text-center active:scale-95 transition-all">👀 เปิดดู / ดาวน์โหลด</a><button onclick="closeReportModal()" class="w-full text-slate-400 font-bold py-2 text-sm uppercase">ปิดหน้าต่าง</button></div></div></div>
 
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwkRheIvYk-SY0UQc9N4pP9hwYf5Vq3JQYq4PSOSW6HPnnKFzW-zZbqYFMExSsxnBHj/exec"; 
