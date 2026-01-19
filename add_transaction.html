@@ -4,23 +4,16 @@
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>✚ บันทึกรายการ - MyFamily Money</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap');
-        body { font-family: 'Kanit', sans-serif; background-color: #f8fafc; }
-        .btn-active { background-color: #1e293b !important; color: white !important; border-color: #1e293b !important; }
-        .btn-inactive { background-color: white; color: #94a3b8; border-color: #f1f5f9; }
-    </style>
+    <style>@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap'); body { font-family: 'Kanit', sans-serif; background-color: #f8fafc; } .btn-active { background-color: #1e293b !important; color: white !important; } .btn-inactive { background-color: white; color: #94a3b8; border-color: #f1f5f9; }</style>
 </head>
 <body class="min-h-screen pb-10 text-slate-700">
     <div class="max-w-md mx-auto p-4 space-y-4">
-        <div class="flex items-center gap-3 mb-2">
-            <button onclick="window.location.href='dashboard.html'" class="p-2 bg-white rounded-full shadow-sm text-slate-400 active:scale-90 transition">❮</button>
-            <h1 class="text-xl font-bold">✚ บันทึกรายการใหม่</h1>
-        </div>
+        <div class="flex items-center gap-3 mb-2"><button onclick="window.location.href='dashboard.html'" class="p-2 bg-white rounded-full shadow-sm text-slate-400 active:scale-90 transition">❮</button><h1 class="text-xl font-bold">✚ บันทึกรายการใหม่</h1></div>
 
-        <div class="bg-white p-2 rounded-[2rem] shadow-sm flex gap-2 border border-slate-50">
-            <button id="btnCirc" onclick="selectAcc('Circular')" class="flex-1 py-4 rounded-[1.6rem] font-bold text-sm border btn-active">🔄 เงินหมุนเวียน</button>
-            <button id="btnSave" onclick="selectAcc('Savings')" class="flex-1 py-4 rounded-[1.6rem] font-bold text-sm border btn-inactive">💰 เงินเก็บออม</button>
+        <div class="bg-white p-2 rounded-[2rem] shadow-sm grid grid-cols-3 gap-1 border border-slate-50">
+            <button id="btnCirc" onclick="selectAcc('Circular')" class="py-4 rounded-[1.6rem] font-bold text-[10px] border btn-active">🔄 หมุนเวียน</button>
+            <button id="btnSave" onclick="selectAcc('Savings')" class="py-4 rounded-[1.6rem] font-bold text-[10px] border btn-inactive">💰 เก็บออม</button>
+            <button id="btnRes" onclick="selectAcc('Reservoir')" class="py-4 rounded-[1.6rem] font-bold text-[10px] border btn-inactive">📥 ถังพัก</button>
         </div>
 
         <div class="grid grid-cols-2 gap-3">
@@ -29,31 +22,17 @@
         </div>
 
         <div class="bg-white p-6 rounded-[2.5rem] shadow-sm space-y-4 border border-slate-50">
-            <div>
+            <div id="catSection">
                 <label class="text-[10px] font-bold text-slate-400 uppercase ml-2 tracking-widest">1. เลือกกลุ่มหมวดหมู่หลัก</label>
-                <select id="mainGroup" onchange="filterSubCats()" class="w-full p-4 bg-slate-50 rounded-3xl border-none outline-none font-medium appearance-none">
-                </select>
+                <select id="mainGroup" onchange="filterSubCats()" class="w-full p-4 bg-slate-50 rounded-3xl border-none outline-none font-medium appearance-none"></select>
             </div>
-
-            <div>
+            <div id="subCatSection">
                 <label class="text-[10px] font-bold text-slate-400 uppercase ml-2 tracking-widest">2. เลือกรายการย่อย</label>
-                <select id="catId" class="w-full p-4 bg-slate-50 rounded-3xl border-none outline-none font-medium appearance-none">
-                    <option value="">-- โปรดเลือกกลุ่มหลักก่อน --</option>
-                </select>
+                <select id="catId" class="w-full p-4 bg-slate-50 rounded-3xl border-none outline-none font-medium appearance-none"><option value="">-- โปรดเลือกกลุ่มหลักก่อน --</option></select>
             </div>
-
-            <div>
-                <label class="text-[10px] font-bold text-slate-400 uppercase ml-2 tracking-widest">3. จำนวนเงิน (บาท)</label>
-                <input type="number" id="amount" placeholder="0.00" class="w-full p-4 bg-slate-50 rounded-3xl border-none outline-none text-3xl font-bold text-slate-800">
-            </div>
-
-            <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-2 tracking-widest">บันทึกช่วยจำ</label>
-            <input type="text" id="note" placeholder="ระบุรายละเอียด..." class="w-full p-4 bg-slate-50 rounded-3xl border-none outline-none font-medium"></div>
-
-            <div class="pt-2"><label class="block w-full border-2 border-dashed border-slate-200 rounded-3xl p-4 text-center cursor-pointer hover:bg-slate-50 transition" id="imgPreview">
-                <input type="file" id="imgInp" class="hidden" accept="image/*" onchange="handleImg(this)"><span class="text-2xl">📸</span><br><span class="text-[10px] font-bold text-slate-400 uppercase">แนบใบเสร็จ</span>
-            </label></div>
-
+            <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-2 tracking-widest">3. จำนวนเงิน (บาท)</label><input type="number" id="amount" placeholder="0.00" class="w-full p-4 bg-slate-50 rounded-3xl border-none outline-none text-3xl font-bold text-slate-800"></div>
+            <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-2 tracking-widest">หมายเหตุ (ระบุที่มา/ที่ไป)</label><input type="text" id="note" placeholder="ระบุรายละเอียด..." class="w-full p-4 bg-slate-50 rounded-3xl border-none outline-none font-medium"></div>
+            <div class="pt-2"><label class="block w-full border-2 border-dashed border-slate-200 rounded-3xl p-4 text-center cursor-pointer hover:bg-slate-50 transition" id="imgPreview"><input type="file" id="imgInp" class="hidden" accept="image/*" onchange="handleImg(this)"><span class="text-2xl">📸</span><br><span class="text-[10px] font-bold text-slate-400 uppercase">แนบใบเสร็จ</span></label></div>
             <button id="submitBtn" onclick="submitData()" class="w-full bg-indigo-600 text-white py-5 rounded-[2rem] font-bold text-lg shadow-xl active:scale-95 transition-all">บันทึกข้อมูลตอนนี้</button>
         </div>
     </div>
@@ -61,67 +40,37 @@
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwkRheIvYk-SY0UQc9N4pP9hwYf5Vq3JQYq4PSOSW6HPnnKFzW-zZbqYFMExSsxnBHj/exec";
         let currentAcc = 'Circular', currentType = 'Expense', allCats = [], imgBase64 = null;
+        async function init() { try { const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_categories' }) }); const data = await res.json(); if(data.status === 'success') { allCats = data.categories; updateMainGroups(); } } catch (e) {} }
 
-        async function init() {
-            try {
-                const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_categories' }) });
-                const data = await res.json();
-                if(data.status === 'success') { allCats = data.categories; updateMainGroups(); }
-            } catch (e) { console.error("Error"); }
-        }
-
-        // ✅ แก้ไข: เพิ่ม "อื่นๆ" เข้าไปในทุกโหมดเพื่อให้สัมพันธ์กับหน้าตั้งค่าครับ
         function updateMainGroups() {
             const mg = document.getElementById('mainGroup');
+            const catSec = document.getElementById('catSection');
+            const subSec = document.getElementById('subCatSection');
+            // ✅ ถ้าเป็น Reservoir (ถังพัก) ให้บันทึกอิสระ ไม่ต้องเลือกหมวดหลัก
+            if(currentAcc === 'Reservoir') { catSec.style.display = 'none'; subSec.style.display = 'none'; return; }
+            catSec.style.display = 'block'; subSec.style.display = 'block';
             if(currentAcc === 'Savings') {
-                if(currentType === 'Income') {
-                    mg.innerHTML = '<option value="">-- เลือกกลุ่มหลัก --</option><option value="ลงทุน">🏆 ลงทุน</option><option value="สุขภาพ">🏥 สุขภาพ</option><option value="รางวัล">✈️ รางวัล</option><option value="อื่นๆ">📦 อื่นๆ</option>';
-                } else {
-                    mg.innerHTML = '<option value="">-- เลือกกลุ่มหลัก --</option><option value="ถอนลงทุน">📉 ถอนลงทุน</option><option value="จ่ายรักษาพยาบาล">🚑 จ่ายรักษาพยาบาล</option><option value="ใช้เงินรางวัล">🎁 ใช้เงินรางวัล</option><option value="อื่นๆ">📦 อื่นๆ</option>';
-                }
+                mg.innerHTML = (currentType === 'Income') ? '<option value="ลงทุน">🏆 ลงทุน</option><option value="สุขภาพ">🏥 สุขภาพ</option><option value="รางวัล">✈️ รางวัล</option><option value="อื่นๆ">📦 อื่นๆ</option>' : '<option value="ถอนลงทุน">📉 ถอนลงทุน</option><option value="จ่ายรักษาพยาบาล">🚑 จ่ายรักษาพยาบาล</option><option value="ใช้เงินรางวัล">🎁 ใช้เงินรางวัล</option><option value="อื่นๆ">📦 อื่นๆ</option>';
             } else {
-                if(currentType === 'Income') {
-                    mg.innerHTML = '<option value="">-- เลือกกลุ่มหลัก --</option><option value="รายได้หลัก">💰 รายได้หลัก</option><option value="รายได้พิเศษ">🧧 รายได้พิเศษ</option><option value="งบต้นเดือน">📈 งบต้นเดือน</option><option value="อื่นๆ">📦 อื่นๆ</option>';
-                } else {
-                    mg.innerHTML = '<option value="">-- เลือกกลุ่มหลัก --</option><option value="ใช้จ่ายส่วนตัว">🛒 ใช้จ่ายส่วนตัว</option><option value="จ่ายฟิกซ์คอร์ส">📋 จ่ายฟิกซ์คอร์ส</option><option value="จ่ายหนี้สิน">💳 จ่ายหนี้สิน</option><option value="อื่นๆ">📦 อื่นๆ</option>';
-                }
+                mg.innerHTML = (currentType === 'Income') ? '<option value="รายได้หลัก">💰 รายได้หลัก</option><option value="รายได้พิเศษ">🧧 รายได้พิเศษ</option><option value="งบต้นเดือน">📈 งบต้นเดือน</option><option value="อื่นๆ">📦 อื่นๆ</option>' : '<option value="ใช้จ่ายส่วนตัว">🛒 ใช้จ่ายส่วนตัว</option><option value="จ่ายฟิกซ์คอร์ส">📋 จ่ายฟิกซ์คอร์ส</option><option value="จ่ายหนี้สิน">💳 จ่ายหนี้สิน</option><option value="อื่นๆ">📦 อื่นๆ</option>';
             }
             document.getElementById('catId').innerHTML = '<option value="">-- โปรดเลือกกลุ่มหลักก่อน --</option>';
         }
 
-        function filterSubCats() {
-            const group = document.getElementById('mainGroup').value;
-            const sel = document.getElementById('catId');
-            sel.innerHTML = '<option value="">-- เลือกรายการย่อย --</option>';
-            const filtered = allCats.filter(c => c.parent === currentAcc && c.type === currentType && c.group === group);
-            filtered.forEach(c => { sel.innerHTML += `<option value="${c.id}">${c.name}</option>`; });
-        }
-
+        function filterSubCats() { const group = document.getElementById('mainGroup').value; const sel = document.getElementById('catId'); sel.innerHTML = '<option value="">-- เลือกรายการย่อย --</option>'; const filtered = allCats.filter(c => c.parent === currentAcc && c.type === currentType && c.group === group); filtered.forEach(c => { sel.innerHTML += `<option value="${c.id}">${c.name}</option>`; }); }
         function selectAcc(v) { 
             currentAcc = v; 
-            document.getElementById('btnCirc').className = v === 'Circular' ? "flex-1 py-4 rounded-[1.6rem] font-bold text-sm border btn-active" : "flex-1 py-4 rounded-[1.6rem] font-bold text-sm border btn-inactive";
-            document.getElementById('btnSave').className = v === 'Savings' ? "flex-1 py-4 rounded-[1.6rem] font-bold text-sm border btn-active" : "flex-1 py-4 rounded-[1.6rem] font-bold text-sm border btn-inactive";
+            ['btnCirc', 'btnSave', 'btnRes'].forEach(id => document.getElementById(id).className = "py-4 rounded-[1.6rem] font-bold text-[10px] border btn-inactive");
+            document.getElementById(v==='Circular'?'btnCirc':v==='Savings'?'btnSave':'btnRes').className = "py-4 rounded-[1.6rem] font-bold text-[10px] border btn-active";
             updateMainGroups(); 
         }
-
-        function selectType(v) { 
-            currentType = v; 
-            document.getElementById('typeInc').className = v === 'Income' ? "py-4 rounded-3xl font-bold text-sm border-2 border-emerald-500 bg-emerald-500 text-white shadow-md" : "py-4 rounded-3xl font-bold text-sm border-2 border-emerald-500 text-emerald-600 bg-white";
-            document.getElementById('typeExp').className = v === 'Expense' ? "py-4 rounded-3xl font-bold text-sm border-2 border-rose-500 bg-rose-500 text-white shadow-md" : "py-4 rounded-3xl font-bold text-sm border-2 border-rose-500 text-rose-600 bg-white";
-            updateMainGroups(); 
-        }
-
+        function selectType(v) { currentType = v; document.getElementById('typeInc').className = v === 'Income' ? "py-4 rounded-3xl font-bold text-sm border-2 border-emerald-500 bg-emerald-500 text-white shadow-md" : "py-4 rounded-3xl font-bold text-sm border-2 border-emerald-500 text-emerald-600 bg-white"; document.getElementById('typeExp').className = v === 'Expense' ? "py-4 rounded-3xl font-bold text-sm border-2 border-rose-500 bg-rose-500 text-white shadow-md" : "py-4 rounded-3xl font-bold text-sm border-2 border-rose-500 text-rose-600 bg-white"; updateMainGroups(); }
         function handleImg(i) { if(i.files && i.files[0]) { const reader = new FileReader(); reader.onload = (e) => { imgBase64 = e.target.result; document.getElementById('imgPreview').innerHTML = `<img src="${imgBase64}" class="h-24 mx-auto rounded-xl shadow-md border-2 border-white">`; }; reader.readAsDataURL(i.files[0]); } }
-
         async function submitData() {
-            const amount = document.getElementById('amount').value;
-            const catId = document.getElementById('catId').value;
-            if(!amount || !catId) { alert("กรุณาระบุข้อมูลให้ครบถ้วน"); return; }
-            const btn = document.getElementById('submitBtn'); btn.disabled = true; btn.innerText = "⌛ กำลังบันทึก...";
-            try {
-                await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'add_transaction', data: { userId: JSON.parse(localStorage.getItem('userData')).userId, amount: currentType==='Expense' ? -amount : amount, catId: catId, note: document.getElementById('note').value, accType: currentAcc, imageFile: imgBase64 } }) });
-                window.location.href = 'dashboard.html';
-            } catch (e) { alert("ล้มเหลว"); btn.disabled = false; }
+            const amount = document.getElementById('amount').value; const note = document.getElementById('note').value;
+            if(!amount || (currentAcc !== 'Reservoir' && !document.getElementById('catId').value)) { alert("กรุณาระบุข้อมูลให้ครบถ้วน"); return; }
+            const btn = document.getElementById('submitBtn'); btn.disabled = true; btn.innerText = "⏳...";
+            try { await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'add_transaction', data: { userId: JSON.parse(localStorage.getItem('userData')).userId, amount: currentType==='Expense' ? -amount : amount, catId: document.getElementById('catId').value, note: note, accType: currentAcc, imageFile: imgBase64 } }) }); window.location.href = 'dashboard.html'; } catch (e) { alert("ล้มเหลว"); btn.disabled = false; }
         }
         window.onload = init;
     </script>
