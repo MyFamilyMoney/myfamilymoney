@@ -5,7 +5,7 @@
     <title>🌀 วางแผนงบประมาณ - MyFamily Money</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap'); body { font-family: 'Kanit', sans-serif; background-color: #f8fafc; } .fixed-card { border: 2px solid #fee2e2; border-radius: 2.5rem; overflow: hidden; background: white; }</style>
+    <style>@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap'); body { font-family: 'Kanit', sans-serif; background-color: #f8fafc; } .group-card { border-radius: 2.5rem; overflow: hidden; background: white; border: 1px solid #e2e8f0; }</style>
 </head>
 <body class="min-h-screen p-4 pb-12 text-slate-800">
     <div class="max-w-md mx-auto space-y-6">
@@ -14,55 +14,92 @@
             <input type="number" id="incomeInput" oninput="runPlanning()" placeholder="ใส่รายได้รวม ฿" class="w-full p-5 bg-slate-50 border-none rounded-[1.5rem] text-3xl font-bold text-center outline-none focus:ring-2 focus:ring-blue-100 transition-all">
         </div>
 
-        <div class="fixed-card shadow-sm"><div class="p-6 pb-2"><h3 class="text-sm font-bold text-rose-500 mb-4 flex items-center gap-2">⭕ รายจ่ายประจำ (Fixed) <span class="text-[10px] text-slate-300 font-normal">CIRCLE 1 & 2</span></h3><div id="fixedDetails" class="space-y-3 text-sm"></div></div><div class="bg-rose-50 p-4 text-center border-t border-rose-100"><p class="text-[10px] font-bold text-rose-400 uppercase mb-1">ต้องหักรวม</p><p id="totalFixed" class="text-2xl font-bold text-rose-600">0 ฿</p></div></div>
+        <div id="section1Card" class="group-card shadow-sm border-l-8 border-indigo-500">
+            <div class="p-6 pb-2">
+                <h3 class="text-sm font-bold text-indigo-600 mb-4 flex items-center gap-2">🔹 รายการจัดสรรส่วนที่ 1 <span class="text-[10px] text-slate-300 font-normal">SECTION 1</span></h3>
+                <div id="details1" class="space-y-3 text-sm">
+                    </div>
+            </div>
+            <div class="bg-indigo-50 p-4 text-center border-t border-indigo-100">
+                <p class="text-[10px] font-bold text-indigo-400 uppercase mb-1">รวมยอดเงินส่วนที่ 1</p>
+                <p id="total1" class="text-2xl font-bold text-indigo-600">0 ฿</p>
+            </div>
+        </div>
+
+        <div id="section2Card" class="group-card shadow-sm border-l-8 border-rose-500">
+            <div class="p-6 pb-2">
+                <h3 class="text-sm font-bold text-rose-600 mb-4 flex items-center gap-2">🔸 รายการจัดสรรส่วนที่ 2 <span class="text-[10px] text-slate-300 font-normal">SECTION 2</span></h3>
+                <div id="details2" class="space-y-3 text-sm">
+                    </div>
+            </div>
+            <div class="bg-rose-50 p-4 text-center border-t border-rose-100">
+                <p class="text-[10px] font-bold text-rose-400 uppercase mb-1">รวมยอดเงินส่วนที่ 2</p>
+                <p id="total2" class="text-2xl font-bold text-rose-600">0 ฿</p>
+            </div>
+        </div>
 
         <div id="savingsSection" class="hidden animate-fade-in space-y-4">
             <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
-                <div class="text-center mb-6"><p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">การจัดสรรเงินออม (10% ของรายได้)</p><h2 id="totalSaving" class="text-4xl font-bold text-slate-800">0.00</h2></div>
+                <div class="text-center mb-6"><p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">จัดสรรเงินออม (10% ของรายได้)</p><h2 id="totalSaving" class="text-4xl font-bold text-slate-800">0.00</h2></div>
                 <div class="relative w-48 h-48 mx-auto mb-8"><canvas id="planningChart"></canvas></div>
-                
                 <div class="grid grid-cols-1 gap-2 text-xs font-bold">
                     <div class="flex justify-between p-3 bg-amber-50 text-amber-700 rounded-2xl"><span>📈 ลงทุน/เกษียณ (6%)</span><span id="valInvest">0</span></div>
                     <div class="flex justify-between p-3 bg-blue-50 text-blue-700 rounded-2xl"><span>🎓 การศึกษาลูก (1.5%)</span><span id="valEdu">0</span></div>
                     <div class="flex justify-between p-3 bg-emerald-50 text-emerald-700 rounded-2xl"><span>🏥 สุขภาพ/ประกัน (1.5%)</span><span id="valHealth">0</span></div>
                     <div class="flex justify-between p-3 bg-indigo-50 text-indigo-700 rounded-2xl"><span>✈️ รางวัลชีวิต (1%)</span><span id="valReward">0</span></div>
                 </div>
-
-                <div class="mt-6 pt-4 border-t border-slate-50 text-center">
-                    <p class="text-[10px] font-bold text-slate-400 uppercase">เงินคงเหลือสุทธิหลังหักทุกส่วน</p>
-                    <p id="netBalance" class="text-xl font-bold text-slate-800">0 ฿</p>
-                </div>
+                <div class="mt-6 pt-4 border-t border-slate-50 text-center"><p class="text-[10px] font-bold text-slate-400 uppercase">คงเหลือสุทธิหลังหักทุกส่วน</p><p id="netBalance" class="text-xl font-bold text-slate-800">0 ฿</p></div>
             </div>
         </div>
         <div class="text-center"><button onclick="window.location.href='dashboard.html'" class="text-slate-300 text-[10px] font-bold uppercase tracking-widest">กลับหน้าหลัก</button></div>
     </div>
 
     <script>
+        // ✅ ⚠️ อย่าลืมนำ URL จาก Apps Script มาวางที่นี่ครับ
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwS4cnZIW0Ntnnx7Qw4s50HY37YbsmeRcjpAFXZsj_5pkdoIZAqKY12lSGf27PW-eaUSA/exec";
-        let config = {}, chart;
-        async function init() { try { const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_bucket_config' }) }); const data = await res.json(); if (data.status === 'success') { config = data.config; let h = "", t = 0; config.circle1.concat(config.circle2).forEach(item => { h += `<div class="flex justify-between items-center py-0.5"><span class="text-slate-600 font-medium">${item.name}</span><span class="font-bold text-slate-800">${item.value.toLocaleString()}</span></div>`; t += item.value; }); document.getElementById('fixedDetails').innerHTML = h; document.getElementById('totalFixed').innerText = t.toLocaleString() + " ฿"; } } catch (e) {} }
+        let configData = [], chart;
+
+        async function init() {
+            try {
+                const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_bucket_config' }) });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    configData = data.config.circle1.concat(data.config.circle2);
+                    renderSections();
+                }
+            } catch (e) { console.error("Load failed"); }
+        }
+
+        function renderSections() {
+            let h1 = "", h2 = "", t1 = 0, t2 = 0;
+            configData.forEach(item => {
+                const row = `<div class="flex justify-between items-center py-0.5"><span class="text-slate-600 font-medium">${item.name}</span><span class="font-bold text-slate-800">${item.value.toLocaleString()}</span></div>`;
+                // ✅ ตรวจสอบเลขนำหน้า 1. หรือ 2.
+                if (item.name.startsWith("1.")) { h1 += row; t1 += item.value; }
+                else if (item.name.startsWith("2.")) { h2 += row; t2 += item.value; }
+            });
+            document.getElementById('details1').innerHTML = h1 || "<p class='text-center text-slate-300'>ไม่มีข้อมูลกลุ่ม 1</p>";
+            document.getElementById('details2').innerHTML = h2 || "<p class='text-center text-slate-300'>ไม่มีข้อมูลกลุ่ม 2</p>";
+            document.getElementById('total1').innerText = t1.toLocaleString() + " ฿";
+            document.getElementById('total2').innerText = t2.toLocaleString() + " ฿";
+            runPlanning(); // คำนวณแผนทันที
+        }
 
         function runPlanning() {
             const inc = parseFloat(document.getElementById('incomeInput').value) || 0;
-            const fix = config.circle1.concat(config.circle2).reduce((a, c) => a + c.value, 0);
+            const t1 = configData.filter(i => i.name.startsWith("1.")).reduce((a, b) => a + b.value, 0);
+            const t2 = configData.filter(i => i.name.startsWith("2.")).reduce((a, b) => a + b.value, 0);
             
             if (inc > 0) {
                 document.getElementById('savingsSection').classList.remove('hidden');
-                
-                // ✅ สูตรคำนวณตามโจทย์
-                const inv = inc * 0.06;
-                const edu = inc * 0.015;
-                const hea = inc * 0.015;
-                const rew = inc * 0.01;
+                const inv = inc * 0.06, edu = inc * 0.015, hea = inc * 0.015, rew = inc * 0.01;
                 const totalSave = inv + edu + hea + rew;
-
                 document.getElementById('totalSaving').innerText = totalSave.toLocaleString() + " ฿";
                 document.getElementById('valInvest').innerText = inv.toLocaleString();
                 document.getElementById('valEdu').innerText = edu.toLocaleString();
                 document.getElementById('valHealth').innerText = hea.toLocaleString();
                 document.getElementById('valReward').innerText = rew.toLocaleString();
-                document.getElementById('netBalance').innerText = (inc - fix - totalSave).toLocaleString() + " ฿";
-                
+                document.getElementById('netBalance').innerText = (inc - t1 - t2 - totalSave).toLocaleString() + " ฿";
                 updateChart([inv, edu, hea, rew]);
             } else { document.getElementById('savingsSection').classList.add('hidden'); }
         }
