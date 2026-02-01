@@ -29,10 +29,6 @@
                 <h3 class="text-xs font-bold text-blue-600 mb-4 flex items-center gap-2 uppercase tracking-tighter">รายการจัดสรรส่วนที่ 1</h3>
                 <div id="details1" class="space-y-3 text-sm font-medium text-slate-600"></div>
             </div>
-            <div class="bg-blue-50/50 p-4 text-center border-t border-blue-50">
-                <p class="text-[10px] font-bold text-blue-400 uppercase mb-1">รวมยอดเงินส่วนที่ 1</p>
-                <p id="total1" class="text-2xl font-bold text-blue-600">0 ฿</p>
-            </div>
         </div>
 
         <div id="section2Card" class="group-card shadow-sm border-l-8 border-rose-500">
@@ -40,13 +36,15 @@
                 <h3 class="text-xs font-bold text-rose-600 mb-4 flex items-center gap-2 uppercase tracking-tighter">รายการจัดสรรส่วนที่ 2</h3>
                 <div id="details2" class="space-y-3 text-sm font-medium text-slate-600"></div>
             </div>
-            <div class="bg-rose-50/50 p-4 text-center border-t border-rose-50">
-                <p class="text-[10px] font-bold text-rose-400 uppercase mb-1">รวมยอดเงินส่วนที่ 2</p>
-                <p id="total2" class="text-2xl font-bold text-rose-600">0 ฿</p>
-            </div>
         </div>
 
-        <div id="resultSection" class="hidden animate-fade-in space-y-6">
+        <div id="resultSection" class="hidden animate-fade-in space-y-4">
+            
+            <div class="bg-rose-50 p-6 rounded-[2.5rem] text-rose-600 shadow-sm border border-rose-100 text-center">
+                <p class="text-[10px] font-bold uppercase tracking-[0.2em] opacity-80 mb-1">รวมยอดรายจ่ายทั้งหมด (1 + 2)</p>
+                <h2 id="totalExpenseDisplay" class="text-3xl font-black">0.00 ฿</h2>
+            </div>
+
             <div class="bg-slate-800 p-8 rounded-[2.5rem] text-white shadow-xl text-center">
                 <p class="text-[10px] font-bold uppercase tracking-[0.2em] opacity-60 mb-2">ยอดคงเหลือ (ตัวตั้ง 100%)</p>
                 <h2 id="balanceInitial" class="text-4xl font-black">0.00 ฿</h2>
@@ -70,11 +68,6 @@
                     <div class="flex justify-between p-3.5 bg-indigo-50 text-indigo-700 rounded-2xl border border-indigo-100">
                         <span>✈️ รางวัลชีวิต (10%)</span><span id="valReward">0</span>
                     </div>
-                </div>
-
-                <div class="mt-8 pt-6 border-t border-slate-50 text-center">
-                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1">ยอดเงินจัดสรรครบถ้วน 100%</p>
-                    <p class="text-xs text-slate-400">ระบบคำนวณจากยอดคงเหลือสีดำหารด้วย 100 ส่วน</p>
                 </div>
             </div>
         </div>
@@ -100,16 +93,14 @@
         }
 
         function renderFixedSections() {
-            let h1 = "", h2 = "", t1 = 0, t2 = 0;
+            let h1 = "", h2 = "";
             configData.forEach(item => {
                 const row = `<div class="flex justify-between items-center py-0.5"><span>${item.name}</span><span class="font-bold text-slate-800">${item.value.toLocaleString()}</span></div>`;
-                if (item.name.startsWith("1.")) { h1 += row; t1 += item.value; }
-                else if (item.name.startsWith("2.")) { h2 += row; t2 += item.value; }
+                if (item.name.startsWith("1.")) { h1 += row; }
+                else if (item.name.startsWith("2.")) { h2 += row; }
             });
             document.getElementById('details1').innerHTML = h1 || "-";
             document.getElementById('details2').innerHTML = h2 || "-";
-            document.getElementById('total1').innerText = t1.toLocaleString() + " ฿";
-            document.getElementById('total2').innerText = t2.toLocaleString() + " ฿";
             runPlanning(); 
         }
 
@@ -118,16 +109,21 @@
             const t1 = configData.filter(i => i.name.startsWith("1.")).reduce((a, b) => a + b.value, 0);
             const t2 = configData.filter(i => i.name.startsWith("2.")).reduce((a, b) => a + b.value, 0);
             
-            const initialBalance = inc - t1 - t2;
+            const totalExp = t1 + t2; // รวมยอดรายจ่ายทั้งหมด
+            const initialBalance = inc - totalExp; // ยอดคงเหลือ
             const resSection = document.getElementById('resultSection');
 
             if (inc > 0) {
                 resSection.classList.remove('hidden');
+                
+                // แสดงยอดรายจ่ายรวมทั้งหมด (แท็บใหม่)
+                document.getElementById('totalExpenseDisplay').innerText = totalExp.toLocaleString(undefined, {minimumFractionDigits: 2}) + " ฿";
+                
+                // แสดงยอดคงเหลือสีดำ
                 document.getElementById('balanceInitial').innerText = initialBalance.toLocaleString(undefined, {minimumFractionDigits: 2}) + " ฿";
 
-                // ✅ ตรรกะใหม่: ยอดคงเหลือสีดำคือ 100% แล้วนำมาแบ่งส่วน
+                // ตรรกะการแบ่ง 60:15:15:10
                 const unit = initialBalance / 100; 
-
                 const inv = unit * 60;
                 const edu = unit * 15;
                 const hea = unit * 15;
