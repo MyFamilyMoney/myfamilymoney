@@ -48,16 +48,11 @@
 
         <div id="resultSection" class="hidden animate-fade-in space-y-6">
             <div class="bg-slate-800 p-8 rounded-[2.5rem] text-white shadow-xl text-center">
-                <p class="text-[10px] font-bold uppercase tracking-[0.2em] opacity-60 mb-2">ยอดคงเหลือ (หลังหักรายจ่ายประจำ)</p>
+                <p class="text-[10px] font-bold uppercase tracking-[0.2em] opacity-60 mb-2">ยอดคงเหลือ (ตัวตั้ง 100%)</p>
                 <h2 id="balanceInitial" class="text-4xl font-black">0.00 ฿</h2>
             </div>
 
             <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
-                <div class="text-center mb-8">
-                    <p class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest mb-1">จัดสรรเงินออม (10% ของยอดคงเหลือ)</p>
-                    <h2 id="totalSaving" class="text-3xl font-bold text-slate-800">0.00</h2>
-                </div>
-
                 <div class="relative w-52 h-52 mx-auto mb-10">
                     <canvas id="planningChart"></canvas>
                 </div>
@@ -78,8 +73,8 @@
                 </div>
 
                 <div class="mt-8 pt-6 border-t border-slate-50 text-center">
-                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1">ยอดคงเหลือสุทธิ (Pocket Money)</p>
-                    <p id="netFinal" class="text-3xl font-black text-indigo-600">0.00 ฿</p>
+                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1">ยอดเงินจัดสรรครบถ้วน 100%</p>
+                    <p class="text-xs text-slate-400">ระบบคำนวณจากยอดคงเหลือสีดำหารด้วย 100 ส่วน</p>
                 </div>
             </div>
         </div>
@@ -130,23 +125,18 @@
                 resSection.classList.remove('hidden');
                 document.getElementById('balanceInitial').innerText = initialBalance.toLocaleString(undefined, {minimumFractionDigits: 2}) + " ฿";
 
-                // ✅ แก้ไขตรรกะตามคำสั่ง: แบ่งจากยอดออม 10% เป็นตัวตั้ง
-                const totalSaving = initialBalance * 0.10;
-                const unit = totalSaving / 100; // หารด้วย 100% ก่อนตามที่คุณต้องการ
+                // ✅ ตรรกะใหม่: ยอดคงเหลือสีดำคือ 100% แล้วนำมาแบ่งส่วน
+                const unit = initialBalance / 100; 
 
                 const inv = unit * 60;
                 const edu = unit * 15;
                 const hea = unit * 15;
                 const rew = unit * 10;
 
-                // แสดงผลแบบทศนิยม 2 ตำแหน่งเพื่อให้ลงตัวสวยงาม
-                document.getElementById('totalSaving').innerText = totalSaving.toLocaleString(undefined, {minimumFractionDigits: 2}) + " ฿";
                 document.getElementById('valInvest').innerText = inv.toLocaleString(undefined, {minimumFractionDigits: 2});
                 document.getElementById('valEdu').innerText = edu.toLocaleString(undefined, {minimumFractionDigits: 2});
                 document.getElementById('valHealth').innerText = hea.toLocaleString(undefined, {minimumFractionDigits: 2});
                 document.getElementById('valReward').innerText = rew.toLocaleString(undefined, {minimumFractionDigits: 2});
-                
-                document.getElementById('netFinal').innerText = (initialBalance - totalSaving).toLocaleString(undefined, {minimumFractionDigits: 2}) + " ฿";
                 
                 updateChart([inv, edu, hea, rew]);
             } else {
