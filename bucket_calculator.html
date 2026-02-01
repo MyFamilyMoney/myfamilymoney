@@ -18,13 +18,19 @@
 
         <div id="savingsSection" class="hidden animate-fade-in space-y-4">
             <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
-                <div class="text-center mb-6"><p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">เงินคงเหลือสำหรับออม</p><h2 id="balanceC3" class="text-4xl font-bold text-slate-800">0.00</h2></div>
+                <div class="text-center mb-6"><p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">การจัดสรรเงินออม (10% ของรายได้)</p><h2 id="totalSaving" class="text-4xl font-bold text-slate-800">0.00</h2></div>
                 <div class="relative w-48 h-48 mx-auto mb-8"><canvas id="planningChart"></canvas></div>
+                
                 <div class="grid grid-cols-1 gap-2 text-xs font-bold">
-                    <div class="flex justify-between p-3 bg-emerald-50 text-emerald-700 rounded-2xl"><span>🏥 สุขภาพ/ประกัน (30%)</span><span id="valHealth">0</span></div>
-                    <div class="flex justify-between p-3 bg-amber-50 text-amber-700 rounded-2xl"><span>📈 ลงทุน/เกษียณ (30%)</span><span id="valInvest">0</span></div>
-                    <div class="flex justify-between p-3 bg-blue-50 text-blue-700 rounded-2xl"><span>🎓 การศึกษาลูก (25%)</span><span id="valEdu">0</span></div>
-                    <div class="flex justify-between p-3 bg-indigo-50 text-indigo-700 rounded-2xl"><span>✈️ รางวัลชีวิต (15%)</span><span id="valReward">0</span></div>
+                    <div class="flex justify-between p-3 bg-amber-50 text-amber-700 rounded-2xl"><span>📈 ลงทุน/เกษียณ (6%)</span><span id="valInvest">0</span></div>
+                    <div class="flex justify-between p-3 bg-blue-50 text-blue-700 rounded-2xl"><span>🎓 การศึกษาลูก (1.5%)</span><span id="valEdu">0</span></div>
+                    <div class="flex justify-between p-3 bg-emerald-50 text-emerald-700 rounded-2xl"><span>🏥 สุขภาพ/ประกัน (1.5%)</span><span id="valHealth">0</span></div>
+                    <div class="flex justify-between p-3 bg-indigo-50 text-indigo-700 rounded-2xl"><span>✈️ รางวัลชีวิต (1%)</span><span id="valReward">0</span></div>
+                </div>
+
+                <div class="mt-6 pt-4 border-t border-slate-50 text-center">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase">เงินคงเหลือสุทธิหลังหักทุกส่วน</p>
+                    <p id="netBalance" class="text-xl font-bold text-slate-800">0 ฿</p>
                 </div>
             </div>
         </div>
@@ -39,19 +45,26 @@
         function runPlanning() {
             const inc = parseFloat(document.getElementById('incomeInput').value) || 0;
             const fix = config.circle1.concat(config.circle2).reduce((a, c) => a + c.value, 0);
-            const bal = inc - fix;
-            const section = document.getElementById('savingsSection');
-            if (bal > 0) {
-                section.classList.remove('hidden');
-                document.getElementById('balanceC3').innerText = bal.toLocaleString() + " ฿";
-                // ✅ สัดส่วน 4 ส่วน: 30:30:25:15
-                const hea = bal * 0.30, inv = bal * 0.30, edu = bal * 0.25, rew = bal * 0.15;
-                document.getElementById('valHealth').innerText = hea.toLocaleString();
+            
+            if (inc > 0) {
+                document.getElementById('savingsSection').classList.remove('hidden');
+                
+                // ✅ สูตรคำนวณตามโจทย์
+                const inv = inc * 0.06;
+                const edu = inc * 0.015;
+                const hea = inc * 0.015;
+                const rew = inc * 0.01;
+                const totalSave = inv + edu + hea + rew;
+
+                document.getElementById('totalSaving').innerText = totalSave.toLocaleString() + " ฿";
                 document.getElementById('valInvest').innerText = inv.toLocaleString();
                 document.getElementById('valEdu').innerText = edu.toLocaleString();
+                document.getElementById('valHealth').innerText = hea.toLocaleString();
                 document.getElementById('valReward').innerText = rew.toLocaleString();
-                updateChart([hea, inv, edu, rew]);
-            } else { section.classList.add('hidden'); }
+                document.getElementById('netBalance').innerText = (inc - fix - totalSave).toLocaleString() + " ฿";
+                
+                updateChart([inv, edu, hea, rew]);
+            } else { document.getElementById('savingsSection').classList.add('hidden'); }
         }
 
         function updateChart(dataValues) {
@@ -60,8 +73,8 @@
             chart = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['สุขภาพ', 'ลงทุน', 'การศึกษา', 'รางวัล'],
-                    datasets: [{ data: dataValues, backgroundColor: ['#10b981', '#f59e0b', '#3b82f6', '#6366f1'], borderWidth: 0 }]
+                    labels: ['ลงทุน', 'การศึกษา', 'สุขภาพ', 'รางวัล'],
+                    datasets: [{ data: dataValues, backgroundColor: ['#f59e0b', '#3b82f6', '#10b981', '#6366f1'], borderWidth: 0 }]
                 },
                 options: { cutout: '75%', plugins: { legend: { display: false } } }
             });
