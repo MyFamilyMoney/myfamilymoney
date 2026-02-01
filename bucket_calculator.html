@@ -1,126 +1,57 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🌀 วางแผนงบประมาณ - MyFamily Money</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Kanit', sans-serif; background-color: #f8fafc; }
-        /* รักษา UI เดิมให้สวยงาม */
-        .fixed-card { border: 2px solid #fee2e2; border-radius: 2.5rem; overflow: hidden; background: white; }
-    </style>
+    <style>@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap'); body { font-family: 'Kanit', sans-serif; background-color: #f8fafc; } .fixed-card { border: 2px solid #fee2e2; border-radius: 2.5rem; overflow: hidden; background: white; }</style>
 </head>
 <body class="min-h-screen p-4 pb-12 text-slate-800">
     <div class="max-w-md mx-auto space-y-6">
-        
-        <div class="bg-white p-8 rounded-[2.5rem] shadow-sm text-center relative border border-slate-100">
-            <div class="flex flex-col items-center gap-2 mb-6">
-                <div class="text-4xl text-blue-500">🌀</div>
-                <h1 class="text-2xl font-bold text-blue-600">วางแผนงบประมาณ</h1>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">INCOME PLANNING SYSTEM</p>
-            </div>
-            <input type="number" id="incomeInput" oninput="runPlanning()" placeholder="ใส่รายได้รวม ฿" 
-                class="w-full p-5 bg-slate-50 border-none rounded-[1.5rem] text-3xl font-bold text-center outline-none focus:ring-2 focus:ring-blue-100 transition-all">
+        <div class="bg-white p-8 rounded-[2.5rem] shadow-sm text-center border border-slate-100">
+            <div class="flex flex-col items-center gap-2 mb-6"><div class="text-4xl text-blue-500">🌀</div><h1 class="text-2xl font-bold text-blue-600">วางแผนงบประมาณ</h1><p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">FAMILY BUDGETING SYSTEM</p></div>
+            <input type="number" id="incomeInput" oninput="runPlanning()" placeholder="ใส่รายได้รวม ฿" class="w-full p-5 bg-slate-50 border-none rounded-[1.5rem] text-3xl font-bold text-center outline-none focus:ring-2 focus:ring-blue-100 transition-all">
         </div>
 
-        <div class="fixed-card shadow-sm">
-            <div class="p-6 pb-2">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-sm font-bold text-rose-500 flex items-center gap-2">⭕ รายจ่ายคงที่ <span class="text-[10px] text-slate-300 font-normal">CIRCLE 1 & 2</span></h3>
-                </div>
-                <div id="fixedDetails" class="space-y-3 text-sm">
-                    </div>
-            </div>
-            <div class="bg-rose-50 p-4 text-center border-t border-rose-100">
-                <p class="text-[10px] font-bold text-rose-400 uppercase mb-1">ต้องหักรวม</p>
-                <p id="totalFixed" class="text-2xl font-bold text-rose-600">0 ฿</p>
-            </div>
-        </div>
+        <div class="fixed-card shadow-sm"><div class="p-6 pb-2"><h3 class="text-sm font-bold text-rose-500 mb-4 flex items-center gap-2">⭕ รายจ่ายประจำ (Fixed) <span class="text-[10px] text-slate-300 font-normal">CIRCLE 1 & 2</span></h3><div id="fixedDetails" class="space-y-3 text-sm"></div></div><div class="bg-rose-50 p-4 text-center border-t border-rose-100"><p class="text-[10px] font-bold text-rose-400 uppercase mb-1">ต้องหักรวม</p><p id="totalFixed" class="text-2xl font-bold text-rose-600">0 ฿</p></div></div>
 
         <div id="savingsSection" class="hidden animate-fade-in space-y-4">
             <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
-                <div class="text-center mb-6">
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">เงินคงเหลือสำหรับออม</p>
-                    <h2 id="balanceC3" class="text-4xl font-bold text-slate-800">0.00</h2>
-                </div>
-
-                <div class="relative w-48 h-48 mx-auto mb-8">
-                    <canvas id="planningChart"></canvas>
-                </div>
-
+                <div class="text-center mb-6"><p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">เงินคงเหลือสำหรับออม</p><h2 id="balanceC3" class="text-4xl font-bold text-slate-800">0.00</h2></div>
+                <div class="relative w-48 h-48 mx-auto mb-8"><canvas id="planningChart"></canvas></div>
                 <div class="grid grid-cols-1 gap-2 text-xs font-bold">
-                    <div class="flex justify-between p-3 bg-amber-50 text-amber-700 rounded-2xl">
-                        <span>🏆 ลงทุน (40%)</span>
-                        <span id="valInvest">0</span>
-                    </div>
-                    <div class="flex justify-between p-3 bg-emerald-50 text-emerald-700 rounded-2xl">
-                        <span>🏥 สุขภาพ (30%)</span>
-                        <span id="valHealth">0</span>
-                    </div>
-                    <div class="flex justify-between p-3 bg-indigo-50 text-indigo-700 rounded-2xl">
-                        <span>✈️ รางวัล (30%)</span>
-                        <span id="valReward">0</span>
-                    </div>
+                    <div class="flex justify-between p-3 bg-emerald-50 text-emerald-700 rounded-2xl"><span>🏥 สุขภาพ/ประกัน (30%)</span><span id="valHealth">0</span></div>
+                    <div class="flex justify-between p-3 bg-amber-50 text-amber-700 rounded-2xl"><span>📈 ลงทุน/เกษียณ (30%)</span><span id="valInvest">0</span></div>
+                    <div class="flex justify-between p-3 bg-blue-50 text-blue-700 rounded-2xl"><span>🎓 การศึกษาลูก (25%)</span><span id="valEdu">0</span></div>
+                    <div class="flex justify-between p-3 bg-indigo-50 text-indigo-700 rounded-2xl"><span>✈️ รางวัลชีวิต (15%)</span><span id="valReward">0</span></div>
                 </div>
             </div>
         </div>
-
-        <div class="text-center">
-            <button onclick="window.location.href='dashboard.html'" class="text-slate-300 text-[10px] font-bold uppercase tracking-widest active:scale-95 transition">กลับหน้าหลัก</button>
-        </div>
+        <div class="text-center"><button onclick="window.location.href='dashboard.html'" class="text-slate-300 text-[10px] font-bold uppercase tracking-widest">กลับหน้าหลัก</button></div>
     </div>
 
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwS4cnZIW0Ntnnx7Qw4s50HY37YbsmeRcjpAFXZsj_5pkdoIZAqKY12lSGf27PW-eaUSA/exec";
-        let config = {}; 
-        let chart;
-
-        async function init() {
-            try {
-                const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_bucket_config' }) });
-                const data = await res.json();
-                if (data.status === 'success') {
-                    config = data.config;
-                    let h = "";
-                    let t = 0;
-                    config.circle1.concat(config.circle2).forEach(item => {
-                        h += `<div class="flex justify-between items-center py-0.5">
-                                <span class="text-slate-600 font-medium">${item.name}</span>
-                                <span class="font-bold text-slate-800">${item.value.toLocaleString()}</span>
-                              </div>`;
-                        t += item.value;
-                    });
-                    document.getElementById('fixedDetails').innerHTML = h;
-                    document.getElementById('totalFixed').innerText = t.toLocaleString() + " ฿";
-                }
-            } catch (e) { console.error("Load failed"); }
-        }
+        let config = {}, chart;
+        async function init() { try { const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_bucket_config' }) }); const data = await res.json(); if (data.status === 'success') { config = data.config; let h = "", t = 0; config.circle1.concat(config.circle2).forEach(item => { h += `<div class="flex justify-between items-center py-0.5"><span class="text-slate-600 font-medium">${item.name}</span><span class="font-bold text-slate-800">${item.value.toLocaleString()}</span></div>`; t += item.value; }); document.getElementById('fixedDetails').innerHTML = h; document.getElementById('totalFixed').innerText = t.toLocaleString() + " ฿"; } } catch (e) {} }
 
         function runPlanning() {
             const inc = parseFloat(document.getElementById('incomeInput').value) || 0;
             const fix = config.circle1.concat(config.circle2).reduce((a, c) => a + c.value, 0);
             const bal = inc - fix;
-            
             const section = document.getElementById('savingsSection');
             if (bal > 0) {
                 section.classList.remove('hidden');
                 document.getElementById('balanceC3').innerText = bal.toLocaleString() + " ฿";
-                
-                const inv = bal * 0.40;
-                const hea = bal * 0.30;
-                const rew = bal * 0.30;
-
-                document.getElementById('valInvest').innerText = inv.toLocaleString();
+                // ✅ สัดส่วน 4 ส่วน: 30:30:25:15
+                const hea = bal * 0.30, inv = bal * 0.30, edu = bal * 0.25, rew = bal * 0.15;
                 document.getElementById('valHealth').innerText = hea.toLocaleString();
+                document.getElementById('valInvest').innerText = inv.toLocaleString();
+                document.getElementById('valEdu').innerText = edu.toLocaleString();
                 document.getElementById('valReward').innerText = rew.toLocaleString();
-                
-                updateChart([inv, hea, rew]);
-            } else {
-                section.classList.add('hidden');
-            }
+                updateChart([hea, inv, edu, rew]);
+            } else { section.classList.add('hidden'); }
         }
 
         function updateChart(dataValues) {
@@ -129,20 +60,12 @@
             chart = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['ลงทุน', 'สุขภาพ', 'รางวัล'],
-                    datasets: [{
-                        data: dataValues,
-                        backgroundColor: ['#f59e0b', '#10b981', '#6366f1'],
-                        borderWidth: 0
-                    }]
+                    labels: ['สุขภาพ', 'ลงทุน', 'การศึกษา', 'รางวัล'],
+                    datasets: [{ data: dataValues, backgroundColor: ['#10b981', '#f59e0b', '#3b82f6', '#6366f1'], borderWidth: 0 }]
                 },
-                options: {
-                    cutout: '75%',
-                    plugins: { legend: { display: false } }
-                }
+                options: { cutout: '75%', plugins: { legend: { display: false } } }
             });
         }
-
         window.onload = init;
     </script>
 </body>
