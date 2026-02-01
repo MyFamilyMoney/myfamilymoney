@@ -64,16 +64,16 @@
                 
                 <div class="grid grid-cols-1 gap-2.5 text-xs font-bold">
                     <div class="flex justify-between p-3.5 bg-amber-50 text-amber-700 rounded-2xl border border-amber-100">
-                        <span>📈 ลงทุน/เกษียณ (6%)</span><span id="valInvest">0</span>
+                        <span>📈 ลงทุน/เกษียณ (60%)</span><span id="valInvest">0</span>
                     </div>
                     <div class="flex justify-between p-3.5 bg-blue-50 text-blue-700 rounded-2xl border border-blue-100">
-                        <span>🎓 การศึกษาลูก (1.5%)</span><span id="valEdu">0</span>
+                        <span>🎓 การศึกษาลูก (15%)</span><span id="valEdu">0</span>
                     </div>
                     <div class="flex justify-between p-3.5 bg-emerald-50 text-emerald-700 rounded-2xl border border-emerald-100">
-                        <span>🏥 สุขภาพ/ประกัน (1.5%)</span><span id="valHealth">0</span>
+                        <span>🏥 สุขภาพ/ประกัน (15%)</span><span id="valHealth">0</span>
                     </div>
                     <div class="flex justify-between p-3.5 bg-indigo-50 text-indigo-700 rounded-2xl border border-indigo-100">
-                        <span>✈️ รางวัลชีวิต (1%)</span><span id="valReward">0</span>
+                        <span>✈️ รางวัลชีวิต (10%)</span><span id="valReward">0</span>
                     </div>
                 </div>
 
@@ -90,7 +90,6 @@
     </div>
 
     <script>
-        // ✅ ⚠️ นำ URL จาก Apps Script ของคุณมาวางตรงนี้ครับ
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwS4cnZIW0Ntnnx7Qw4s50HY37YbsmeRcjpAFXZsj_5pkdoIZAqKY12lSGf27PW-eaUSA/exec";
         let configData = [], chart;
 
@@ -124,30 +123,30 @@
             const t1 = configData.filter(i => i.name.startsWith("1.")).reduce((a, b) => a + b.value, 0);
             const t2 = configData.filter(i => i.name.startsWith("2.")).reduce((a, b) => a + b.value, 0);
             
-            // 1. หา "ยอดคงเหลือ" (หลังหักประจำ)
             const initialBalance = inc - t1 - t2;
             const resSection = document.getElementById('resultSection');
 
             if (inc > 0) {
                 resSection.classList.remove('hidden');
-                document.getElementById('balanceInitial').innerText = initialBalance.toLocaleString() + " ฿";
+                document.getElementById('balanceInitial').innerText = initialBalance.toLocaleString(undefined, {minimumFractionDigits: 2}) + " ฿";
 
-                // 2. จัดสรร 10% จาก "ยอดคงเหลือ"
-                // สัดส่วน: ลงทุน 6%, การศึกษา 1.5%, สุขภาพ 1.5%, รางวัล 1% (รวม 10%)
-                const inv = initialBalance * 0.06;
-                const edu = initialBalance * 0.015;
-                const hea = initialBalance * 0.015;
-                const rew = initialBalance * 0.01;
+                // ✅ แก้ไขตรรกะตามคำสั่ง: แบ่งจากยอดออม 10% เป็นตัวตั้ง
                 const totalSaving = initialBalance * 0.10;
+                const unit = totalSaving / 100; // หารด้วย 100% ก่อนตามที่คุณต้องการ
 
-                document.getElementById('totalSaving').innerText = totalSaving.toLocaleString() + " ฿";
-                document.getElementById('valInvest').innerText = inv.toLocaleString();
-                document.getElementById('valEdu').innerText = edu.toLocaleString();
-                document.getElementById('valHealth').innerText = hea.toLocaleString();
-                document.getElementById('valReward').innerText = rew.toLocaleString();
+                const inv = unit * 60;
+                const edu = unit * 15;
+                const hea = unit * 15;
+                const rew = unit * 10;
+
+                // แสดงผลแบบทศนิยม 2 ตำแหน่งเพื่อให้ลงตัวสวยงาม
+                document.getElementById('totalSaving').innerText = totalSaving.toLocaleString(undefined, {minimumFractionDigits: 2}) + " ฿";
+                document.getElementById('valInvest').innerText = inv.toLocaleString(undefined, {minimumFractionDigits: 2});
+                document.getElementById('valEdu').innerText = edu.toLocaleString(undefined, {minimumFractionDigits: 2});
+                document.getElementById('valHealth').innerText = hea.toLocaleString(undefined, {minimumFractionDigits: 2});
+                document.getElementById('valReward').innerText = rew.toLocaleString(undefined, {minimumFractionDigits: 2});
                 
-                // 3. ยอดสุทธิสุดท้าย
-                document.getElementById('netFinal').innerText = (initialBalance - totalSaving).toLocaleString() + " ฿";
+                document.getElementById('netFinal').innerText = (initialBalance - totalSaving).toLocaleString(undefined, {minimumFractionDigits: 2}) + " ฿";
                 
                 updateChart([inv, edu, hea, rew]);
             } else {
