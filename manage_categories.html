@@ -6,72 +6,71 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap'); body { font-family: 'Kanit', sans-serif; background-color: #f8fafc; }</style>
 </head>
-<body class="min-h-screen p-4 pb-20 text-slate-700">
-    <div class="max-w-md mx-auto space-y-4">
-        <div class="flex items-center gap-3 mb-6"><button onclick="window.location.href='dashboard.html'" class="p-2 bg-white rounded-full shadow-sm text-slate-400 active:scale-90 transition">❮</button><h1 class="text-xl font-bold">⚙️ จัดการหมวดหมู่</h1></div>
+<body class="min-h-screen p-4 pb-12 text-slate-800">
+    <div class="max-w-md mx-auto space-y-5">
+        <div class="flex items-center gap-3 mb-2"><button onclick="window.location.href='dashboard.html'" class="p-2 bg-white rounded-full shadow-sm text-slate-400 active:scale-90 transition">❮</button><h1 class="text-xl font-bold">⚙️ จัดการหมวดหมู่</h1></div>
 
-        <div class="bg-white p-6 rounded-[2.5rem] shadow-sm space-y-4 border border-slate-100">
-            <div class="grid grid-cols-2 gap-2">
-                <div><label class="text-[10px] font-bold text-slate-400 ml-2">ถังเงิน (Account)</label>
-                <select id="catAcc" onchange="updateGroupOptions()" class="w-full p-3 bg-slate-50 rounded-2xl border-none text-sm outline-none"><option value="Circular">เงินหมุนเวียน</option><option value="Savings">เงินเก็บออม</option></select></div>
-                <div><label class="text-[10px] font-bold text-slate-400 ml-2">ประเภท (Type)</label>
-                <select id="catType" onchange="updateGroupOptions()" class="w-full p-3 bg-slate-50 rounded-2xl border-none text-sm outline-none"><option value="Expense">รายจ่าย</option><option value="Income">รายรับ</option></select></div>
+        <div class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-50 space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+                <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-2">ถังเงิน (Account)</label>
+                    <select id="acc" onchange="updateGroups()" class="w-full p-4 bg-slate-50 rounded-2xl border-none outline-none font-medium mt-1">
+                        <option value="Circular">เงินหมุนเวียน</option>
+                        <option value="Savings">เงินเก็บออม</option>
+                    </select>
+                </div>
+                <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-2">ประเภท (Type)</label>
+                    <select id="type" onchange="updateGroups()" class="w-full p-4 bg-slate-50 rounded-2xl border-none outline-none font-medium mt-1">
+                        <option value="Income">รายรับ</option>
+                        <option value="Expense">รายจ่าย</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-2">กลุ่มหมวดหมู่หลัก (MAIN GROUP)</label>
+                <select id="group" class="w-full p-4 bg-slate-50 rounded-2xl border-none outline-none font-medium mt-1"></select>
+            </div>
+            
+            <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-2">ระบุชื่อรายการย่อย</label>
+                <input type="text" id="name" placeholder="เช่น เงินเดือน, ค่าเน็ต..." class="w-full p-4 bg-slate-50 rounded-2xl border-none outline-none font-bold text-slate-800 mt-1">
             </div>
 
-            <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-2">กลุ่มหมวดหมู่หลัก (Main Group)</label>
-            <select id="catGroup" class="w-full p-4 bg-slate-50 rounded-3xl border-none outline-none font-medium appearance-none"></select></div>
-
-            <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-2">ระบุชื่อรายการย่อย</label>
-            <input type="text" id="catName" placeholder="เช่น ค่าข้าว, ค่าน้ำไฟ" class="w-full p-4 bg-slate-50 rounded-3xl border-none font-medium outline-none"></div>
-
-            <button onclick="addCat()" id="addBtn" class="w-full bg-blue-600 text-white py-4 rounded-3xl font-bold active:scale-95 transition-all shadow-lg">เพิ่มหมวดหมู่ตอนนี้</button>
+            <button id="saveBtn" onclick="addCat()" class="w-full bg-blue-600 text-white py-4 rounded-[1.5rem] font-bold shadow-lg active:scale-95 transition-all">เพิ่มหมวดหมู่ตอนนี้</button>
         </div>
-
-        <div id="catList" class="space-y-2 text-center"><h3 class="text-xs font-bold text-slate-400 uppercase ml-4 mt-6 tracking-widest">หมวดหมู่ปัจจุบัน</h3></div>
+        
+        <div class="pt-4"><h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest text-center mb-4">หมวดหมู่ปัจจุบัน</h3><div id="list" class="space-y-2"></div></div>
     </div>
 
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwS4cnZIW0Ntnnx7Qw4s50HY37YbsmeRcjpAFXZsj_5pkdoIZAqKY12lSGf27PW-eaUSA/exec";
         
-        function updateGroupOptions() {
-            const acc = document.getElementById('catAcc').value;
-            const type = document.getElementById('catType').value;
-            const group = document.getElementById('catGroup');
+        function updateGroups() {
+            const acc = document.getElementById('acc').value, type = document.getElementById('type').value, g = document.getElementById('group');
             if(acc === 'Savings') {
-                if(type === 'Income') { group.innerHTML = '<option value="ลงทุน">🏆 ลงทุน</option><option value="สุขภาพ">🏥 สุขภาพ</option><option value="รางวัล">✈️ รางวัล</option><option value="อื่นๆ">📦 อื่นๆ</option>'; } 
-                else { group.innerHTML = '<option value="ถอนลงทุน">📉 ถอนลงทุน</option><option value="จ่ายรักษาพยาบาล">🚑 จ่ายรักษาพยาบาล</option><option value="ใช้เงินรางวัล">🎁 ใช้เงินรางวัล</option><option value="อื่นๆ">📦 อื่นๆ</option>'; }
+                g.innerHTML = (type === 'Income') ? '<option value="ลงทุน">🏆 ลงทุน</option><option value="การศึกษา">🎓 การศึกษา</option><option value="สุขภาพ">🏥 สุขภาพ</option><option value="รางวัล">✈️ รางวัล</option>' : '<option value="ถอนลงทุน">📉 ถอนลงทุน</option><option value="จ่ายค่าเรียน">📚 จ่ายค่าเรียน</option><option value="จ่ายรักษาพยาบาล">🚑 จ่ายรักษาพยาบาล</option><option value="ใช้เงินรางวัล">🎁 ใช้เงินรางวัล</option>';
             } else {
-                if(type === 'Income') { group.innerHTML = '<option value="รายได้หลัก">💰 รายได้หลัก</option><option value="รายได้พิเศษ">🧧 รายได้พิเศษ</option><option value="งบต้นเดือน">📈 งบต้นเดือน</option><option value="อื่นๆ">📦 อื่นๆ</option>'; } 
-                else { group.innerHTML = '<option value="ใช้จ่ายส่วนตัว">🛒 ใช้จ่ายส่วนตัว</option><option value="จ่ายฟิกซ์คอร์ส">📋 จ่ายฟิกซ์คอร์ส</option><option value="จ่ายหนี้สิน">💳 จ่ายหนี้สิน</option><option value="อื่นๆ">📦 อื่นๆ</option>'; }
-            }
-        }
-
-        async function load() {
-            const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_categories' }) });
-            const data = await res.json();
-            if(data.status === 'success') {
-                const list = document.getElementById('catList');
-                list.innerHTML = '<h3 class="text-xs font-bold text-slate-400 uppercase ml-4 mt-6 tracking-widest text-center">หมวดหมู่ปัจจุบัน</h3>';
-                data.categories.forEach(c => {
-                    list.innerHTML += `<div class="bg-white p-4 rounded-2xl flex justify-between items-center shadow-sm border border-slate-50 text-left"><div><p class="font-bold text-slate-800">${c.name}</p><p class="text-[9px] text-slate-400 font-bold uppercase">${c.parent} > ${c.group}</p></div><button onclick="toggleCat('${c.id}')" class="text-rose-300 font-bold text-xs p-2">ลบ</button></div>`;
-                });
+                g.innerHTML = (type === 'Income') ? '<option value="งบต้นเดือน">📈 งบต้นเดือน</option><option value="รายได้หลัก">💰 รายได้หลัก</option><option value="รายได้พิเศษ">🧧 รายได้พิเศษ</option><option value="อื่นๆ">📦 อื่นๆ</option>' : '<option value="ใช้จ่ายส่วนตัว">🛒 ใช้จ่ายส่วนตัว</option><option value="จ่ายฟิกซ์คอร์ส">📋 จ่ายฟิกซ์คอร์ส</option><option value="อื่นๆ">📦 อื่นๆ</option>';
             }
         }
 
         async function addCat() {
-            const name = document.getElementById('catName').value;
-            if(!name) { alert("กรุณาระบุชื่อรายการย่อย"); return; }
-            const btn = document.getElementById('addBtn'); btn.disabled = true; btn.innerText = "⏳ บันทึก...";
+            const n = document.getElementById('name').value; if(!n) return;
+            const btn = document.getElementById('saveBtn'); btn.disabled = true; btn.innerText = "⏳ กำลังบันทึก...";
             try {
-                const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'add_category', data: { name: name, type: document.getElementById('catType').value, parent: document.getElementById('catAcc').value, group: document.getElementById('catGroup').value } }) });
-                const result = await res.json();
-                if(result.status === 'success') { document.getElementById('catName').value = ''; load(); }
+                await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'add_category', data: { name: n, type: document.getElementById('type').value, parent: document.getElementById('acc').value, group: document.getElementById('group').value } }) });
+                document.getElementById('name').value = ''; loadCats();
             } catch (e) { alert("ล้มเหลว"); }
             btn.disabled = false; btn.innerText = "เพิ่มหมวดหมู่ตอนนี้";
         }
 
-        async function toggleCat(id) { if(!confirm('ลบหมวดหมู่?')) return; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'update_category_status', data: { id: id, status: 'Inactive' } }) }); load(); }
-        window.onload = () => { updateGroupOptions(); load(); };
+        async function loadCats() {
+            const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_categories' }) });
+            const data = await res.json();
+            if(data.status === 'success') {
+                document.getElementById('list').innerHTML = data.categories.map(c => `<div class="bg-white p-3 rounded-2xl flex justify-between items-center shadow-sm border border-slate-50"><div class="text-xs"><b>${c.name}</b><br><span class="text-[9px] text-slate-300 uppercase">${c.parent} / ${c.group}</span></div><button onclick="updateStat('${c.id}')" class="text-rose-400 text-[9px] font-bold uppercase">ลบ</button></div>`).join('');
+            }
+        }
+        async function updateStat(id) { if(confirm('ต้องการลบหมวดหมู่หรือไม่?')) { await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'update_category_status', data: { id: id, status: 'Inactive' } }) }); loadCats(); } }
+        window.onload = () => { updateGroups(); loadCats(); };
     </script>
 </body>
 </html>
