@@ -1,57 +1,106 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>💰 แผงควบคุม - MyFamily Money</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;400;500;600;800&display=swap'); body { font-family: 'Kanit', sans-serif; background-color: #f8fafc; }</style>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;400;500;600;800&display=swap');
+        body { font-family: 'Kanit', sans-serif; background-color: #f8fafc; -webkit-font-smoothing: antialiased; }
+        .number-soft { font-weight: 500; letter-spacing: 0.05em; } 
+        .shared-balance { font-weight: 800; letter-spacing: -0.02em; font-size: 2.8rem; }
+        .unread-badge { position: absolute; top: -2px; right: -2px; width: 10px; height: 10px; background-color: #ef4444; border-radius: 99px; border: 2px solid white; display: none; }
+    </style>
 </head>
 <body class="min-h-screen pb-10 text-slate-700">
     <div class="max-w-md mx-auto p-4 space-y-4">
+        
         <div class="flex justify-between items-center bg-white p-4 rounded-[2.5rem] shadow-sm border border-slate-50">
             <div class="flex items-center gap-3">
-                <img id="userImg" src="https://ui-avatars.com/api/?name=User" class="w-14 h-14 rounded-full border-2 border-slate-100 object-cover shadow-sm">
-                <div><h2 id="userNameDisplay" class="font-semibold text-slate-800 text-base">...</h2><button onclick="logout()" class="text-[9px] font-bold text-slate-300 uppercase">Sign Out</button></div>
+                <div class="relative"><img id="userImg" src="https://ui-avatars.com/api/?name=User" class="w-14 h-14 rounded-full border-2 border-slate-100 object-cover shadow-sm"></div>
+                <div>
+                    <h2 id="userNameDisplay" class="font-semibold text-slate-800 text-base leading-tight">...</h2>
+                    <button onclick="logout()" class="text-[9px] font-bold text-slate-300 uppercase tracking-widest">Sign Out</button>
+                </div>
             </div>
+            
             <div class="flex flex-col gap-1.5">
                 <div class="flex gap-1.5">
-                    <button onclick="exportReport()" class="text-[9px] font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full">📄 รายงาน</button>
-                    <button onclick="window.location.href='chat.html'" class="text-[9px] font-bold text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-full">💬 แชท</button>
+                    <button onclick="exportReport()" id="exportBtn" class="text-[9px] font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full shadow-sm active:scale-95 transition">📄 รายงาน</button>
+                    <div class="relative">
+                        <button onclick="window.location.href='chat.html'" class="text-[9px] font-bold text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-full shadow-sm active:scale-90 transition">💬 แชท</button>
+                        <div id="chatBadge" class="unread-badge"></div>
+                    </div>
                 </div>
                 <div class="flex gap-1.5">
-                    <button onclick="window.location.href='reservoir.html'" class="text-[9px] font-bold text-amber-600 bg-amber-50 px-3 py-1.5 rounded-full">📥 รอจัดสรร</button>
-                    <button onclick="window.location.href='manage_categories.html'" class="text-[9px] font-bold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-full">⚙️ ตั้งค่า</button>
+                    <button onclick="window.location.href='reservoir.html'" class="text-[9px] font-bold text-amber-600 bg-amber-50 px-3 py-1.5 rounded-full shadow-sm active:scale-90 transition">📥 รอจัดสรร</button>
+                    <button onclick="window.location.href='manage_categories.html'" class="text-[9px] font-bold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-full shadow-sm active:scale-90 transition">⚙️ ตั้งค่า</button>
                 </div>
             </div>
         </div>
 
         <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
-            <div class="bg-slate-50/80 p-3 grid grid-cols-5 text-center gap-0.5 border-b border-slate-50 text-[7px] font-bold uppercase">
-                <div><p class="text-yellow-600">📈 ลงทุน</p><p id="saveInvest">0</p></div>
-                <div><p class="text-blue-600">🎓 ศึกษา</p><p id="saveEdu">0</p></div>
-                <div><p class="text-emerald-600">🏥 สุขภาพ</p><p id="saveHealth">0</p></div>
-                <div><p class="text-indigo-600">✈️ รางวัล</p><p id="saveReward">0</p></div>
-                <div class="bg-emerald-100/30 rounded-lg text-emerald-700"><p>💰 รวม</p><p id="saveTotal">0</p></div>
+            <div class="bg-slate-50/80 p-3 grid grid-cols-5 text-center gap-0.5 border-b border-slate-50">
+                <div><p class="text-[7px] text-slate-400 font-bold uppercase">📈 ลงทุน</p><p id="saveInvest" class="text-[9px] font-bold text-yellow-600">0</p></div>
+                <div><p class="text-[7px] text-slate-400 font-bold uppercase">🎓 ศึกษา</p><p id="saveEdu" class="text-[9px] font-bold text-blue-600">0</p></div>
+                <div><p class="text-[7px] text-slate-400 font-bold uppercase">🏥 สุขภาพ</p><p id="saveHealth" class="text-[9px] font-bold text-emerald-600">0</p></div>
+                <div><p class="text-[7px] text-slate-400 font-bold uppercase">✈️ รางวัล</p><p id="saveReward" class="text-[9px] font-bold text-indigo-600">0</p></div>
+                <div class="bg-emerald-100/30 rounded-lg"><p class="text-[7px] text-emerald-600 font-bold uppercase">💰 รวม</p><p id="saveTotal" class="text-[9px] font-bold text-emerald-700">0</p></div>
             </div>
-            <div class="p-8 text-center"><p class="text-[10px] text-slate-400 font-medium uppercase tracking-widest mb-1">กองกลางรวม</p><h1 id="sharedCircular" class="text-4xl font-bold text-slate-800">0 ฿</h1></div>
+            
+            <div class="p-10 text-center bg-white">
+                <p class="text-[10px] text-slate-400 font-medium uppercase tracking-[0.2em] mb-1">กองกลางรวมคงเหลือ</p>
+                <h1 id="sharedCircular" class="shared-balance text-slate-800">0 ฿</h1>
+            </div>
         </div>
 
         <div class="grid grid-cols-2 gap-3">
-             <button onclick="window.location.href='add_transaction.html'" class="bg-white border-2 border-indigo-600 text-indigo-600 py-4 rounded-[2rem] font-bold shadow-sm">✚ บันทึก</button>
-             <button onclick="window.location.href='bucket_calculator.html'" class="bg-white border-2 border-blue-400 text-blue-500 py-4 rounded-[2rem] font-bold shadow-sm">🌀 วางแผน</button>
+             <button onclick="window.location.href='add_transaction.html'" class="w-full bg-white border-2 border-indigo-600 text-indigo-600 py-4 rounded-[2rem] font-bold text-base shadow-sm active:scale-95 transition">✚ บันทึกรายการ</button>
+             <button onclick="window.location.href='bucket_calculator.html'" class="w-full bg-white border-2 border-blue-400 text-blue-500 py-4 rounded-[2rem] font-bold text-base shadow-sm active:scale-95 transition">🌀 วางแผนงบ</button>
         </div>
 
-        <div class="pt-4"><h3 class="text-[10px] uppercase font-bold text-slate-400 text-center mb-4">ความเคลื่อนไหว (คนละ 15 รายการ)</h3>
-            <div class="grid grid-cols-2 gap-3 items-start text-[10px]">
-                <div><p class="text-indigo-400 font-extrabold ml-2">สมเจต</p><div id="u1LogsContainer" class="space-y-2"></div></div>
-                <div><p class="text-rose-400 font-extrabold ml-2">รัชนี</p><div id="u2LogsContainer" class="space-y-2"></div></div>
+        <div class="pt-4">
+            <h3 class="font-medium text-slate-400 text-[10px] uppercase tracking-[0.3em] mb-5 text-center">ความเคลื่อนไหว (คนละ 15 รายการ)</h3>
+            <div class="grid grid-cols-2 gap-4 items-start">
+                <div>
+                    <p class="text-[10px] font-extrabold text-indigo-400 uppercase mb-2 ml-2 tracking-tighter">สมเจต</p>
+                    <div class="bg-indigo-50/50 p-3 rounded-[1.5rem] mb-4 text-center border border-indigo-100 shadow-inner">
+                        <p class="text-[8px] font-bold text-indigo-300 uppercase mb-0.5">ยอดคงเหลือ</p>
+                        <p id="u1BalDisplay" class="text-lg font-black text-indigo-600">0 ฿</p>
+                    </div>
+                    <div id="u1LogsContainer" class="space-y-2"></div>
+                </div>
+                
+                <div>
+                    <p class="text-[10px] font-extrabold text-rose-400 uppercase mb-2 ml-2 tracking-tighter">รัชนี</p>
+                    <div class="bg-rose-50/50 p-3 rounded-[1.5rem] mb-4 text-center border border-rose-100 shadow-inner">
+                        <p class="text-[8px] font-bold text-rose-300 uppercase mb-0.5">ยอดคงเหลือ</p>
+                        <p id="u2BalDisplay" class="text-lg font-black text-rose-600">0 ฿</p>
+                    </div>
+                    <div id="u2LogsContainer" class="space-y-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="reportModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-6">
+        <div class="bg-white w-full max-w-sm rounded-[2.5rem] p-8 text-center shadow-2xl border-t-8 border-emerald-500">
+            <div class="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">📄</div>
+            <h3 class="text-xl font-bold text-slate-800 mb-2">สรุปรายงานเรียบร้อย!</h3>
+            <div class="flex flex-col gap-3 mt-8">
+                <a id="viewReportBtn" href="#" target="_blank" class="w-full bg-emerald-600 text-white py-4 rounded-[1.5rem] font-bold shadow-lg shadow-emerald-100 text-center active:scale-95 transition-all">👀 เปิดดู / ดาวน์โหลด</a>
+                <button onclick="closeReportModal()" class="w-full text-slate-400 font-bold py-2 text-sm uppercase">ปิดหน้าต่าง</button>
             </div>
         </div>
     </div>
 
     <script>
+        // นำ URL จาก App Script มาวางตรงนี้ครับ
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyyNYj7nE5QjhGMCU8jlE_0DcXQOpXl9T8EMeHtXTXBB2SPcJiUOv9zFJGPoHSAn946ug/exec"; 
+        
         const user = JSON.parse(localStorage.getItem('userData'));
+
         async function init() {
             if (!user) { window.location.href = 'index.html'; return; }
             document.getElementById('userNameDisplay').innerText = user.name;
@@ -60,18 +109,55 @@
                 const data = await res.json();
                 if (data.status === 'success') {
                     if (data.userPic) document.getElementById('userImg').src = data.userPic;
+                    
+                    // อัปเดตยอดออมย่อย
                     document.getElementById('saveInvest').innerText = data.savings.invest.toLocaleString();
                     document.getElementById('saveEdu').innerText = data.savings.edu.toLocaleString();
                     document.getElementById('saveHealth').innerText = data.savings.health.toLocaleString();
                     document.getElementById('saveReward').innerText = data.savings.reward.toLocaleString();
                     document.getElementById('saveTotal').innerText = data.savings.total.toLocaleString();
+                    
+                    // อัปเดตยอดกองกลางรวม
                     document.getElementById('sharedCircular').innerText = data.sharedCircular.toLocaleString() + " ฿";
-                    const log = (l) => `<div class="bg-white p-2 rounded-xl shadow-sm border-l-2 ${l.amount > 0 ? 'border-indigo-400' : 'border-rose-400'}"><p class="font-bold">${l.amount.toLocaleString()}</p><p class="text-[8px] truncate">${l.note}</p></div>`;
-                    document.getElementById('u1LogsContainer').innerHTML = data.user1.logs.map(log).join('');
-                    document.getElementById('u2LogsContainer').innerHTML = data.user2.logs.map(log).join('');
+                    
+                    // ✅ แสดงยอดคงเหลือรายคน (จุดที่แก้ไข)
+                    document.getElementById('u1BalDisplay').innerText = data.user1.balance.toLocaleString() + " ฿";
+                    document.getElementById('u2BalDisplay').innerText = data.user2.balance.toLocaleString() + " ฿";
+                    
+                    const createLogHTML = (log) => `<div class="bg-white p-3 rounded-2xl shadow-sm border-l-2 ${log.amount > 0 ? 'border-indigo-400' : 'border-rose-400'}"><p class="text-[8px] font-bold text-slate-300 uppercase">${log.date}</p><p class="text-[10px] font-medium text-slate-700 truncate mb-1 leading-tight">${log.note}</p><p class="text-[11px] font-bold ${log.amount > 0 ? 'text-indigo-600' : 'text-rose-500'}">${log.amount.toLocaleString()}</p></div>`;
+                    
+                    // แสดงประวัติคนละ 15 รายการ
+                    document.getElementById('u1LogsContainer').innerHTML = data.user1.logs.map(createLogHTML).join('');
+                    document.getElementById('u2LogsContainer').innerHTML = data.user2.logs.map(createLogHTML).join('');
                 }
-            } catch (e) {}
+                checkNewMessages();
+            } catch (e) { console.error("Load failed"); }
         }
+
+        async function exportReport() {
+            const btn = document.getElementById('exportBtn'); btn.innerText = "⏳..."; btn.disabled = true;
+            try {
+                const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'export_pdf', data: { userId: user.userId } }) });
+                const result = await res.json();
+                if (result.status === 'success') { document.getElementById('viewReportBtn').href = result.url; document.getElementById('reportModal').classList.remove('hidden'); }
+            } catch (e) { alert('ขัดข้อง'); }
+            btn.innerText = "📄 รายงาน"; btn.disabled = false;
+        }
+
+        function closeReportModal() { document.getElementById('reportModal').classList.add('hidden'); }
+        
+        async function checkNewMessages() { 
+            try { 
+                const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_messages' }) }); 
+                const data = await res.json(); 
+                if(data.status === 'success' && data.messages.length > 0) { 
+                    if(data.messages[data.messages.length-1].id !== localStorage.getItem('lastReadMsgId') && data.messages[data.messages.length-1].sender !== user.userId) { 
+                        document.getElementById('chatBadge').style.display = 'block'; 
+                    } 
+                } 
+            } catch (e) {} 
+        }
+
         function logout() { localStorage.removeItem('userData'); window.location.href = 'index.html'; }
         window.onload = init;
     </script>
