@@ -8,26 +8,26 @@
 </head>
 <body class="min-h-screen p-4 pb-12">
     <div class="max-w-md mx-auto space-y-6">
-        <div class="flex items-center gap-3 mb-2"><button onclick="window.location.href='dashboard.html'" class="p-2 bg-white rounded-full shadow-sm text-slate-400 active:scale-90 transition">❮</button><h1 class="text-xl font-bold">⚙️ จัดการหมวดหมู่</h1></div>
+        <div class="flex items-center gap-3 mb-2"><button onclick="window.location.href='dashboard.html'" class="p-2 bg-white rounded-full shadow-sm text-slate-400 active:scale-90 transition">❮</button><h1 class="text-xl font-bold text-slate-800">⚙️ จัดการหมวดหมู่</h1></div>
 
         <div class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-50 space-y-4">
             <div class="grid grid-cols-2 gap-3">
                 <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-2">ถังเงิน</label>
-                    <select id="accType" onchange="updateMainGroups()" class="w-full p-3 bg-slate-50 rounded-2xl border-none outline-none text-sm font-medium">
+                    <select id="accType" onchange="updateMainGroups()" class="w-full p-3 bg-slate-50 rounded-2xl border-none outline-none text-sm font-medium appearance-none">
                         <option value="Circular">เงินหมุนเวียน</option><option value="Savings">เงินเก็บออม</option>
                     </select>
                 </div>
                 <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-2">ประเภท</label>
-                    <select id="type" onchange="updateMainGroups()" class="w-full p-3 bg-slate-50 rounded-2xl border-none outline-none text-sm font-medium">
+                    <select id="type" onchange="updateMainGroups()" class="w-full p-3 bg-slate-50 rounded-2xl border-none outline-none text-sm font-medium appearance-none">
                         <option value="Income">รายรับ</option><option value="Expense">รายจ่าย</option>
                     </select>
                 </div>
             </div>
             <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-2">กลุ่มหมวดหมู่หลัก</label>
-                <select id="mainGroup" class="w-full p-3 bg-slate-50 rounded-2xl border-none outline-none text-sm font-medium"></select>
+                <select id="mainGroup" class="w-full p-3 bg-slate-50 rounded-2xl border-none outline-none text-sm font-medium appearance-none"></select>
             </div>
             <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-2">ชื่อรายการย่อย</label>
-                <input type="text" id="catName" placeholder="เช่น เงินเดือน, ค่าเน็ต..." class="w-full p-4 bg-slate-50 rounded-2xl border-none outline-none text-base font-bold">
+                <input type="text" id="catName" placeholder="เช่น เงินเดือน, ค่าเน็ต..." class="w-full p-4 bg-slate-50 rounded-2xl border-none outline-none text-base font-bold shadow-inner">
             </div>
             <button id="addBtn" onclick="addCategory()" class="w-full bg-blue-600 text-white py-4 rounded-3xl font-bold shadow-lg active:scale-95 transition-all">เพิ่มหมวดหมู่ตอนนี้</button>
         </div>
@@ -36,16 +36,16 @@
     </div>
 
     <div id="successModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-6 z-50">
-        <div class="bg-white rounded-[2.5rem] p-8 w-full max-w-xs text-center shadow-2xl">
+        <div class="bg-white rounded-[2.5rem] p-8 w-full max-w-xs text-center shadow-2xl scale-in-center">
             <div class="text-5xl mb-4">✅</div>
-            <h3 class="text-xl font-bold text-slate-800 mb-2">บันทึกสำเร็จ!</h3>
-            <p class="text-sm text-slate-500 mb-6">รายการย่อยของคุณถูกเพิ่มเข้าสู่ระบบแล้ว</p>
-            <button onclick="closeModal()" class="w-full bg-slate-800 text-white py-3 rounded-2xl font-bold active:scale-95 transition">ตกลง</button>
+            <h3 class="text-xl font-bold text-slate-800 mb-2">บันทึกเรียบร้อย!</h3>
+            <p class="text-sm text-slate-500 mb-6">รายการย่อยถูกเพิ่มลงในระบบแล้ว</p>
+            <button onclick="closeModal()" class="w-full bg-slate-800 text-white py-3 rounded-2xl font-bold">ตกลง</button>
         </div>
     </div>
 
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyyNYj7nE5QjhGMCU8jlE_0DcXQOpXl9T8EMeHtXTXBB2SPcJiUOv9zFJGPoHSAn946ug/exec";
+        const WEB_APP_URL = "ใส่ URL ตรงนี้";
         function updateMainGroups() {
             const acc = document.getElementById('accType').value, type = document.getElementById('type').value, mg = document.getElementById('mainGroup');
             if(acc === 'Savings') {
@@ -56,17 +56,20 @@
             loadCats();
         }
         async function loadCats() {
-            const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_categories' }) });
-            const data = await res.json();
-            const list = document.getElementById('catList'); list.innerHTML = '';
-            data.categories.filter(c => c.parent === document.getElementById('accType').value && c.type === document.getElementById('type').value).forEach(c => {
-                list.innerHTML += `<div class="bg-white p-3 px-5 rounded-2xl flex justify-between items-center shadow-sm text-sm"><span class="font-medium text-slate-600">${c.name} <small class="text-slate-300">(${c.group})</small></span><button onclick="toggleCat('${c.id}', 'Inactive')" class="text-rose-400 font-bold text-xs">ลบ</button></div>`;
-            });
+            const list = document.getElementById('catList'); list.innerHTML = '<p class="text-center text-[10px] text-slate-300">กำลังโหลด...</p>';
+            try {
+                const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_categories' }) });
+                const data = await res.json();
+                list.innerHTML = '';
+                data.categories.filter(c => c.parent === document.getElementById('accType').value && c.type === document.getElementById('type').value).forEach(c => {
+                    list.innerHTML += `<div class="bg-white p-3 px-5 rounded-2xl flex justify-between items-center shadow-sm text-sm"><span class="font-medium text-slate-600">${c.name} <small class="text-slate-300">(${c.group})</small></span></div>`;
+                });
+            } catch (e) { list.innerHTML = 'โหลดไม่สำเร็จ'; }
         }
         async function addCategory() {
             const name = document.getElementById('catName').value, mg = document.getElementById('mainGroup').value, acc = document.getElementById('accType').value, type = document.getElementById('type').value;
-            if(!name) return alert("กรุณาระบุชื่อรายการ");
-            const btn = document.getElementById('addBtn'); btn.innerText = "⌛ บันทึก..."; btn.disabled = true;
+            if(!name) return;
+            const btn = document.getElementById('addBtn'); btn.innerText = "⏳ บันทึก..."; btn.disabled = true;
             try {
                 const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'add_category', data: { name: name, type: type, parent: acc, group: mg } }) });
                 const result = await res.json();
@@ -79,7 +82,6 @@
             btn.innerText = "เพิ่มหมวดหมู่ตอนนี้"; btn.disabled = false;
         }
         function closeModal() { document.getElementById('successModal').classList.add('hidden'); }
-        async function toggleCat(id, status) { if(confirm('ต้องการลบ?')) { await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'update_category_status', data: { id: id, status: status } }) }); loadCats(); } }
         window.onload = updateMainGroups;
     </script>
 </body>
