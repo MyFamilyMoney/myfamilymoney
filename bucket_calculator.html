@@ -5,65 +5,58 @@
     <title>🌀 วางแผนงบประมาณ - MyFamily Money</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;400;500;600;700;800&display=swap');
-        body { font-family: 'Kanit', sans-serif; background-color: #f8fafc; }
-        .group-card { border-radius: 2.5rem; overflow: hidden; background: white; border: 1px solid #e2e8f0; }
-        .status-paid { color: #10b981 !important; font-weight: 800; opacity: 0.6; text-decoration: line-through; }
-        .status-unpaid { color: #ef4444 !important; font-weight: 600; }
-        .item-row { cursor: pointer; padding: 6px 0; border-bottom: 1px solid #f8fafc; }
-    </style>
+    <style>@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;400;500;600;700;800&display=swap'); body { font-family: 'Kanit', sans-serif; background-color: #f8fafc; } .group-card { border-radius: 2.5rem; overflow: hidden; background: white; border: 1px solid #e2e8f0; } .status-paid { color: #10b981 !important; font-weight: 800; opacity: 0.6; text-decoration: line-through; } .item-row { cursor: pointer; padding: 8px 0; border-bottom: 1px solid #f8fafc; }</style>
 </head>
 <body class="min-h-screen p-4 pb-12 text-slate-800">
     <div class="max-w-md mx-auto space-y-6">
         <div class="bg-white p-8 rounded-[2.5rem] shadow-sm text-center border border-slate-100 shadow-indigo-100/50">
             <h1 class="text-2xl font-bold text-indigo-600 mb-6">วางแผนงบประมาณ</h1>
             <input type="number" id="incomeInput" oninput="runPlanning()" placeholder="ใส่รายได้รวมทั้งหมด ฿" 
-                class="w-full p-5 bg-slate-50 border-2 border-slate-50 rounded-[1.5rem] text-3xl font-bold text-center outline-none focus:border-indigo-500 transition-all">
+                class="w-full p-5 bg-slate-50 border-2 border-slate-50 rounded-[1.5rem] text-3xl font-bold text-center outline-none focus:border-indigo-500 transition-all shadow-inner">
+            <p class="text-[9px] text-slate-400 mt-4 uppercase">แตะที่ชื่อรายการเพื่อยืนยันการชำระเงิน</p>
         </div>
 
         <div class="group-card shadow-sm border-l-8 border-blue-500">
-            <div class="p-6 pb-2"><h3 class="text-xs font-bold text-blue-600 mb-4 uppercase">รายการจัดสรรส่วนที่ 1</h3><div id="details1" class="space-y-1 text-sm"></div></div>
+            <div class="p-6 pb-2"><h3 class="text-xs font-bold text-blue-600 mb-4 uppercase">รายการส่วนที่ 1 (หักลบรายจ่าย)</h3><div id="details1" class="space-y-1 text-sm"></div></div>
             <div class="bg-blue-50/50 p-4 text-center border-t border-blue-50"><p id="total1" class="text-2xl font-bold text-blue-600">0 ฿</p></div>
         </div>
 
         <div class="group-card shadow-sm border-l-8 border-rose-500">
-            <div class="p-6 pb-2"><h3 class="text-xs font-bold text-rose-600 mb-4 uppercase">รายการจัดสรรส่วนที่ 2</h3><div id="details2" class="space-y-1 text-sm"></div></div>
+            <div class="p-6 pb-2"><h3 class="text-xs font-bold text-rose-600 mb-4 uppercase">รายการส่วนที่ 2 (หักลบรายจ่าย)</h3><div id="details2" class="space-y-1 text-sm"></div></div>
             <div class="bg-rose-50/50 p-4 text-center border-t border-rose-50"><p id="total2" class="text-2xl font-bold text-rose-600">0 ฿</p></div>
         </div>
 
-        <div id="resultSection" class="hidden space-y-4">
-            <div class="bg-white p-6 rounded-[2rem] border-2 border-rose-100 text-center"><p class="text-[10px] font-bold text-rose-400 uppercase mb-1">รวมยอดค้างชำระทั้งหมด</p><h2 id="totalAllExpenses" class="text-3xl font-black text-rose-500">0 ฿</h2></div>
+        <div id="resultSection" class="hidden animate-fade-in space-y-4">
+            <div class="bg-white p-6 rounded-[2rem] border-2 border-rose-100 text-center"><p class="text-[10px] font-bold text-rose-400 uppercase mb-1">รวมยอดที่ยังไม่ได้จ่ายทั้งหมด</p><h2 id="totalAllExpenses" class="text-3xl font-black text-rose-500">0 ฿</h2></div>
             <div class="bg-slate-800 p-8 rounded-[2.5rem] text-white text-center shadow-xl"><p class="text-[10px] font-bold uppercase opacity-60 mb-2">ยอดคงเหลือ (ตัวตั้ง 100%)</p><h2 id="balanceInitial" class="text-4xl font-black">0 ฿</h2></div>
             <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
                 <div class="relative w-52 h-52 mx-auto mb-10"><canvas id="planningChart"></canvas></div>
                 <div class="grid grid-cols-1 gap-2.5 text-xs font-bold">
-                    <div class="flex justify-between p-3.5 bg-amber-50 text-amber-700 rounded-2xl"><span>📈 ลงทุน/เกษียณ (60%)</span><span id="valInvest">0</span></div>
-                    <div class="flex justify-between p-3.5 bg-blue-50 text-blue-700 rounded-2xl"><span>🎓 การศึกษาลูก (15%)</span><span id="valEdu">0</span></div>
-                    <div class="flex justify-between p-3.5 bg-emerald-50 text-emerald-700 rounded-2xl"><span>🏥 สุขภาพ/ประกัน (15%)</span><span id="valHealth">0</span></div>
-                    <div class="flex justify-between p-3.5 bg-indigo-50 text-indigo-700 rounded-2xl"><span>✈️ รางวัลชีวิต (10%)</span><span id="valReward">0</span></div>
+                    <div class="flex justify-between p-3.5 bg-amber-50 text-amber-700 rounded-2xl"><span>📈 ลงทุน (60%)</span><span id="valInvest">0</span></div>
+                    <div class="flex justify-between p-3.5 bg-blue-50 text-blue-700 rounded-2xl"><span>🎓 การศึกษา (15%)</span><span id="valEdu">0</span></div>
+                    <div class="flex justify-between p-3.5 bg-emerald-50 text-emerald-700 rounded-2xl"><span>🏥 สุขภาพ (15%)</span><span id="valHealth">0</span></div>
+                    <div class="flex justify-between p-3.5 bg-indigo-50 text-indigo-700 rounded-2xl"><span>✈️ รางวัล (10%)</span><span id="valReward">0</span></div>
                 </div>
             </div>
         </div>
-        <div class="text-center"><button onclick="window.location.href='dashboard.html'" class="text-slate-300 text-[10px] font-bold uppercase tracking-widest">กลับสู่หน้าหลัก</button></div>
     </div>
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzZps6Ze-HX8WqrIFufqP9QKYZ3-RJWU5chJCDqepI_qp84oqS9pmzm7b_mJzS_wYyV/exec"; // ⚠️ ต้องเป็น URL เดียวกับรหัส.gs
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby9wGATELSDvY7phy2CwDZsGtF4-BbxfSZPSzxU70nGiUPzP9TNnith4QVlRztcQQ4LXg/exec"; 
         let configData = [], chart;
         async function init() {
             try {
                 const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_bucket_config' }) });
                 const data = await res.json();
                 if (data.status === 'success') { configData = data.config.circle1.concat(data.config.circle2); renderFixedSections(); }
-            } catch (e) { console.error("Load failed"); }
+            } catch (e) {}
         }
         function renderFixedSections() {
             let h1 = "", h2 = "", t1 = 0, t2 = 0;
             configData.forEach(item => {
-                const statusClass = (item.status === 'Paid') ? 'status-paid' : 'status-unpaid';
-                const row = `<div class="flex justify-between items-center item-row ${statusClass}" onclick="toggleStatus('${item.name}', '${item.status}')"><span>${item.name}</span><span class="font-bold">${item.value.toLocaleString()}</span></div>`;
-                if (item.name.startsWith("1.")) { h1 += row; if(item.status!=='Paid') t1 += item.value; }
-                else if (item.name.startsWith("2.")) { h2 += row; if(item.status!=='Paid') t2 += item.value; }
+                const isPaid = (item.status === 'Paid');
+                const row = `<div class="flex justify-between items-center item-row ${isPaid ? 'status-paid' : 'font-medium'}" onclick="toggleStatus('${item.name}', '${item.status}')"><span>${item.name}</span><span class="font-bold">${item.value.toLocaleString()}</span></div>`;
+                if (item.name.startsWith("1.")) { h1 += row; if(!isPaid) t1 += item.value; }
+                else if (item.name.startsWith("2.")) { h2 += row; if(!isPaid) t2 += item.value; }
             });
             document.getElementById('details1').innerHTML = h1; document.getElementById('details2').innerHTML = h2;
             document.getElementById('total1').innerText = t1.toLocaleString() + " ฿"; document.getElementById('total2').innerText = t2.toLocaleString() + " ฿";
